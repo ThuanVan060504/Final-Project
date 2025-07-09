@@ -752,28 +752,28 @@ progress {
 
 @media (min-width: 576px) {
   .container-sm, .container {
-    max-width: 540px;
+    max-width: 90%;
   }
 }
 @media (min-width: 768px) {
-  .container-md, .container-sm, .container {
-    max-width: 720px;
-  }
+    .container-md, .container-sm, .container {
+        max-width: 90%;
+    }
 }
 @media (min-width: 992px) {
-  .container-lg, .container-md, .container-sm, .container {
-    max-width: 960px;
-  }
+    .container-lg, .container-md, .container-sm, .container {
+        max-width: 90%;
+    }
 }
 @media (min-width: 1200px) {
-  .container-xl, .container-lg, .container-md, .container-sm, .container {
-    max-width: 1140px;
-  }
+    .container-xl, .container-lg, .container-md, .container-sm, .container {
+        max-width: 90%;
+    }
 }
 @media (min-width: 1400px) {
-  .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
-    max-width: 1320px;
-  }
+    .container-xxl, .container-xl, .container-lg, .container-md, .container-sm, .container {
+        max-width: 90%;
+    }
 }
 :root {
   --bs-breakpoint-xs: 0;
@@ -8303,7 +8303,8 @@ textarea.form-control-lg {
 }
 
 .gap-3 {
-  gap: 1rem !important;
+    gap: 1rem !important;
+    margin-left: 60px;
 }
 
 .gap-4 {
@@ -8454,6 +8455,7 @@ textarea.form-control-lg {
 
 .text-end {
   text-align: right !important;
+  margin-right:60px;
 }
 
 .text-center {
@@ -8834,8 +8836,8 @@ textarea.form-control-lg {
 }
 
 .bg-light {
-  --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+    --bs-bg-opacity: 1;
+    background-color: #ffdf15;
 }
 
 .bg-dark {

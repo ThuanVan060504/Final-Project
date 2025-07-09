@@ -1798,7 +1798,8 @@
 }
 
 .text-end {
-  text-align: left !important;
+    text-align: left !important;
+    margin-right: 60px;
 }
 
 .text-center {
@@ -2171,8 +2172,8 @@
 }
 
 .bg-light {
-  --bs-bg-opacity: 1;
-  background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
+    --bs-bg-opacity: 1;
+    background-color: #ffdf15;
 }
 
 .bg-dark {
