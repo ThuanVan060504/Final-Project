@@ -1,9 +1,14 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using Final_Project.Models;
+using Microsoft.EntityFrameworkCore; 
+
+var builder = WebApplication.CreateBuilder(args);
 
 // 1. Thêm các service cần thiết
 builder.Services.AddDistributedMemoryCache(); // Bắt buộc cho session
 builder.Services.AddSession(); // Bật session
 builder.Services.AddControllersWithViews();
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 

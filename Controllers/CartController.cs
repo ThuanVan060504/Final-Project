@@ -7,7 +7,7 @@ namespace Final_Project.Controllers
     public class CartController : Controller
     {
         private const string CART_KEY = "cart";
-        private static List<Product> Products = ProductController.Products;
+        private static List<SanPham> Products = ProductController.Products;
 
         public IActionResult Index()
         {
@@ -17,23 +17,27 @@ namespace Final_Project.Controllers
 
         public IActionResult AddToCart(int id)
         {
-            var product = Products.FirstOrDefault(p => p.Id == id);
+            var product = Products.FirstOrDefault(p => p.MaSP == id);
             if (product == null) return NotFound();
 
             var cart = GetCart();
             var item = cart.FirstOrDefault(x => x.ProductId == id);
 
             if (item != null)
+            {
                 item.Quantity++;
+            }
             else
+            {
                 cart.Add(new CartItem
                 {
-                    ProductId = product.Id,
-                    ProductName = product.Name,
-                    Price = product.Price,
-                    ImageUrl = product.ImageUrl,
+                    ProductId = product.MaSP,
+                    ProductName = product.TenSP,
+                    Price = product.DonGia,
+                    ImageUrl = product.ImageURL,
                     Quantity = 1
                 });
+            }
 
             SaveCart(cart);
             return RedirectToAction("Index");
@@ -43,7 +47,10 @@ namespace Final_Project.Controllers
         {
             var cart = GetCart();
             var item = cart.FirstOrDefault(x => x.ProductId == id);
-            if (item != null) cart.Remove(item);
+            if (item != null)
+            {
+                cart.Remove(item);
+            }
             SaveCart(cart);
             return RedirectToAction("Index");
         }
@@ -51,13 +58,16 @@ namespace Final_Project.Controllers
         private List<CartItem> GetCart()
         {
             var session = HttpContext.Session.GetString(CART_KEY);
-            return session == null ? new List<CartItem>() : JsonSerializer.Deserialize<List<CartItem>>(session) ?? new List<CartItem>();
+            return session == null
+                ? new List<CartItem>()
+                : JsonSerializer.Deserialize<List<CartItem>>(session) ?? new List<CartItem>();
         }
 
         private void SaveCart(List<CartItem> cart)
         {
             HttpContext.Session.SetString(CART_KEY, JsonSerializer.Serialize(cart));
         }
+
         [HttpPost]
         public IActionResult UpdateQuantity(int id, string actionType)
         {
@@ -81,6 +91,7 @@ namespace Final_Project.Controllers
             }
             return RedirectToAction("Index");
         }
+
         public IActionResult Checkout()
         {
             var cart = GetCart();
@@ -96,7 +107,7 @@ namespace Final_Project.Controllers
         public IActionResult CompleteCheckout(string method)
         {
             // Sau khi thanh toán thành công, xóa session giỏ hàng
-            HttpContext.Session.Remove("cart");
+            HttpContext.Session.Remove(CART_KEY);
             TempData["Success"] = $"Cảm ơn bạn đã mua hàng! Phương thức: {method}";
             return RedirectToAction("ThankYou");
         }
@@ -105,6 +116,5 @@ namespace Final_Project.Controllers
         {
             return View();
         }
-
     }
 }
