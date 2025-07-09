@@ -1,113 +1,88 @@
-﻿/* FORM LOGIN ĐẸP NHẸ GỌN */
-
-body {
-    background: linear-gradient(135deg, #74ebd5, #9face6);
+﻿body {
+    background: #f0f4f8;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
 }
 
-.auth-container {
+.login-container {
+    width: 100%;
     max-width: 400px;
     margin: 80px auto;
-    padding: 35px 30px;
-    background-color: #ffffff;
-    border-radius: 16px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
-    animation: slideFadeIn 0.8s ease;
+    padding: 30px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
-@keyframes slideFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(40px);
+    .login-container h2 {
+        text-align: center;
+        margin-bottom: 24px;
+        color: #333;
     }
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.auth-container h2 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 25px;
-    font-size: 26px;
-    font-weight: 600;
-}
-
-.auth-container label {
+.login-form label {
     display: block;
-    margin-top: 18px;
-    font-weight: 500;
-    color: #333;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #555;
 }
 
-.auth-container input[type="text"],
-.auth-container input[type="password"] {
+.login-form input[type="text"],
+.login-form input[type="password"] {
     width: 100%;
-    padding: 11px 14px;
-    margin-top: 8px;
+    padding: 10px;
+    margin-bottom: 16px;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 15px;
-    transition: border-color 0.3s ease;
+    border-radius: 6px;
+    font-size: 14px;
 }
 
-.auth-container input:focus {
-    border-color: #5c8df6;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(92, 141, 246, 0.2);
-}
-
-.auth-container .btn-submit {
+.login-form button {
     width: 100%;
-    padding: 13px;
-    margin-top: 30px;
-    background: linear-gradient(135deg, #5c8df6, #4a6fe3);
+    padding: 12px;
+    background: #2196f3;
     color: white;
     font-size: 16px;
-    font-weight: bold;
     border: none;
-    border-radius: 8px;
+    border-radius: 6px;
     cursor: pointer;
     transition: background 0.3s ease;
 }
 
-    .auth-container .btn-submit:hover {
-        background: linear-gradient(135deg, #4a6fe3, #3e5ddc);
-    }
-
-.auth-container p {
-    margin-top: 25px;
-    text-align: center;
-    font-size: 14px;
-}
-
-.auth-container a {
-    color: #4a6fe3;
-    text-decoration: none;
-}
-
-    .auth-container a:hover {
-        text-decoration: underline;
+    .login-form button:hover {
+        background: #1976d2;
     }
 
 .alert {
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
     font-size: 14px;
-    font-weight: 500;
+    text-align: center;
 }
 
-.alert-danger {
-    background-color: #ffe0e0;
-    color: #a10000;
+    .alert.error {
+        background-color: #ffdddd;
+        color: #a94442;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert.success {
+        background-color: #ddffdd;
+        color: #3c763d;
+        border: 1px solid #c3e6cb;
+    }
+
+.register-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
 }
 
-.alert-success {
-    background-color: #e0ffe3;
-    color: #0a7511;
-}
+    .register-link a {
+        color: #2196f3;
+        text-decoration: none;
+    }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
