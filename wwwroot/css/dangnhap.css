@@ -1,87 +1,113 @@
-﻿.auth-container {
-    max-width: 450px;
-    margin: 80px auto;
-    padding: 30px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+﻿/* FORM LOGIN ĐẸP NHẸ GỌN */
+
+body {
+    background: linear-gradient(135deg, #74ebd5, #9face6);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-    .auth-container h2 {
-        text-align: center;
-        color: #007bff;
-        margin-bottom: 25px;
-        font-weight: 600;
+.auth-container {
+    max-width: 400px;
+    margin: 80px auto;
+    padding: 35px 30px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    animation: slideFadeIn 0.8s ease;
+}
+
+@keyframes slideFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
     }
 
-    .auth-container label {
-        display: block;
-        margin-top: 15px;
-        font-weight: 500;
-        color: #333;
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 600;
+}
+
+.auth-container label {
+    display: block;
+    margin-top: 18px;
+    font-weight: 500;
+    color: #333;
+}
+
+.auth-container input[type="text"],
+.auth-container input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    margin-top: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: border-color 0.3s ease;
+}
+
+.auth-container input:focus {
+    border-color: #5c8df6;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(92, 141, 246, 0.2);
+}
+
+.auth-container .btn-submit {
+    width: 100%;
+    padding: 13px;
+    margin-top: 30px;
+    background: linear-gradient(135deg, #5c8df6, #4a6fe3);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+    .auth-container .btn-submit:hover {
+        background: linear-gradient(135deg, #4a6fe3, #3e5ddc);
     }
 
-    .auth-container input[type="text"],
-    .auth-container input[type="password"] {
-        width: 100%;
-        padding: 10px;
-        margin-top: 6px;
-        border-radius: 6px;
-        border: 1px solid #ccc;
-        transition: border 0.3s;
+.auth-container p {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.auth-container a {
+    color: #4a6fe3;
+    text-decoration: none;
+}
+
+    .auth-container a:hover {
+        text-decoration: underline;
     }
-
-    .auth-container input:focus {
-        border-color: #007bff;
-        outline: none;
-    }
-
-    .auth-container .btn-submit {
-        width: 100%;
-        padding: 12px;
-        margin-top: 25px;
-        background-color: #007bff;
-        color: white;
-        font-size: 16px;
-        font-weight: bold;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-
-        .auth-container .btn-submit:hover {
-            background-color: #0056b3;
-        }
-
-    .auth-container p {
-        margin-top: 20px;
-        text-align: center;
-    }
-
-    .auth-container a {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-        .auth-container a:hover {
-            text-decoration: underline;
-        }
 
 .alert {
-    padding: 10px 15px;
-    border-radius: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
     margin-bottom: 20px;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 500;
 }
 
 .alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
+    background-color: #ffe0e0;
+    color: #a10000;
 }
 
 .alert-success {
-    background-color: #d4edda;
-    color: #155724;
+    background-color: #e0ffe3;
+    color: #0a7511;
 }
