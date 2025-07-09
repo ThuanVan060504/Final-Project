@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Đăng ký ";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Kế thừa Layout
+}
+
+<div class="auth-container">
+    <h2>Đăng ký tài khoản</h2>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger">@ViewBag.Error</div>
+    }
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+
+    <form asp-controller="Dangky" asp-action="Index" method="post">
+        <label for="hoTen">Họ tên</label>
+        <input type="text" name="hoTen" id="hoTen" required />
+
+        <label for="email">Email</label>
+        <input type="email" name="email" id="email" required />
+
+        <label for="sdt">Số điện thoại</label>
+        <input type="tel" name="sdt" id="sdt" pattern="[0-9]{10,11}" required />
+
+        <label for="newUsername">Tên đăng nhập</label>
+        <input type="text" name="newUsername" id="newUsername" required />
+
+        <label for="newPassword">Mật khẩu</label>
+        <input type="password" name="newPassword" id="newPassword" required />
+
+        <label for="confirmPassword">Xác nhận mật khẩu</label>
+        <input type="password" name="confirmPassword" id="confirmPassword" required />
+
+        <button type="submit" class="btn-submit">Đăng ký</button>
+    </form>
+
+    <p>Đã có tài khoản? <a asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></p>
+</div>
