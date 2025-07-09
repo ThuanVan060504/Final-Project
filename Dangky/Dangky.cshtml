@@ -1,42 +1,54 @@
 ﻿@{
-    ViewData["Title"] = "Đăng ký ";
-    
+    ViewData["Title"] = "Đăng ký";
 }
+<link rel="stylesheet" href="/css/dangky.css" />
+
 
 <div class="auth-container">
-    <h2>Đăng ký tài khoản</h2>
+    <h2 class="auth-title">Đăng ký tài khoản</h2>
 
     @if (ViewBag.Error != null)
     {
-        <div class="alert alert-danger">@ViewBag.Error</div>
+        <div class="alert error">@ViewBag.Error</div>
     }
-
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert success">@TempData["Success"]</div>
     }
 
-    <form asp-controller="Dangky" asp-action="Index" method="post">
-        <label for="hoTen">Họ tên</label>
-        <input type="text" name="hoTen" id="hoTen" required />
+    <form asp-controller="Dangky" asp-action="Index" method="post" class="auth-form">
+        <div class="auth-box">
+            <input type="text" id="hoTen" name="hoTen" required placeholder=" " class="auth-input" />
+            <label for="hoTen" class="auth-label">Họ tên</label>
+        </div>
 
-        <label for="email">Email</label>
-        <input type="email" name="email" id="email" required />
+        <div class="auth-box">
+            <input type="email" id="email" name="email" required placeholder=" " class="auth-input" />
+            <label for="email" class="auth-label">Email</label>
+        </div>
 
-        <label for="sdt">Số điện thoại</label>
-        <input type="tel" name="sdt" id="sdt" pattern="[0-9]{10,11}" required />
+        <div class="auth-box">
+            <input type="tel" id="sdt" name="sdt" pattern="[0-9]{10,11}" required placeholder=" " class="auth-input" />
+            <label for="sdt" class="auth-label">Số điện thoại</label>
+        </div>
 
-        <label for="newUsername">Tên đăng nhập</label>
-        <input type="text" name="newUsername" id="newUsername" required />
+        <div class="auth-box">
+            <input type="text" id="newUsername" name="newUsername" required placeholder=" " class="auth-input" />
+            <label for="newUsername" class="auth-label">Tên đăng nhập</label>
+        </div>
 
-        <label for="newPassword">Mật khẩu</label>
-        <input type="password" name="newPassword" id="newPassword" required />
+        <div class="auth-box">
+            <input type="password" id="newPassword" name="newPassword" required placeholder=" " class="auth-input" />
+            <label for="newPassword" class="auth-label">Mật khẩu</label>
+        </div>
 
-        <label for="confirmPassword">Xác nhận mật khẩu</label>
-        <input type="password" name="confirmPassword" id="confirmPassword" required />
+        <div class="auth-box">
+            <input type="password" id="confirmPassword" name="confirmPassword" required placeholder=" " class="auth-input" />
+            <label for="confirmPassword" class="auth-label">Xác nhận mật khẩu</label>
+        </div>
 
-        <button type="submit" class="btn-submit">Đăng ký</button>
+        <button type="submit" class="auth-button">Đăng ký</button>
     </form>
 
-    <p>Đã có tài khoản? <a asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></p>
+    <p class="auth-switch">Đã có tài khoản? <a asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></p>
 </div>
