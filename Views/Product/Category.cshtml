@@ -1,0 +1,18 @@
+﻿@model List<Final_Project.Models.Product>
+
+<h2 class="text-danger">Danh sách sản phẩm: @ViewBag.CategoryName</h2>
+<div class="row row-cols-1 row-cols-md-4 g-4">
+    @foreach (var item in Model)
+    {
+        <div class="col">
+            <div class="card h-100">
+                <img src="@item.ImageUrl" class="card-img-top" style="height: 200px; object-fit: contain;" />
+                <div class="card-body">
+                    <h5 class="card-title">@item.Name</h5>
+                    <p class="card-text text-success">@item.Price.ToString("N0") đ</p>
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

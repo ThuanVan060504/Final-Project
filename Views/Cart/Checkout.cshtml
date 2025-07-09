@@ -1,0 +1,100 @@
+﻿@model List<Final_Project.Models.CartItem>
+@{
+    ViewData["Title"] = "Chọn phương thức thanh toán";
+}
+
+<div class="container mt-5">
+    <h2 class="text-center text-success mb-4">🧾 Chọn phương thức thanh toán</h2>
+
+    <div class="accordion" id="paymentAccordion">
+
+        <!-- Visa / MasterCard -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button" data-bs-toggle="collapse" data-bs-target="#visa">
+                    💳 Visa / MasterCard
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse show" id="visa" data-bs-parent="#paymentAccordion">
+                <div class="accordion-body">
+                    <form asp-action="CompleteCheckout" method="post">
+                        <div class="mb-3">
+                            <label class="form-label">Số thẻ</label>
+                            <input type="text" class="form-control" required placeholder="1234 5678 9012 3456" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày hết hạn</label>
+                                <input type="text" class="form-control" placeholder="MM/YY" required />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV</label>
+                                <input type="text" class="form-control" placeholder="123" required />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-success">✅ Xác nhận thanh toán</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Momo / ZaloPay -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#momo">
+                    📱 Momo / ZaloPay
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse" id="momo" data-bs-parent="#paymentAccordion">
+                <div class="accordion-body text-center">
+                    <p>Vui lòng quét mã QR dưới đây để thanh toán:</p>
+                    <img src="/LOGO.QR/QR.jpg" width="250" class="img-fluid border rounded shadow-sm" />
+                    <form asp-action="CompleteCheckout" method="post" class="mt-3">
+                        <button type="submit" class="btn btn-success">✅ Tôi đã thanh toán</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chuyển khoản ngân hàng -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#bank">
+                    🏦 Chuyển khoản ngân hàng
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse" id="bank" data-bs-parent="#paymentAccordion">
+                <div class="accordion-body">
+                    <p>Vui lòng chuyển khoản theo thông tin sau:</p>
+                    <ul>
+                        <li><strong>Ngân hàng:</strong> Vietcombank</li>
+                        <li><strong>Số tài khoản:</strong> 123456789</li>
+                        <li><strong>Chủ tài khoản:</strong> Nguyễn Văn A</li>
+                        <li><strong>Nội dung chuyển khoản:</strong> Thanh toán đơn hàng G3TD</li>
+                    </ul>
+                    <form asp-action="CompleteCheckout" method="post">
+                        <button type="submit" class="btn btn-success">✅ Tôi đã chuyển khoản</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thanh toán khi nhận hàng -->
+        <div class="accordion-item">
+            <h2 class="accordion-header">
+                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#cod">
+                    📦 Thanh toán khi nhận hàng
+                </button>
+            </h2>
+            <div class="accordion-collapse collapse" id="cod" data-bs-parent="#paymentAccordion">
+                <div class="accordion-body">
+                    <p>Bạn sẽ thanh toán trực tiếp khi nhận hàng từ shipper.</p>
+                    <form asp-action="CompleteCheckout" method="post">
+                        <button type="submit" class="btn btn-success">✅ Xác nhận đơn hàng</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,90 @@
+﻿@model List<Final_Project.Models.Product>
+@{
+    ViewData["Title"] = "Sản phẩm";
+}
+
+<div class="container mt-5">
+    <h2 class="fw-bold mb-4 text-center">🛒 Tất cả sản phẩm</h2>
+
+    <div class="row">
+        <!-- 🔍 Sidebar bên trái -->
+        <div class="col-md-3 mb-4">
+            <form method="get" asp-action="Index" class="card shadow-sm p-3">
+                <h5 class="fw-semibold mb-3">🎯 Bộ lọc</h5>
+
+                <!-- Danh mục -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Danh mục</label>
+                    <select class="form-select" name="category">
+                        <option value="">Tất cả</option>
+                        <option value="Gạch ốp lát">Gạch ốp lát</option>
+                        <option value="Gương">Gương</option>
+                        <option value="Rèm cửa">Rèm cửa</option>
+                        <option value="Sàn gỗ">Sàn gỗ</option>
+                        <option value="Sàn vinyl">Sàn vinyl</option>
+                        <option value="Thiết bị vệ sinh">Thiết bị vệ sinh</option>
+                        <option value="Thiết bị gia dụng">Thiết bị gia dụng</option>
+                        <option value="Công nghệ thông tin">Công nghệ thông tin</option>
+                        <option value="Nội thất tiện ích">Nội thất tiện ích</option>
+                    </select>
+                </div>
+
+                <!-- Tìm kiếm -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tìm kiếm</label>
+                    <input class="form-control" type="text" name="search" placeholder="Tên sản phẩm..."
+                           value="@Context.Request.Query["search"]" />
+                </div>
+
+                <!-- Sắp xếp -->
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Sắp xếp theo</label>
+                    <select class="form-select" name="sort">
+                        <option value="">Mặc định</option>
+                        <option value="asc">Giá tăng dần</option>
+                        <option value="desc">Giá giảm dần</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Lọc sản phẩm</button>
+            </form>
+        </div>
+
+        <!-- 🛍️ Danh sách sản phẩm bên phải -->
+        <div class="col-md-9">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-warning text-center">
+                    😥 Xin lỗi, chúng tôi hiện không có sản phẩm bạn yêu cầu.
+                </div>
+            }
+            else
+            {
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+                    @foreach (var item in Model)
+                    {
+                        <div class="col">
+                            <div class="card h-100 shadow-sm border-0">
+                                <img src="@item.ImageUrl" class="card-img-top p-2 rounded" style="height: 200px; object-fit: contain;" alt="@item.Name" />
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="fw-bold">@item.Name</h6>
+                                    <p class="text-danger fw-semibold">@item.Price.ToString("N0") đ</p>
+                                    <p class="text-muted small">@item.Description</p>
+
+                                    <div class="mt-auto d-flex gap-2">
+                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-primary btn-sm flex-fill">
+                                            Xem chi tiết
+                                        </a>
+                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-success btn-sm flex-fill">
+                                            🛒 Thêm
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>

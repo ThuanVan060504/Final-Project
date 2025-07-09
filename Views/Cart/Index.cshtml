@@ -1,0 +1,67 @@
+﻿@model List<Final_Project.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ hàng";
+    decimal total = 0;
+}
+
+<h2 class="mb-4">Giỏ hàng của bạn</h2>
+
+@if (!Model.Any())
+{
+    <p class="text-muted">🛒 Giỏ hàng trống. Quay lại <a href="/Product">cửa hàng</a> để mua sắm nhé!</p>
+}
+else
+{
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-light">
+            <tr>
+                <th>Hình</th>
+                <th>Tên sản phẩm</th>
+                <th>Số lượng</th>
+                <th>Giá</th>
+                <th>Thành tiền</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                var subTotal = item.Price * item.Quantity;
+                total += subTotal;
+                <tr>
+                    <td>
+                        <img src="@item.ImageUrl" alt="@item.ProductName" width="80" class="img-thumbnail" />
+                    </td>
+                    <td>@item.ProductName</td>
+                    <td>
+                        <form asp-controller="Cart" asp-action="UpdateQuantity" method="post" class="d-flex justify-content-center align-items-center">
+                            <input type="hidden" name="id" value="@item.ProductId" />
+                            <button type="submit" name="actionType" value="decrease" class="btn btn-sm btn-outline-secondary">-</button>
+                            <span class="mx-2">@item.Quantity</span>
+                            <button type="submit" name="actionType" value="increase" class="btn btn-sm btn-outline-secondary">+</button>
+                        </form>
+                    </td>
+                    <td>@item.Price.ToString("#,##0") đ</td>
+                    <td>@subTotal.ToString("#,##0") đ</td>
+                    <td>
+                        <a asp-controller="Cart" asp-action="Remove" asp-route-id="@item.ProductId" class="btn btn-sm btn-danger">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+            }
+
+            <tr>
+                <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                <td colspan="2" class="fw-bold text-danger">@total.ToString("#,##0") đ</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="text-end">
+        <a href="/Product" class="btn btn-outline-primary px-4 py-2 fs-5">🛒 Tiếp tục mua sắm</a>
+        <a asp-action="Checkout" class="btn btn-success px-4 py-2 fs-5">💳 Thanh toán</a>
+    </div>
+}
+

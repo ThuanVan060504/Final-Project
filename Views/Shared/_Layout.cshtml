@@ -1,0 +1,183 @@
+﻿    <!DOCTYPE html>
+    <html lang="vi">
+    <head>
+        <meta charset="utf-8" />
+        <title>@ViewData["Title"] - G3TD Shop</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="~/css/site.css" />
+    </head>
+    <body>
+    <!-- Header -->
+    <header class="bg-white border-bottom py-4 shadow-sm">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <img src="~/LOGO.QR/logo-G3TD.png" style="height: 80px; width: auto;" />
+                <span class="fw-bold text-danger fs-3">G3TD-SHOP</span>
+            </div>
+            <form class="d-flex w-50">
+                <input class="form-control form-control-lg" placeholder="Thỏa mãn nhu cầu trang trí nhà..." />
+                <button class="btn btn-danger ms-2 px-3">🔍</button>
+            </form>
+            <div class="text-end">
+                <div class="fw-semibold">Tư vấn: <span class="text-danger">09*********</span></div>
+                <div class="fw-semibold">Đại lý: <span class="text-danger">09*********</span></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Nav -->
+    <nav class="bg-light border-bottom">
+        <div class="container">
+            <ul class="nav">
+                <li class="nav-item">
+                    <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                </li>
+
+                <!-- Dropdown Sản phẩm -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Gạch ốp lát">Gạch ốp lát</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Gương">Gương</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Rèm cửa">Rèm cửa</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Sàn gỗ">Sàn gỗ</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Sàn vinyl">Sàn vinyl</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Thiết bị gia dụng">Thiết bị gia dụng</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Thiết bị vệ sinh">Thiết bị vệ sinh</a></li>
+                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Công nghệ thông tin">Công nghệ thông tin</a></li>
+                    </ul>
+                </li>
+
+                <!-- Dropdown Không gian sống -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" asp-controller="LivingSpace" asp-action="Index">Không gian sống</a>
+                    <div class="dropdown-menu p-3" style="min-width: 400px;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong class="dropdown-header">Không gian công cộng</strong>
+                                <a class="dropdown-item" href="#">Bệnh viện</a>
+                                <a class="dropdown-item" href="#">Khách sạn</a>
+                                <a class="dropdown-item" href="#">Trường học</a>
+                                <a class="dropdown-item" href="#">Văn phòng</a>
+                            </div>
+                            <div class="col-md-6">
+                                <strong class="dropdown-header">Không gian gia đình</strong>
+                                <a class="dropdown-item" href="#">Phòng bếp</a>
+                                <a class="dropdown-item" href="#">Phòng ngủ</a>
+                                <a class="dropdown-item" href="#">Phòng làm việc</a>
+                                <a class="dropdown-item" href="#">Phòng tắm</a>
+                                <a class="dropdown-item" href="#">Sân vườn</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Dropdown Thương hiệu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" asp-controller="Brand" asp-action="Index">Thương hiệu</a>
+                    <div class="dropdown-menu border-0 shadow-lg p-4 rounded-3" style="min-width: 720px;">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <a class="dropdown-item py-1" href="#">An Cường</a>
+                                <a class="dropdown-item py-1" href="#">Basic</a>
+                                <a class="dropdown-item py-1" href="#">Bosch</a>
+                                <a class="dropdown-item py-1" href="#">Caesar</a>
+                                <a class="dropdown-item py-1" href="#">Đồng Tâm</a>
+                                <a class="dropdown-item py-1" href="#">Eurotile</a>
+                                <a class="dropdown-item py-1" href="#">Glasso</a>
+                                <a class="dropdown-item py-1" href="#">WMF</a>
+                            </div>
+                            <div class="col-md-4">
+                                <a class="dropdown-item py-1" href="#">Pare</a>
+                                <a class="dropdown-item py-1" href="#">IVC</a>
+                                <a class="dropdown-item py-1" href="#">Hafele</a>
+                                <a class="dropdown-item py-1" href="#">Happy Home</a>
+                                <a class="dropdown-item py-1" href="#">Inax</a>
+                                <a class="dropdown-item py-1" href="#">Malloca</a>
+                                <a class="dropdown-item py-1" href="#">Moodflor</a>
+                                <a class="dropdown-item py-1" href="#">Super Stone</a>
+                            </div>
+                            <div class="col-md-4">
+                                <a class="dropdown-item py-1" href="#">Viva</a>
+                                <a class="dropdown-item py-1" href="#">Taicera</a>
+                                <a class="dropdown-item py-1" href="#">Tarkett</a>
+                                <a class="dropdown-item py-1" href="#">Thu Hương</a>
+                                <a class="dropdown-item py-1" href="#">Toto</a>
+                                <a class="dropdown-item py-1" href="#">Trenco</a>
+                                <a class="dropdown-item py-1" href="#">Vietceramics</a>
+                                <a class="dropdown-item py-1" href="#">Viglacera</a>
+                                <a class="dropdown-item py-1" href="#">No Brand</a>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Dropdown Dự án -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" asp-controller="Project" asp-action="Index">Dự án</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Công trình xanh</a></li>
+                        <li><a class="dropdown-item" href="#">Văn Phòng</a></li>
+                        <li><a class="dropdown-item" href="#">Trường học</a></li>
+                        <li><a class="dropdown-item" href="#">Nhà Hàng & Cà phê</a></li>
+                        <li><a class="dropdown-item" href="#">Cửa hàng</a></li>
+                        <li><a class="dropdown-item" href="#">Khách sạn</a></li>
+                        <li><a class="dropdown-item" href="#">Nhà phố</a></li>
+                    </ul>
+                </li>
+
+
+                <!-- Dropdown tin tức -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" asp-controller="News" asp-action="Index">Tin tức</a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" asp-controller="News" asp-action="knowledge">kiến thức</a>
+                        <a class="dropdown-item" asp-controller="News" asp-action="Design">Thiết kế đẹp</a>
+                        <a class="dropdown-item" asp-controller="News" asp-action="Promotions">Khuyến mãi</a>
+                    </div>
+                </li>
+
+                <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index">FLASH SALE</a></li>
+                <li class="nav-item ms-auto"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒 Giỏ hàng</a></li>
+
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="container my-4">
+        @RenderBody()       
+
+        <!-- Footer -->
+        <footer class="bg-dark text-white text-center py-3">
+            © 2025 G3TD-SHOP - All rights reserved.
+        </footer>
+
+        <!-- Chat Bubble (demo) -->
+        <div style="position: fixed; bottom: 10px; right: 10px;">
+            <a href="#" class="btn btn-primary rounded-circle">💬</a>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+    </html>
+    <!-- Facebook Messenger Plugin chat -->
+    <div id="fb-root"></div>
+    <div id="fb-customer-chat" class="fb-customerchat"></div>
+    <script>
+        var chatbox = document.getElementById('fb-customer-chat');
+        chatbox.setAttribute("page_id", "YOUR_PAGE_ID");
+        chatbox.setAttribute("attribution", "biz_inbox");
+    </script>
+    <script>
+        window.fbAsyncInit = function() {
+          FB.init({ xfbml: true, version: 'v18.0' });
+        };
+        (function(d, s, id) {
+          var js, fjs = d.getElementsByTagName(s)[0];
+          if (d.getElementById(id)) return;
+          js = d.createElement(s); js.id = id;
+          js.src = 'https://connect.facebook.net/vi_VN/sdk/xfbml.customerchat.js';
+          fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
