@@ -1,0 +1,104 @@
+﻿/* Tổng thể */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+/* Header */
+header {
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+    header img {
+        height: 80px;
+        width: auto;
+    }
+
+    header .text-danger {
+        font-size: 26px;
+        font-weight: bold;
+    }
+
+/* Thanh tìm kiếm */
+form input.form-control-lg {
+    border-radius: 8px;
+    padding: 0.75rem 1.2rem;
+}
+
+form .btn {
+    border-radius: 8px;
+    font-size: 20px;
+    padding: 0.5rem 1.2rem;
+}
+
+/* Thông tin số điện thoại */
+header .text-end .fw-semibold {
+    font-size: 15px;
+}
+
+/* Navbar */
+nav {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.nav .nav-link {
+    color: #333;
+    font-weight: 500;
+    padding: 14px 16px;
+    transition: all 0.3s ease;
+}
+
+    .nav .nav-link:hover {
+        color: #dc3545;
+        background-color: #f1f1f1;
+    }
+
+.nav-link.dropdown-toggle::after {
+    margin-left: 6px;
+}
+
+.nav .dropdown-menu {
+    border-radius: 0;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.dropdown-header {
+    font-weight: bold;
+    color: #444;
+}
+
+/* FLASH SALE */
+.nav .nav-link.text-danger {
+    font-weight: bold;
+    color: #dc3545 !important;
+}
+
+/* Giỏ hàng */
+.nav .nav-link:last-child {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+/* Footer */
+footer {
+    background-color: #1e1e1e;
+    color: #fff;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 14px;
+}
+
+/* Chat bubble */
+a.btn.rounded-circle {
+    font-size: 24px;
+    padding: 12px 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
