@@ -1,7 +1,5 @@
-﻿/* Tổng thể */
-body {
+﻿body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 16px;
     background-color: #f9f9f9;
     color: #333;
 }
@@ -24,7 +22,7 @@ header {
         font-weight: bold;
     }
 
-/* Thanh tìm kiếm */
+/* Tìm kiếm */
 form input.form-control-lg {
     border-radius: 8px;
     padding: 0.75rem 1.2rem;
@@ -34,11 +32,6 @@ form .btn {
     border-radius: 8px;
     font-size: 20px;
     padding: 0.5rem 1.2rem;
-}
-
-/* Thông tin số điện thoại */
-header .text-end .fw-semibold {
-    font-size: 15px;
 }
 
 /* Navbar */
@@ -51,7 +44,6 @@ nav {
     color: #333;
     font-weight: 500;
     padding: 14px 16px;
-    transition: all 0.3s ease;
 }
 
     .nav .nav-link:hover {
@@ -63,6 +55,7 @@ nav {
     margin-left: 6px;
 }
 
+/* Dropdown */
 .nav .dropdown-menu {
     border-radius: 0;
     border: 1px solid #ddd;
@@ -74,31 +67,42 @@ nav {
     color: #444;
 }
 
-/* FLASH SALE */
-.nav .nav-link.text-danger {
-    font-weight: bold;
-    color: #dc3545 !important;
+/* Footer section nội dung */
+.footer {
+    background-color: #ce2424;
+    color: white;
+    padding: 60px 0 20px;
+    font-family: Arial, sans-serif;
 }
 
-/* Giỏ hàng */
-.nav .nav-link:last-child {
-    font-weight: 500;
-    display: flex;
-    align-items: center;
+    .footer h5 {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+.footer-column ul {
+    list-style: none;
+    padding: 0;
 }
 
-/* Footer */
-footer {
-    background-color: #1e1e1e;
-    color: #fff;
-    text-align: center;
-    padding: 15px 0;
-    font-size: 14px;
-}
+    .footer-column ul li a {
+        color: #cfcfd3;
+        font-size: 14px;
+        text-decoration: none;
+    }
 
-/* Chat bubble */
-a.btn.rounded-circle {
-    font-size: 24px;
-    padding: 12px 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        .footer-column ul li a:hover {
+            color: #ffffff;
+        }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+    }
+
+    .footer-column,
+    .footer-brand {
+        flex: 1 1 100%;
+    }
 }
