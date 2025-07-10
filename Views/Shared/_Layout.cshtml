@@ -5,6 +5,7 @@
         <title>@ViewData["Title"] - G3TD Shop</title>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
         <link rel="stylesheet" href="/css/site.css" />
+     
 
 
     </head>
@@ -125,7 +126,12 @@
                     </ul>
                 </li>
 
+
                 <!-- Menu: Tin tức -->
+
+                
+                <!-- Dropdown tin tức -->
+
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                         <i class="bi bi-newspaper"></i> Tin tức
@@ -136,6 +142,7 @@
                         <a class="dropdown-item" asp-controller="News" asp-action="Promotions"><i class="bi bi-tags"></i> Chương trình khuyến mãi</a>
                     </div>
                 </li>
+
 
                 <!-- Flash Sale -->
                 <li class="nav-item">
@@ -151,6 +158,15 @@
                     </a>
                 </li>
 
+                <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index"></a></li>
+                <li class="nav-item ms-auto"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒 Giỏ hàng</a></li>
+                <li class="nav-item dn"><a class="nav-link" asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></li>
+                <li class="nav-item dn"><a class="nav-link" asp-controller="Dangky" asp-action="Index">Đăng kí</a></li>
+            </ul>
+        </div>
+    </nav>
+
+
     <!-- Main -->
     <main class="container my-4">
         @RenderBody()       
@@ -163,6 +179,7 @@
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        @RenderSection("Scripts", required: false)
     </body>
    </main>
    
