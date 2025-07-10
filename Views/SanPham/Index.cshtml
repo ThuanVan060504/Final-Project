@@ -1,4 +1,5 @@
-﻿@model List<Final_Project.Models.SanPham>
+﻿@using Final_Project.Models.Shop
+@model List<SanPham>
 @{
     ViewData["Title"] = "Sản phẩm";
 }
@@ -17,15 +18,17 @@
                     <label class="form-label fw-semibold">Danh mục</label>
                     <select class="form-select" name="category">
                         <option value="">Tất cả</option>
-                        <option value="Gạch ốp lát">Gạch ốp lát</option>
-                        <option value="Gương">Gương</option>
-                        <option value="Rèm cửa">Rèm cửa</option>
-                        <option value="Sàn gỗ">Sàn gỗ</option>
-                        <option value="Sàn vinyl">Sàn vinyl</option>
-                        <option value="Thiết bị vệ sinh">Thiết bị vệ sinh</option>
-                        <option value="Thiết bị gia dụng">Thiết bị gia dụng</option>
-                        <option value="Công nghệ thông tin">Công nghệ thông tin</option>
-                        <option value="Nội thất tiện ích">Nội thất tiện ích</option>
+                        <option value="Bàn làm việc">Bàn làm việc</option>
+                        <option value="Ghế văn phòng">Ghế văn phòng</option>
+                        <option value="Tủ kệ trang trí">Tủ kệ trang trí</option>
+                        <option value="Phòng khách">Phòng khách</option>
+                        <option value="Phòng ngủ">Phòng ngủ</option>
+                        <option value="Phòng ăn">Phòng ăn</option>
+                        <option value="Phòng làm việc">Phòng làm việc</option>
+                        <option value="Nội thất trẻ em">Nội thất trẻ em</option>
+                        <option value="Đồ trang trí">Đồ trang trí</option>
+                        <option value="Đèn & chiếu sáng">Đèn & chiếu sáng</option>
+                        <option value="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</option>
                     </select>
                 </div>
 
@@ -61,21 +64,21 @@
             else
             {
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-                    @foreach (var item in Model)
-                    {
-                        <div class="col">
-                            <div class="card h-100 shadow-sm border-0">
-                                <img src="@item.ImageURL" class="card-img-top p-2 rounded" style="height: 200px; object-fit: contain;" alt="@item.TenSP" />
-                                <div class="card-body d-flex flex-column">
-                                    <h6 class="fw-bold">@item.TenSP</h6>
-                                    <p class="text-danger fw-semibold">@item.DonGia.ToString("N0") đ</p>
-                                    <p class="text-muted small">@item.MoTa</p>
 
+    @foreach (var sp in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" />
+                <div class="card-body">
+                    <h5 class="card-title">@sp.TenSP</h5>
+                    <p class="card-text text-danger">@sp.DonGia.ToString("N0") đ</p>
+                    <p class="card-text">@sp.MoTa</p>
                                     <div class="mt-auto d-flex gap-2">
-                                        <a asp-controller="Product" asp-action="Details" asp-route-id="@item.MaSP" class="btn btn-outline-primary btn-sm flex-fill">
+                                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="btn btn-outline-primary btn-sm flex-fill">
                                             Xem chi tiết
                                         </a>
-                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@item.MaSP" class="btn btn-success btn-sm flex-fill">
+                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@sp.MaSP" class="btn btn-success btn-sm flex-fill">
                                             🛒 Thêm
                                         </a>
                                     </div>
@@ -85,6 +88,3 @@
                     }
                 </div>
             }
-        </div>
-    </div>
-</div>

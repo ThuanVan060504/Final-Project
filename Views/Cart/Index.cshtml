@@ -1,4 +1,5 @@
-﻿@model List<Final_Project.Models.CartItem>
+﻿@using Final_Project.Models.Shop
+@model List<CartItem>
 
 @{
     ViewData["Title"] = "Giỏ hàng";
@@ -60,7 +61,7 @@ else
     </table>
 
     <div class="text-end">
-        <a href="/Product" class="btn btn-outline-primary px-4 py-2 fs-5">🛒 Tiếp tục mua sắm</a>
+        <a href="/SanPham" class="btn btn-outline-primary px-4 py-2 fs-5">🛒 Tiếp tục mua sắm</a>
         <a asp-action="Checkout" class="btn btn-success px-4 py-2 fs-5">💳 Thanh toán</a>
     </div>
 }

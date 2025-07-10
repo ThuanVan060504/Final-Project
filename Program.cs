@@ -1,5 +1,5 @@
-﻿using Final_Project.Models;
-using Microsoft.EntityFrameworkCore; 
+﻿using Final_Project.Models.Shop;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 

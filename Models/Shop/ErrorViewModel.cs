@@ -1,4 +1,4 @@
-namespace Final_Project.Models
+namespace Final_Project.Models.Shop
 {
     public class ErrorViewModel
     {

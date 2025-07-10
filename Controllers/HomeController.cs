@@ -1,43 +1,39 @@
-﻿using Final_Project.Models;
+﻿using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace Final_Project.Controllers
 {
     public class HomeController : Controller
     {
-        // Danh sách sản phẩm mẫu cho trang chủ
-        public static List<SanPham> SanPhamMau = new List<SanPham>
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
-            new SanPham
-            {
-                MaSP = 2,
-                TenSP = "Gạch ốp tường Đồng Tâm",
-                DonGia = 195000,
-                MoTa = "Họa tiết vân mây tinh tế, cho căn nhà thêm phần sang trọng và thanh lịch.",
-                ImageURL = "/images/product2.jpg"
-            },
-            new SanPham
-            {
-                MaSP = 21,
-                TenSP = "Khóa cửa điện tử Xiaomi",
-                DonGia = 3990000,
-                MoTa = "Bảo mật cao, mở bằng vân tay và mã số tiện lợi.",
-                ImageURL = "/images/product21.jpg"
-            },
-            new SanPham
-            {
-                MaSP = 30,
-                TenSP = "Kính chắn bếp cường lực",
-                DonGia = 1550000,
-                MoTa = "Kính màu xanh ngọc đẹp mắt, dễ vệ sinh, chịu nhiệt tốt.",
-                ImageURL = "/images/product30.jpg"
-            }
-        };
+            _context = context;
+        }
 
         public IActionResult Index()
         {
-            return View(SanPhamMau);
+            var sanPhams = _context.SanPhams
+                .Include(sp => sp.DanhMuc) // lấy kèm tên danh mục
+                .OrderByDescending(sp => sp.MaSP)
+                .Take(6) // Lấy 6 sản phẩm mới nhất
+                .ToList();
+
+            return View(sanPhams);
+        }
+
+        public IActionResult Details(int id)
+        {
+            var product = _context.SanPhams
+                .FirstOrDefault(p => p.MaSP == id);
+
+            if (product == null)
+                return NotFound();
+
+            return View(product);
         }
     }
 }

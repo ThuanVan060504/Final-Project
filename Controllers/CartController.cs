@@ -1,13 +1,19 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Final_Project.Models;
 using System.Text.Json;
+using Final_Project.Models.Shop;
 
 namespace Final_Project.Controllers
 {
     public class CartController : Controller
     {
+        private readonly AppDbContext _context;
         private const string CART_KEY = "cart";
-        private static List<SanPham> Products = ProductController.Products;
+
+        public CartController(AppDbContext context)
+        {
+            _context = context;
+        }
+
 
         public IActionResult Index()
         {
@@ -17,7 +23,7 @@ namespace Final_Project.Controllers
 
         public IActionResult AddToCart(int id)
         {
-            var product = Products.FirstOrDefault(p => p.MaSP == id);
+            var product = _context.SanPhams.FirstOrDefault(p => p.MaSP == id);
             if (product == null) return NotFound();
 
             var cart = GetCart();
@@ -42,6 +48,7 @@ namespace Final_Project.Controllers
             SaveCart(cart);
             return RedirectToAction("Index");
         }
+
 
         public IActionResult Remove(int id)
         {

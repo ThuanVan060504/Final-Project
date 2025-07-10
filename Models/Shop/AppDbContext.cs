@@ -1,7 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Final_Project.Models.User;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace Final_Project.Models
+namespace Final_Project.Models.Shop
 {
     public class AppDbContext : DbContext
     {

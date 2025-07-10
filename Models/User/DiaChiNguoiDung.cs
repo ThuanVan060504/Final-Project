@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Final_Project.Models
+namespace Final_Project.Models.User
 {
     public class DiaChiNguoiDung
     {

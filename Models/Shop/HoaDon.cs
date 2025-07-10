@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Final_Project.Models
+namespace Final_Project.Models.Shop
 {
     public class HoaDon
     {
