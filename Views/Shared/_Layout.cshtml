@@ -36,6 +36,12 @@
                     <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
                 </li>
 
+
+                    <!-- Menu: Giới thiệu -->
+                    <li class="nav-item ">
+                        <a class="nav-link" asp-controller="Gioithieu" asp-action="Index">Giới thiệu </a>
+                        </a>
+                    </li>
                 <!-- Dropdown Sản phẩm -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Sản phẩm</a>
@@ -54,80 +60,32 @@
                     </ul>
                 </li>
 
-                <!-- Menu: Giải pháp theo không gian -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-house-door"></i> Giải pháp theo không gian
-                    </a>
-                    <div class="dropdown-menu p-3" style="min-width: 400px;">
-                        <div class="row">
-                            <div class="col-6">
-                                <h6 class="dropdown-header text-uppercase fw-bold text-primary">Không gian công cộng</h6>
-                                <a class="dropdown-item" href="#"><i class="bi bi-hospital"></i> Bệnh viện</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-building"></i> Khách sạn</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-mortarboard"></i> Trường học</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-briefcase"></i> Văn phòng</a>
-                            </div>
-                            <div class="col-6">
-                                <h6 class="dropdown-header text-uppercase fw-bold text-success">Không gian gia đình</h6>
-                                <a class="dropdown-item" href="#"><i class="bi bi-cup-straw"></i> Phòng bếp</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-bed"></i> Phòng ngủ</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-laptop"></i> Phòng làm việc</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-droplet"></i> Phòng tắm</a>
-                                <a class="dropdown-item" href="#"><i class="bi bi-tree"></i> Sân vườn</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
 
-                <!-- Menu: Thương hiệu -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-star"></i> Thương hiệu
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-lg p-4 shadow rounded-3" style="min-width: 720px;">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <h6 class="dropdown-header">Nội thất</h6>
-                                <a class="dropdown-item" href="#">An Cường</a>
-                                <a class="dropdown-item" href="#">Basic</a>
-                                <a class="dropdown-item" href="#">Bosch</a>
-                                <a class="dropdown-item" href="#">Caesar</a>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="dropdown-header">Thiết bị</h6>
-                                <a class="dropdown-item" href="#">Hafele</a>
-                                <a class="dropdown-item" href="#">Malloca</a>
-                                <a class="dropdown-item" href="#">Inax</a>
-                                <a class="dropdown-item" href="#">Toto</a>
-                            </div>
-                            <div class="col-md-4">
-                                <h6 class="dropdown-header">Khác</h6>
-                                <a class="dropdown-item" href="#">Viglacera</a>
-                                <a class="dropdown-item" href="#">Vietceramics</a>
-                                <a class="dropdown-item" href="#">No Brand</a>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-
-                <!-- Menu: Công trình thực tế -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-collection"></i> Công trình thực tế
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-tree"></i> Công trình xanh</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-building"></i> Văn phòng</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-mortarboard"></i> Trường học</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-cup-straw"></i> Nhà hàng & Cà phê</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-shop"></i> Cửa hàng</a></li>
-                        <li><a class="dropdown-item" href="#"><i class="bi bi-house-door"></i> Nhà phố</a></li>
-                    </ul>
-                </li>
+                    <!-- Dropdown Decor -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Decor</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng khách">Phòng khách</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ngủ">Phòng ngủ</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ăn">Phòng ăn</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng làm việc">Phòng làm việc</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Nội thất trẻ em">Nội thất trẻ em</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đồ trang trí">Đồ trang trí</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đèn & chiếu sáng">Đèn & chiếu sáng</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Bàn làm việc">Bàn làm việc</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Ghế văn phòng">Ghế văn phòng</a></li>
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Tủ kệ trang trí">Tủ kệ trang trí</a></li>
+                        </ul>
+                    </li>
 
 
-                <!-- Menu: Tin tức -->
+
+
+               
+
+
+          
 
                 
                 <!-- Dropdown tin tức -->
@@ -152,11 +110,7 @@
                 </li>
 
                 <!-- Giỏ hàng -->
-                <li class="nav-item ms-auto">
-                    <a class="nav-link" asp-controller="Cart" asp-action="Index">
-                        <i class="bi bi-cart3"></i> Giỏ hàng
-                    </a>
-                </li>
+              
 
                 <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index"></a></li>
                 <li class="nav-item ms-auto"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒 Giỏ hàng</a></li>
