@@ -88,6 +88,8 @@ namespace Final_Project.Controllers
             TempData["Success"] = "Đăng ký thành công. Bạn có thể đăng nhập.";
             return Redirect("/Dangnhap");
         }
+
+
     }
 }
 
