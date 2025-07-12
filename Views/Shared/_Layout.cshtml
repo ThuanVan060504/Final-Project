@@ -43,23 +43,24 @@
                         <a class="nav-link" asp-controller="GioiThieu" asp-action="Index">Giới thiệu </a>
                         </a>
                     </li>
-                <!-- Dropdown Sản phẩm -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Sản phẩm</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng khách">Phòng khách</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ngủ">Phòng ngủ</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ăn">Phòng ăn</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng làm việc">Phòng làm việc</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Nội thất trẻ em">Nội thất trẻ em</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đồ trang trí">Đồ trang trí</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đèn & chiếu sáng">Đèn & chiếu sáng</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Bàn làm việc">Bàn làm việc</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Ghế văn phòng">Ghế văn phòng</a></li>
-                        <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Tủ kệ trang trí">Tủ kệ trang trí</a></li>
-                    </ul>
-                </li>
+                    <!-- Dropdown Sản phẩm -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Sản phẩm</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Phòng khách">Phòng khách</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Phòng ngủ">Phòng ngủ</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Phòng ăn">Phòng ăn</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Phòng làm việc">Phòng làm việc</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Nội thất trẻ em">Nội thất trẻ em</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Đồ trang trí">Đồ trang trí</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Đèn & chiếu sáng">Đèn & chiếu sáng</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Bàn làm việc">Bàn làm việc</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Ghế văn phòng">Ghế văn phòng</a></li>
+                            <li><a class="dropdown-item" asp-controller="SanPham" asp-action="Index" asp-route-category="Tủ kệ trang trí">Tủ kệ trang trí</a></li>
+                        </ul>
+                    </li>
+
 
 
                     <!-- Dropdown Decor -->
