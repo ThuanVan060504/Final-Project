@@ -9,7 +9,22 @@
 <div class="auth-container">
     <h2 class="auth-title">📝 Đăng ký tài khoản</h2>
 
-    <form asp-action="Register" method="post" class="auth-form">
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert success">@TempData["Success"]</div>
+    }
+
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="alert error">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <form asp-controller="Auth" asp-action="Register" method="post" class="auth-form">
         <div class="auth-box">
             <input asp-for="HoTen" placeholder=" " class="auth-input" />
             <label asp-for="HoTen" class="auth-label">Họ tên</label>
@@ -49,7 +64,10 @@
         <button type="submit" class="auth-button">Đăng ký</button>
     </form>
 
-    <p class="auth-switch">Đã có tài khoản? <a asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></p>
+    <p class="auth-switch">
+        Đã có tài khoản?
+        <a asp-controller="Auth" asp-action="Login">Đăng nhập</a>
+    </p>
 </div>
 
 @section Scripts {

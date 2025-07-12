@@ -14,19 +14,19 @@ namespace Final_Project.Controllers
             _context = context;
         }
 
-        // ✅ Gắn route chính thức: /Dangnhap
+        // GET: /Dangnhap
         [HttpGet("/Dangnhap")]
         public IActionResult Login()
         {
-            return View();
+            return View("Login");
         }
 
-        // ✅ Route POST cũng là /Dangnhap
+        // POST: /Dangnhap
         [HttpPost("/Dangnhap")]
         public IActionResult Login(LoginViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Login", model);
 
             var user = _context.TaiKhoans
                 .FirstOrDefault(u => u.Email == model.Email && u.MatKhau == model.MatKhau);
@@ -34,16 +34,16 @@ namespace Final_Project.Controllers
             if (user == null)
             {
                 ModelState.AddModelError("", "Email hoặc mật khẩu không đúng");
-                return View(model);
+                return View("Login", model);
             }
 
             HttpContext.Session.SetString("UserEmail", user.Email);
-            HttpContext.Session.SetString("UserRole", user.VaiTro);
+            HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");
 
             return RedirectToAction("Index", "Home");
         }
 
-        // Đăng xuất
+        // GET: /Dangxuat
         [HttpGet("/Dangxuat")]
         public IActionResult Logout()
         {
@@ -51,23 +51,25 @@ namespace Final_Project.Controllers
             return Redirect("/Dangnhap");
         }
 
+        // GET: /Dangky
         [HttpGet("/Dangky")]
         public IActionResult Register()
         {
-            return View();
+            return View("Register");
         }
 
+        // POST: /Dangky
         [HttpPost("/Dangky")]
         public IActionResult Register(RegisterViewModel model)
         {
             if (!ModelState.IsValid)
-                return View(model);
+                return View("Register", model);
 
-            // Kiểm tra Email đã tồn tại chưa
+            // Kiểm tra email đã tồn tại
             if (_context.TaiKhoans.Any(u => u.Email == model.Email))
             {
                 ModelState.AddModelError("Email", "Email đã được sử dụng");
-                return View(model);
+                return View("Register", model);
             }
 
             var user = new TaiKhoan
@@ -76,9 +78,8 @@ namespace Final_Project.Controllers
                 Email = model.Email,
                 SDT = model.SDT,
                 DiaChi = model.DiaChi,
-                MatKhau = model.MatKhau, // Nếu muốn: mã hóa ở đây
+                MatKhau = model.MatKhau,
                 VaiTro = "Customer",
-
                 NgayTao = DateTime.Now
             };
 
@@ -89,7 +90,29 @@ namespace Final_Project.Controllers
             return Redirect("/Dangnhap");
         }
 
+        // GET: /Quenmatkhau
+        [HttpGet("/Quenmatkhau")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
 
+        [HttpPost("/Quenmatkhau")]
+        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = _context.TaiKhoans.FirstOrDefault(u => u.Email == model.Email);
+            if (user == null)
+            {
+                ModelState.AddModelError("Email", "Không tìm thấy email này.");
+                return View(model);
+            }
+
+            // 👇 Tạm thời chỉ hiển thị thông báo. Gửi email thực sẽ làm sau.
+            TempData["Message"] = "Liên kết khôi phục mật khẩu đã được gửi (giả lập).";
+            return RedirectToAction("ForgotPassword");
+        }
     }
 }
-

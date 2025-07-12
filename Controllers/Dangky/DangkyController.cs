@@ -1,49 +1,50 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Final_Project.Models.Shop;
+using Final_Project.Models.User;
+using Microsoft.AspNetCore.Mvc;
 using System.Linq;
 
 public class DangkyController : Controller
 {
+    private readonly AppDbContext _context;
+
+    public DangkyController(AppDbContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     public IActionResult Index()
     {
-        return View("~/Dangky/DangKy.cshtml");
+        return View("~/Views/Auth/Register.cshtml");
     }
 
     [HttpPost]
-    public IActionResult Index(string hoTen, string email, string sdt, string newUsername, string newPassword, string confirmPassword)
+    public IActionResult Register(RegisterViewModel model)
     {
-        // Kiểm tra thông tin bắt buộc
-        if (string.IsNullOrWhiteSpace(hoTen) || string.IsNullOrWhiteSpace(email) ||
-            string.IsNullOrWhiteSpace(sdt) || string.IsNullOrWhiteSpace(newUsername) ||
-            string.IsNullOrWhiteSpace(newPassword))
+        if (!ModelState.IsValid)
+            return View("~/Views/Auth/Register.cshtml", model);
+
+        if (_context.TaiKhoans.Any(u => u.Email == model.Email))
         {
-            ViewBag.Error = "Vui lòng nhập đầy đủ thông tin.";
-            return View("~/Dangky/DangKy.cshtml");
+            ModelState.AddModelError("Email", "Email đã được sử dụng.");
+            return View("~/Views/Auth/Register.cshtml", model);
         }
 
-        // Kiểm tra định dạng email đơn giản
-        if (!email.Contains("@") || !email.Contains("."))
+        var user = new TaiKhoan
         {
-            ViewBag.Error = "Email không hợp lệ.";
-            return View("~/Dangky/DangKy.cshtml");
-        }
+            HoTen = model.HoTen,
+            Email = model.Email,
+            SDT = model.SDT,
+            DiaChi = model.DiaChi,
+            MatKhau = model.MatKhau,
+            VaiTro = "Customer",
+            NgayTao = DateTime.Now
+        };
 
-        // Kiểm tra số điện thoại
-        if (sdt.Length < 10 || sdt.Length > 11 || !sdt.All(char.IsDigit))
-        {
-            ViewBag.Error = "Số điện thoại không hợp lệ. Vui lòng nhập 10–11 số.";
-            return View("~/Dangky/DangKy.cshtml");
-        }
+        _context.TaiKhoans.Add(user);
+        _context.SaveChanges();
 
-        // Kiểm tra xác nhận mật khẩu
-        if (newPassword != confirmPassword)
-        {
-            ViewBag.Error = "Mật khẩu xác nhận không khớp.";
-            return View("~/Dangky/DangKy.cshtml");
-        }
-
-        // Tạm thời mô phỏng đăng ký thành công
-        TempData["Success"] = $"Đăng ký thành công! Chào {hoTen}. Vui lòng đăng nhập.";
-        return RedirectToAction("Index", "Dangnhap");
+        TempData["Success"] = $"Đăng ký thành công! Chào {model.HoTen}";
+        return Redirect("/Dangnhap");
     }
 }
