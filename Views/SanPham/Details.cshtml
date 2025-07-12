@@ -124,3 +124,91 @@
         </div>
     </div>
 }
+
+<hr />
+<style>
+    .btn-check:checked + .btn-outline-warning {
+        background-color: #ffc107;
+        color: black;
+        font-weight: bold;
+        border-color: #ffc107;
+    }
+
+    .btn-outline-warning {
+        padding: 5px 10px;
+        font-size: 18px;
+    }
+
+    .form-check-inline {
+        display: flex;
+        gap: 8px;
+    }
+</style>
+
+<h4 class="text-dark mt-5">📝 Viết đánh giá</h4>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="alert alert-warning">
+        Bạn cần <a asp-controller="Auth" asp-action="Login">đăng nhập</a> để viết đánh giá.
+    </div>
+}
+else
+{
+    <form method="post" asp-action="GuiDanhGia">
+        <input type="hidden" name="SanPhamId" value="@Model.MaSP" />
+
+        @{
+            var tenNguoiDung = User.Identity.Name ?? "Ẩn danh";
+        }
+
+        <input type="hidden" name="TenNguoiDung" value="@tenNguoiDung" />
+        <div class="mb-3">
+            <label class="form-label">Tên của bạn</label>
+            <p class="text-muted">👤 <strong>@tenNguoiDung</strong></p>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Chọn số sao</label>
+            <div class="form-check form-check-inline">
+                @for (int i = 5; i >= 1; i--)
+                {
+                    <input class="btn-check" type="radio" name="Diem" id="sao-@i" value="@i" @(i == 5 ? "checked" : "") />
+                    <label class="btn btn-outline-warning" for="sao-@i">
+                        @for (int j = 1; j <= i; j++)
+                        {
+                            <span>★</span>
+                        }
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Bình luận</label>
+            <textarea name="BinhLuan" class="form-control" rows="3" required placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Gửi đánh giá</button>
+    </form>
+}
+
+<!-- Hiển thị các đánh giá -->
+<h4 class="mt-5 mb-3">📢 Đánh giá từ người dùng:</h4>
+
+@if (ViewBag.DanhGiaList != null && ViewBag.DanhGiaList.Count > 0)
+{
+    @foreach (var dg in ViewBag.DanhGiaList)
+    {
+        <div class="border rounded p-3 mb-3 shadow-sm">
+            <strong>@dg.TenNguoiDung</strong> - @dg.ThoiGian.ToString("dd/MM/yyyy HH:mm")<br />
+            ⭐ @dg.Diem sao
+            <p class="mt-2">@dg.BinhLuan</p>
+        </div>
+    }
+}
+else
+{
+    <p class="text-muted fst-italic">Chưa có đánh giá nào.</p>
+}
+

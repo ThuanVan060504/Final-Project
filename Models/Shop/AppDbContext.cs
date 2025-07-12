@@ -19,5 +19,38 @@ namespace Final_Project.Models.Shop
         public DbSet<HoaDon> HoaDons { get; set; }
         public DbSet<DanhGia> DanhGias { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder); // nhớ giữ dòng này
+
+            modelBuilder.Entity<SanPham>()
+        .Property(p => p.DonGia)
+        .HasPrecision(18, 2);
+
+            modelBuilder.Entity<ChiTietDonHang>()
+                .Property(c => c.DonGia)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<DonHang>()
+                .Property(d => d.GiamGia)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<DonHang>()
+                .Property(d => d.PhiVanChuyen)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<DonHang>()
+                .Property(d => d.TongTien)
+                .HasPrecision(18, 2);
+
+            modelBuilder.Entity<HoaDon>()
+                .Property(h => h.TongTien)
+                .HasPrecision(18, 2);
+            modelBuilder.Entity<DanhGia>()
+                .HasOne(d => d.SanPham)
+                .WithMany(sp => sp.DanhGias)
+                .HasForeignKey(d => d.SanPhamId);
+        }
     }
+
 }

@@ -1,7 +1,9 @@
 ﻿using Final_Project.Models;
 using Final_Project.Models.Shop;
 using Final_Project.Models.User;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Final_Project.Controllers
 {
@@ -23,7 +25,8 @@ namespace Final_Project.Controllers
 
         // ✅ Route POST cũng là /Dangnhap
         [HttpPost("/Dangnhap")]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
+
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -37,19 +40,34 @@ namespace Final_Project.Controllers
                 return View(model);
             }
 
-            HttpContext.Session.SetString("UserEmail", user.Email);
-            HttpContext.Session.SetString("UserRole", user.VaiTro);
+            var claims = new List<Claim>
+{
+    new Claim(ClaimTypes.Name, user.HoTen),
+    new Claim(ClaimTypes.Email, user.Email),
+    new Claim(ClaimTypes.Role, user.VaiTro)
+};
+
+            var identity = new ClaimsIdentity(claims, "MyCookie");
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(
+    scheme: "MyCookie",  
+    principal: principal
+);
+
+
 
             return RedirectToAction("Index", "Home");
         }
 
         // Đăng xuất
         [HttpGet("/Dangxuat")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
+            await HttpContext.SignOutAsync("MyCookie"); 
             HttpContext.Session.Clear();
-            return Redirect("/Dangnhap");
+            return RedirectToAction("Login", "Auth");
         }
+
 
         [HttpGet("/Dangky")]
         public IActionResult Register()
@@ -86,7 +104,8 @@ namespace Final_Project.Controllers
             _context.SaveChanges();
 
             TempData["Success"] = "Đăng ký thành công. Bạn có thể đăng nhập.";
-            return Redirect("/Dangnhap");
+            return RedirectToAction("Login", "Auth");
+
         }
 
 

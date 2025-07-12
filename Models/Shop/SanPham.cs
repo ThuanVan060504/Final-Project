@@ -20,5 +20,7 @@ namespace Final_Project.Models.Shop
         public int? ChieuRong { get; set; }
         public int? ChieuCao { get; set; }
         public int? ChieuSau { get; set; }
+        public ICollection<DanhGia> DanhGias { get; set; }
+
     }
 }

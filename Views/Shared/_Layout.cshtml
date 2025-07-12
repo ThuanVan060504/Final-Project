@@ -122,8 +122,26 @@
 
                 <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index"></a></li>
                 <li class="nav-item ms-auto"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒 Giỏ hàng</a></li>
-                <li class="nav-item dn"><a class="nav-link" asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></li>
-                <li class="nav-item dn"><a class="nav-link" asp-controller="Dangky" asp-action="Index">Đăng kí</a></li>
+                    @if (!User.Identity.IsAuthenticated)
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Auth" asp-action="Login">Đăng nhập</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Auth" asp-action="Register">Đăng ký</a>
+                        </li>
+                    }
+                    else
+                    {
+                        var hoTen = User.Identity.Name ?? "Ẩn danh";
+                        <li class="nav-item">
+                            <a class="nav-link text-success fw-semibold">👤 @hoTen</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger fw-semibold" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
+                        </li>
+                    }
+
             </ul>
         </div>
     </nav>

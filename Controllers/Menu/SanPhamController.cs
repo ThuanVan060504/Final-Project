@@ -46,7 +46,7 @@ namespace Final_Project.Controllers.Menu
         public IActionResult Details(int id)
         {
             var sp = _context.SanPhams
-                .Include(s => s.DanhMuc) // nếu có navigation
+                .Include(s => s.DanhMuc)
                 .FirstOrDefault(s => s.MaSP == id);
 
             if (sp == null)
@@ -58,10 +58,41 @@ namespace Final_Project.Controllers.Menu
                 .Take(4)
                 .ToList();
 
+            // Lấy đánh giá
+            var danhGiaList = _context.DanhGias
+                .Where(d => d.SanPhamId == id)
+                .OrderByDescending(d => d.ThoiGian)
+                .ToList();
+
             ViewBag.SanPhamTuongTu = tuongTu;
+            ViewBag.DanhGiaList = danhGiaList;
 
             return View(sp);
         }
+
+        [HttpPost]
+        public IActionResult GuiDanhGia(int SanPhamId, int Diem, string BinhLuan)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "TaiKhoan"); // hoặc trả lỗi
+            }
+
+            var danhGia = new DanhGia
+            {
+                SanPhamId = SanPhamId,
+                TenNguoiDung = User.Identity.Name, // Lấy tên từ người dùng đăng nhập
+                Diem = Diem,
+                BinhLuan = BinhLuan,
+                ThoiGian = DateTime.Now
+            };
+
+            _context.DanhGias.Add(danhGia);
+            _context.SaveChanges();
+
+            return RedirectToAction("Details", new { id = SanPhamId });
+        }
+
 
     }
 }
