@@ -4,10 +4,16 @@
     Layout = null;
     ViewData["Title"] = "Đăng nhập";
 }
+
 <link rel="stylesheet" href="~/css/dangky.css" />
 
 <div class="auth-container">
     <h2 class="auth-title">🔐 Đăng nhập</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert success">@TempData["Success"]</div>
+    }
 
     @if (ViewData.ModelState.ErrorCount > 0)
     {
@@ -19,7 +25,7 @@
         </div>
     }
 
-    <form asp-action="Login" method="post" class="auth-form">
+    <form asp-controller="Auth" asp-action="Login" method="post" class="auth-form">
         <div class="auth-box">
             <input asp-for="Email" placeholder=" " class="auth-input" />
             <label asp-for="Email" class="auth-label">Email</label>
@@ -32,14 +38,17 @@
             <span asp-validation-for="MatKhau" class="text-danger small"></span>
         </div>
 
+        <div class="auth-options">
+               <a asp-controller="Auth" asp-action="ForgotPassword"> Quên mật khẩu?</a>
+        </div>
+
         <button type="submit" class="auth-button">Đăng nhập</button>
     </form>
 
     <p class="auth-switch">
         Chưa có tài khoản?
-        <a href="/Dangky">Đăng ký</a>
+        <a asp-controller="Auth" asp-action="Register">Đăng ký</a>
     </p>
-
 </div>
 
 @section Scripts {
