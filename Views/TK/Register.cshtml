@@ -1,0 +1,57 @@
+﻿@model Final_Project.Models.User.RegisterViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Đăng ký";
+}
+<link rel="stylesheet" href="~/css/dangky.css" />
+
+<div class="auth-container">
+    <h2 class="auth-title">📝 Đăng ký tài khoản</h2>
+
+    <form asp-action="Register" method="post" class="auth-form">
+        <div class="auth-box">
+            <input asp-for="HoTen" placeholder=" " class="auth-input" />
+            <label asp-for="HoTen" class="auth-label">Họ tên</label>
+            <span asp-validation-for="HoTen" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="Email" placeholder=" " class="auth-input" />
+            <label asp-for="Email" class="auth-label">Email</label>
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="SDT" placeholder=" " class="auth-input" />
+            <label asp-for="SDT" class="auth-label">Số điện thoại</label>
+            <span asp-validation-for="SDT" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="DiaChi" placeholder=" " class="auth-input" />
+            <label asp-for="DiaChi" class="auth-label">Địa chỉ</label>
+            <span asp-validation-for="DiaChi" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="MatKhau" type="password" placeholder=" " class="auth-input" />
+            <label asp-for="MatKhau" class="auth-label">Mật khẩu</label>
+            <span asp-validation-for="MatKhau" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="XacNhanMatKhau" type="password" placeholder=" " class="auth-input" />
+            <label asp-for="XacNhanMatKhau" class="auth-label">Xác nhận mật khẩu</label>
+            <span asp-validation-for="XacNhanMatKhau" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="auth-button">Đăng ký</button>
+    </form>
+
+    <p class="auth-switch">Đã có tài khoản? <a asp-controller="Dangnhap" asp-action="Index">Đăng nhập</a></p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

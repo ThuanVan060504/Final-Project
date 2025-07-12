@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Final_Project.Controllers
+namespace Final_Project.Controllers.Menu
 {
-    public class LienHeController : Controller
+    public class BrandController : Controller
     {
         public IActionResult Index()
         {

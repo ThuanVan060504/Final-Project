@@ -1,28 +1,34 @@
 ﻿@using Final_Project.Models.Shop
 @model IEnumerable<SanPham>
 
+@{
+    ViewData["Title"] = "Sản phẩm nổi bật";
+}
+
+<style>
+    .card:hover {
+        transform: translateY(-4px);
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+</style>
+
 <h2 class="mb-4">Sản phẩm nổi bật</h2>
 <div class="row">
     @foreach (var sp in Model)
     {
         <div class="col-md-4 mb-4">
-            <div class="card h-100 shadow-sm">
-                <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" style="height: 250px; object-fit: cover;" />
-                <div class="card-body">
-                    <h5 class="card-title">@sp.TenSP</h5>
-                    <p class="text-muted">@sp.DanhMuc?.TenDanhMuc</p>
-                    <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
-                    <p class="card-text">@sp.MoTa</p>
-                    <div class="mt-auto d-flex gap-2">
-                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="btn btn-outline-primary btn-sm flex-fill">
-                            Xem chi tiết
-                        </a>
-                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@sp.MaSP" class="btn btn-success btn-sm flex-fill">
-                            🛒 Thêm
-                        </a>
+            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
+                <div class="card h-100 shadow-sm">
+                    <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" style="height: 250px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@sp.TenSP</h5>
+                        <p class="text-muted">@sp.DanhMuc?.TenDanhMuc</p>
+                        <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
+                        <p class="card-text">@sp.MoTa</p>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
     }
 </div>

@@ -4,16 +4,32 @@
     ViewData["Title"] = "Sản phẩm";
 }
 
+<style>
+    .card-hover {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .card-hover:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-hover img {
+            height: 200px;
+            object-fit: cover;
+        }
+</style>
+
 <div class="container mt-5">
     <h2 class="fw-bold mb-4 text-center">🛒 Tất cả sản phẩm</h2>
 
     <div class="row">
-        <!-- 🔍 Sidebar bên trái -->
+        <!-- 🔍 Sidebar -->
         <div class="col-md-3 mb-4">
             <form method="get" asp-action="Index" class="card shadow-sm p-3">
                 <h5 class="fw-semibold mb-3">🎯 Bộ lọc</h5>
 
-                <!-- Danh mục -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Danh mục</label>
                     <select class="form-select" name="category">
@@ -32,14 +48,12 @@
                     </select>
                 </div>
 
-                <!-- Tìm kiếm -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Tìm kiếm</label>
                     <input class="form-control" type="text" name="search" placeholder="Tên sản phẩm..."
                            value="@Context.Request.Query["search"]" />
                 </div>
 
-                <!-- Sắp xếp -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Sắp xếp theo</label>
                     <select class="form-select" name="sort">
@@ -53,7 +67,7 @@
             </form>
         </div>
 
-        <!-- 🛍️ Danh sách sản phẩm bên phải -->
+        <!-- 🛍️ Danh sách sản phẩm -->
         <div class="col-md-9">
             @if (!Model.Any())
             {
@@ -64,27 +78,23 @@
             else
             {
                 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-
-    @foreach (var sp in Model)
-    {
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" />
-                <div class="card-body">
-                    <h5 class="card-title">@sp.TenSP</h5>
-                    <p class="card-text text-danger">@sp.DonGia.ToString("N0") đ</p>
-                    <p class="card-text">@sp.MoTa</p>
-                                    <div class="mt-auto d-flex gap-2">
-                                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="btn btn-outline-primary btn-sm flex-fill">
-                                            Xem chi tiết
-                                        </a>
-                                        <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@sp.MaSP" class="btn btn-success btn-sm flex-fill">
-                                            🛒 Thêm
-                                        </a>
+                    @foreach (var sp in Model)
+                    {
+                        <div class="col">
+                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
+                                <div class="card card-hover h-100">
+                                    <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" />
+                                    <div class="card-body">
+                                        <h6 class="fw-bold">@sp.TenSP</h6>
+                                        <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
+                                        <p class="text-muted small">@sp.MoTa</p>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                     }
                 </div>
             }
+        </div>
+    </div>
+</div>

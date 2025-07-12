@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Final_Project.Controllers
+namespace Final_Project.Controllers.Menu
 {
     public class SanPhamController : Controller
     {
@@ -45,13 +45,23 @@ namespace Final_Project.Controllers
 
         public IActionResult Details(int id)
         {
-            var product = _context.SanPhams
-                .FirstOrDefault(p => p.MaSP == id);
+            var sp = _context.SanPhams
+                .Include(s => s.DanhMuc) // nếu có navigation
+                .FirstOrDefault(s => s.MaSP == id);
 
-            if (product == null)
+            if (sp == null)
                 return NotFound();
 
-            return View(product);
+            // Lấy sản phẩm tương tự
+            var tuongTu = _context.SanPhams
+                .Where(s => s.DanhMuc == sp.DanhMuc && s.MaSP != sp.MaSP)
+                .Take(4)
+                .ToList();
+
+            ViewBag.SanPhamTuongTu = tuongTu;
+
+            return View(sp);
         }
-        }
+
+    }
 }

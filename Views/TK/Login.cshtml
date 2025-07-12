@@ -1,0 +1,43 @@
+﻿@model Final_Project.Models.User.LoginViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Đăng nhập";
+}
+<link rel="stylesheet" href="~/css/dangky.css" />
+
+<div class="auth-container">
+    <h2 class="auth-title">🔐 Đăng nhập</h2>
+
+    @if (ViewData.ModelState.ErrorCount > 0)
+    {
+        <div class="alert error">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@error.ErrorMessage</div>
+            }
+        </div>
+    }
+
+    <form asp-action="Login" method="post" class="auth-form">
+        <div class="auth-box">
+            <input asp-for="Email" placeholder=" " class="auth-input" />
+            <label asp-for="Email" class="auth-label">Email</label>
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <div class="auth-box">
+            <input asp-for="MatKhau" type="password" placeholder=" " class="auth-input" />
+            <label asp-for="MatKhau" class="auth-label">Mật khẩu</label>
+            <span asp-validation-for="MatKhau" class="text-danger small"></span>
+        </div>
+
+        <button type="submit" class="auth-button">Đăng nhập</button>
+    </form>
+
+    <p class="auth-switch">Chưa có tài khoản? <a asp-controller="Dangky" asp-action="Index">Đăng ký</a></p>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

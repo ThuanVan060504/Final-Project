@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
-namespace Final_Project.Controllers
+namespace Final_Project.Controllers.Menu
 {
     public class HomeController : Controller
     {
@@ -35,7 +35,5 @@ namespace Final_Project.Controllers
 
             return View(product);
         }
-
     }
-
 }

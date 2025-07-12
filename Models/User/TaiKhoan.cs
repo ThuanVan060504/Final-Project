@@ -1,10 +1,15 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Final_Project.Models.User
 {
+    [Table("TaiKhoan")] // ✅ Rất quan trọn
     public class TaiKhoan
     {
+        
+
         [Key] // ✅ Phải có dòng này
         public int MaTK { get; set; }
 
