@@ -61,7 +61,17 @@ namespace Final_Project.Controllers
             HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");
 
 
-            return RedirectToAction("Index", "Home");
+            // ✅ Điều hướng theo vai trò
+            if (user.VaiTro?.ToLower() == "admin")
+            {
+                var url = $"{Request.Scheme}://{Request.Host}/Admin/Home/Index";
+                return Redirect(url);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
         }
 
         // GET: /Dangxuat

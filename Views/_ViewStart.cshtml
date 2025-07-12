@@ -1,3 +1,19 @@
 ﻿@{
-    Layout = "_Layout";
+    var role = Context.Session.GetString("UserRole");
+
+    if (string.IsNullOrEmpty(role))
+    {
+        // Chưa đăng nhập hoặc không có session → layout mặc định
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    else if (role == "Admin")
+    {
+        // Là admin → layout admin
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        // Người dùng thường → layout mặc định
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
 }

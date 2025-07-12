@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // 1. Thêm các service cần thiết
-builder.Services.AddDistributedMemoryCache(); // Bắt buộc cho session
+builder.Services.AddDistributedMemoryCache();
 builder.Services.AddAuthentication("MyCookie")
     .AddCookie("MyCookie", options =>
     {
-        options.LoginPath = "/Dangnhap"; // nếu chưa login sẽ chuyển tới đây
+        options.LoginPath = "/Dangnhap";
     });
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // ⏰ Session tồn tại 30 phút
-    options.Cookie.HttpOnly = true; // 🔐 An toàn
-    options.Cookie.IsEssential = true; // ✅ Bắt buộc cho hoạt động
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services.AddControllersWithViews();
@@ -32,14 +32,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles(); // ⛅️ Load ảnh, CSS, JS
+app.UseStaticFiles();
 
 app.UseRouting();
-app.UseSession(); // 💥 Phải có dòng này trước UseAuthorization
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Cấu hình route mặc định
+// ✅ Cấu hình routing cho Area
+app.MapControllerRoute(
+    name: "Adminboot",
+    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+// ✅ Route mặc định
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
