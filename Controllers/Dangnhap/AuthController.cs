@@ -64,7 +64,7 @@ namespace Final_Project.Controllers
             // ✅ Điều hướng theo vai trò
             if (user.VaiTro?.ToLower() == "admin")
             {
-                var url = $"{Request.Scheme}://{Request.Host}/Admin/Home/Index";
+                var url = $"{Request.Scheme}://{Request.Host}/Admin/Home/";
                 return Redirect(url);
             }
             else
