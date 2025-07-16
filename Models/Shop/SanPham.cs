@@ -12,10 +12,10 @@ namespace Final_Project.Models.Shop
         [ForeignKey("MaDanhMuc")]
         public DanhMuc DanhMuc { get; set; }
         public decimal DonGia { get; set; }
-        public string MoTa { get; set; }
+        public string? MoTa { get; set; }
         [NotMapped]
-        public string ChiTiet { get; set; }
-        public string ImageURL { get; set; }
+        public string? ChiTiet { get; set; }
+        public string? ImageURL { get; set; }
         public int? MaDanhMuc { get; set; }
         public int? ChieuRong { get; set; }
         public int? ChieuCao { get; set; }

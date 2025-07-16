@@ -1,16 +1,45 @@
-﻿@{
+﻿@model List<Final_Project.Models.TinTuc>
+@{
     ViewData["Title"] = "Tin tức";
 }
-<h2 class="mb-4">Tin tức</h2>
-<div class="row">
-    <div class="col-md-6">
-        <img src="/images/news1.jpg" class="img-fluid mb-3" />
-        <h5>Tin tức số 1</h5>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit...</p>
-    </div>
-    <div class="col-md-6">
-        <img src="/images/news2.jpg" class="img-fluid mb-3" />
-        <h5>Tin tức số 2</h5>
-        <p>Vestibulum ante ipsum primis in faucibus orci luctus et...</p>
-    </div>
+
+<h2 class="mb-4 text-center">📰 Tin tức nội thất cập nhật</h2>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    @foreach (var tin in Model)
+    {
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                @* Hiển thị ảnh nếu có trong mô tả *@
+                @{
+                    string imageUrl = "";
+                    var match = System.Text.RegularExpressions.Regex.Match(tin.TomTat ?? "", "<img.+?src=[\"'](.+?)[\"']");
+
+                    if (match.Success)
+                    {
+                        imageUrl = match.Groups[1].Value;
+                    }
+                }
+
+                @if (!string.IsNullOrEmpty(imageUrl))
+                {
+                    <img src="@imageUrl" class="card-img-top" style="max-height: 220px; object-fit: cover;" />
+                }
+
+                <div class="card-body text-center">
+                    <h5 class="card-title">
+                        <a href="@tin.Link" target="_blank" class="text-decoration-none text-primary">
+                            @tin.TieuDe
+                        </a>
+                    </h5>
+                    <p class="card-text text-muted">
+                        🗓 @tin.NgayDang.ToString("dd/MM/yyyy HH:mm") | 📌 @tin.Nguon
+                    </p>
+                    <div class="card-text text-start">
+                        @Html.Raw(tin.TomTat)
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
