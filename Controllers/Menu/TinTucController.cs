@@ -2,7 +2,7 @@
 
 namespace Final_Project.Controllers.Menu
 {
-    public class LivingSpaceController : Controller
+    public class TinTucController : Controller
     {
         public IActionResult Index()
         {

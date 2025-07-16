@@ -124,7 +124,7 @@
 
                     <!-- Dropdown Decor -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Decor</a>
+                        <a class="nav-link dropdown-toggle" asp-controller="Decor" asp-action="Index">Decor</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng khách">Phòng khách</a></li>
                             <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ngủ">Phòng ngủ</a></li>
@@ -140,20 +140,9 @@
                         </ul>
                     </li>
 
-
-
-
-               
-
-
-          
-
-                
                 <!-- Dropdown tin tức -->
-
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="bi bi-newspaper"></i> Tin tức
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Decor</a>
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" asp-controller="News" asp-action="Knowledge"><i class="bi bi-lightbulb"></i> Kiến thức nội thất</a>
@@ -227,17 +216,17 @@
                 <div class="col-md-3 footer-column">
                     <h5>Về Chúng Tôi</h5>
                     <ul>
-                        <li><a href="#">Giới Thiệu</a></li>
-                        <li><a href="#">Sản Phẩm</a></li>
-                        <li><a href="#">Dự Án</a></li>
-                        <li><a href="#">Tuyển Dụng</a></li>
-                    </ul>
+                            <li><a asp-controller="GioiThieu" asp-action="Index">Giới Thiệu</a></li>
+                            <li><a asp-controller="SanPham" asp-action="Index">Sản Phẩm</a></li>
+                            <li><a asp-controller="Decor" asp-action="Index">Decor</a></li>
+                            <li><a asp-controller="TinTuc" asp-action="Index">Tin Tức</a></li>
+                        </ul>
                 </div>
                 <div class="col-md-3 footer-column">
                     <h5>Hỗ Trợ</h5>
                     <ul>
-                        <li><a href="#">Chăm Sóc Khách Hàng</a></li>
-                        <li><a href="#">Thông Tin Giao Hàng</a></li>
+                            <li><a asp-controller="LienHe" asp-action="Index">Liên hệ</a></li>
+                            <li><a href="#">Thông Tin Giao Hàng</a></li>
                         <li><a href="#">Điều Khoản</a></li>
                         <li><a href="#">Bảo Mật</a></li>
                     </ul>

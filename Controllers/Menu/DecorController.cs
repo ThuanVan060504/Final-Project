@@ -2,7 +2,7 @@
 
 namespace Final_Project.Controllers.Menu
 {
-    public class NewsController : Controller
+    public class DecorController : Controller
     {
         public IActionResult Index()
         {
