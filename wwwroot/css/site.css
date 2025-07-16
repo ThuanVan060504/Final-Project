@@ -22,14 +22,14 @@ header img {
 }
 
 .top-bar {
-  background-color: #ff4d4d;
-  color: white;
-  padding: 10px 30px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-radius: 0 0 10px 10px;
-  font-family: 'Segoe UI', sans-serif;
+    background-color: #636363;
+    color: white;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 10px 10px;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 .top-bar-left {
