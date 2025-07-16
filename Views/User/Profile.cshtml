@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Thông tin tài khoản";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var hoTen = User.Identity.Name;
+    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
+    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-primary text-white text-center fs-4 fw-bold rounded-top-4">
+                    👤 Thông tin người dùng
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Họ tên:</label>
+                        <div class="form-control">@hoTen</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Email:</label>
+                        <div class="form-control">@email</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Vai trò:</label>
+                        <div class="form-control">@role</div>
+                    </div>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-controller="Auth" asp-action="Logout" class="btn btn-danger">
+                        🚪 Đăng xuất
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -181,6 +181,10 @@
 
                 <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index"></a></li>
                 <li class="nav-item ms-auto"><a class="nav-link" asp-controller="Cart" asp-action="Index">🛒 Giỏ hàng</a></li>
+                    @{
+                        var hoTen = User.Identity.Name ?? "Ẩn danh";
+                    }
+
                     @if (!User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
@@ -192,9 +196,10 @@
                     }
                     else
                     {
-                        var hoTen = User.Identity.Name ?? "Ẩn danh";
                         <li class="nav-item">
-                            <a class="nav-link text-success fw-semibold">👤 @hoTen</a>
+                            <a class="nav-link text-success fw-semibold" asp-controller="User" asp-action="Profile">
+                                👤 @hoTen
+                            </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-danger fw-semibold" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
