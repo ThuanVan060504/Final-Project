@@ -8,8 +8,24 @@
 }
 
 <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
+    <div class="row">
+        <!-- Menu bên trái -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow rounded-3">
+                <a href="#" class="list-group-item list-group-item-action active">
+                    👤 Thông tin cá nhân
+                </a>
+                <a asp-controller="Order" asp-action="History" class="list-group-item list-group-item-action">
+                    📜 Lịch sử mua hàng
+                </a>
+                <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action">
+                    🛒 Giỏ hàng đã thêm
+                </a>
+            </div>
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="col-md-9">
             <div class="card shadow rounded-4">
                 <div class="card-header bg-primary text-white text-center fs-4 fw-bold rounded-top-4">
                     👤 Thông tin người dùng
