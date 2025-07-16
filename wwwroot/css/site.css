@@ -226,3 +226,46 @@ footer {
     .promo-img:hover {
         transform: scale(1.05);
     }
+.top-bar {
+    background-color: #636363;
+    color: white;
+    padding: 10px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 0 0 0 10px;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+.top-bar-left {
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .top-bar-left i {
+        color: #fff;
+        background: linear-gradient(135deg, #ff6a00, #ee0979);
+        padding: 6px;
+        border-radius: 50%;
+    }
+
+.working-hours {
+    font-weight: 300;
+    font-style: italic;
+}
+
+.top-bar-right a.social-icon {
+    color: white;
+    font-size: 18px;
+    margin-left: 15px;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background 0.3s, color 0.3s;
+}
+
+    .top-bar-right a.social-icon:hover {
+        background-color: white;
+        color: #ff4d4d;
+    }

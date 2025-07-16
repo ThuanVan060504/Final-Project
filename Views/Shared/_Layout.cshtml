@@ -23,51 +23,6 @@
                 <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
             </div>
         </div>
-        <style>
-            .top-bar {
-                background-color: #636363;
-                color: white;
-                padding: 10px 30px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-radius: 0 0 0 10px;
-                font-family: 'Segoe UI', sans-serif;
-            }
-
-            .top-bar-left {
-                font-size: 16px;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-                .top-bar-left i {
-                    color: #fff;
-                    background: linear-gradient(135deg, #ff6a00, #ee0979);
-                    padding: 6px;
-                    border-radius: 50%;
-                }
-
-            .working-hours {
-                font-weight: 300;
-                font-style: italic;
-            }
-
-            .top-bar-right a.social-icon {
-                color: white;
-                font-size: 18px;
-                margin-left: 15px;
-                padding: 8px;
-                border-radius: 50%;
-                transition: background 0.3s, color 0.3s;
-            }
-
-                .top-bar-right a.social-icon:hover {
-                    background-color: white;
-                    color: #ff4d4d;
-                }
-        </style>
 
     <!-- Header -->
     <header class="bg-white border-bottom py-4 shadow-sm">
@@ -130,19 +85,12 @@
                             <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ngủ">Phòng ngủ</a></li>
                             <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ăn">Phòng ăn</a></li>
                             <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng làm việc">Phòng làm việc</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Nội thất trẻ em">Nội thất trẻ em</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đồ trang trí">Đồ trang trí</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Đèn & chiếu sáng">Đèn & chiếu sáng</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Bàn làm việc">Bàn làm việc</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Ghế văn phòng">Ghế văn phòng</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Tủ kệ trang trí">Tủ kệ trang trí</a></li>
                         </ul>
                     </li>
 
                 <!-- Dropdown tin tức -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" asp-controller="SanPham" asp-action="Index">Decor</a>
+                        <a class="nav-link dropdown-toggle" asp-controller="TinTuc" asp-action="Index">Tin Tức</a>
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" asp-controller="News" asp-action="Knowledge"><i class="bi bi-lightbulb"></i> Kiến thức nội thất</a>
