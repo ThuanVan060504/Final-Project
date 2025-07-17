@@ -66,35 +66,7 @@ nav {
     font-weight: bold;
     color: #444;
 }
-
-/* Footer section nội dung */
-.footer {
-    background-color: #ff4d4d;
-    color: white;
-    padding: 60px 0 20px;
-    font-family: Arial, sans-serif;
-}
-
-    .footer h5 {
-        font-size: 16px;
-        margin-bottom: 15px;
-    }
-
-.footer-column ul {
-    list-style: none;
-    padding: 0;
-}
-
-    .footer-column ul li a {
-        color: #cfcfd3;
-        font-size: 14px;
-        text-decoration: none;
-    }
-
-        .footer-column ul li a:hover {
-            color: #ffffff;
-        }
-
+  
 /* Responsive */
 @media (max-width: 768px) {
     .footer-content {
