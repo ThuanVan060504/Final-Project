@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Final_Project.Models.Shop;
 
-namespace Final_Project.Controllers.Menu
+namespace Final_Project.Controllers.CaNhan
 {
     public class CartController : Controller
     {

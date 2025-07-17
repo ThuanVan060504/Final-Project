@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Lịch sử mua hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Menu bên trái -->
+        <div class="col-md-3 mb-4">
+            <div class="list-group shadow rounded-3">
+                <a asp-controller="Account" asp-action="Profile" class="list-group-item list-group-item-action">
+                    👤 Thông tin cá nhân
+                </a>
+                <a href="#" class="list-group-item list-group-item-action active">
+                    📜 Lịch sử mua hàng
+                </a>
+                <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action">
+                    🛒 Giỏ hàng đã thêm
+                </a>
+            </div>
+        </div>
+
+        <!-- Nội dung chính -->
+        <div class="col-md-9">
+            <div class="card shadow rounded-4">
+                <div class="card-header bg-warning text-white text-center fs-4 fw-bold rounded-top-4">
+                    📜 Lịch sử đơn hàng
+                </div>
+                <div class="card-body p-4">
+                    <p>Hiện tại bạn chưa có đơn hàng nào.</p>
+                    @* Sau này chỗ này sẽ là table danh sách đơn hàng *@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
