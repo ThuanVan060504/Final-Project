@@ -1,4 +1,6 @@
-﻿@{
+﻿@model List<Final_Project.ViewModels.OrderHistoryViewModel>
+
+@{
     ViewData["Title"] = "Lịch sử mua hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -8,10 +10,10 @@
         <!-- Menu bên trái -->
         <div class="col-md-3 mb-4">
             <div class="list-group shadow rounded-3">
-                <a asp-controller="Account" asp-action="Profile" class="list-group-item list-group-item-action">
+                <a href="#" class="list-group-item list-group-item-action">
                     👤 Thông tin cá nhân
                 </a>
-                <a href="#" class="list-group-item list-group-item-action active">
+                <a asp-controller="Order" asp-action="History" class="list-group-item list-group-item-action active">
                     📜 Lịch sử mua hàng
                 </a>
                 <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action">
@@ -20,15 +22,47 @@
             </div>
         </div>
 
-        <!-- Nội dung chính -->
+        <!-- Nội dung bên phải -->
         <div class="col-md-9">
-            <div class="card shadow rounded-4">
-                <div class="card-header bg-warning text-white text-center fs-4 fw-bold rounded-top-4">
+            <div class="card shadow rounded-3">
+                <div class="card-header bg-success text-white fw-bold">
                     📜 Lịch sử đơn hàng
                 </div>
-                <div class="card-body p-4">
-                    <p>Hiện tại bạn chưa có đơn hàng nào.</p>
-                    @* Sau này chỗ này sẽ là table danh sách đơn hàng *@
+                <div class="card-body">
+                    @if (Model != null && Model.Any())
+                    {
+                        <table class="table table-bordered table-hover">
+                            <thead class="table-primary text-center">
+                                <tr>
+                                    <th>Mã đơn hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td class="text-center">@item.MaDonHang</td>
+                                        <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                                        <td>@item.TenSP</td>
+                                        <td class="text-center">@item.SoLuong</td>
+                                        <td class="text-end">@item.DonGia.ToString("N0") ₫</td>
+                                        <td class="text-end">@((item.SoLuong * item.DonGia).ToString("N0")) ₫</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info text-center">
+                            Bạn chưa có đơn hàng nào.
+                        </div>
+                    }
                 </div>
             </div>
         </div>

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // Thêm dòng này
 
 namespace Final_Project.Models.Shop
 {
+    [Table("DonHang")] // Ánh xạ đúng tên bảng
     public class DonHang
     {
         [Key]
