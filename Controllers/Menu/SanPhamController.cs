@@ -13,9 +13,13 @@ namespace Final_Project.Controllers.Menu
             _context = context;
         }
 
-        public IActionResult Index(string category, string search, string sort)
+        public IActionResult Index(string category, string search, string sort, int page = 1)
         {
-            var products = _context.SanPhams.AsQueryable();
+            int pageSize = 6;
+
+            var products = _context.SanPhams
+                .Include(p => p.DanhMuc)
+                .AsQueryable();
 
             // Lọc theo danh mục
             if (!string.IsNullOrEmpty(category))
@@ -38,10 +42,28 @@ namespace Final_Project.Controllers.Menu
                 case "desc":
                     products = products.OrderByDescending(p => p.DonGia);
                     break;
+                default:
+                    products = products.OrderBy(p => p.MaSP); // Mặc định
+                    break;
             }
 
-            return View(products.ToList());
+            // Tính tổng số trang
+            int totalItems = products.Count();
+            int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+
+            // Lấy sản phẩm theo trang
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Truyền thông tin phân trang ra View
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
+
+            return View(pagedProducts);
         }
+
 
         public IActionResult Details(int id)
         {

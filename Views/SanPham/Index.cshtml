@@ -19,6 +19,24 @@
             height: 200px;
             object-fit: cover;
         }
+
+    .pagination {
+        justify-content: center; /* căn giữa hàng nút */
+    }
+
+        .pagination .page-item .page-link {
+            color: #007bff;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .pagination .page-item .page-link:hover {
+            background-color: #e9ecef;
+        }
 </style>
 
 <div class="container mt-5">
@@ -93,6 +111,60 @@
                             </a>
                         </div>
                     }
+                    @if (ViewBag.TotalPages > 1)
+                    {
+                        var currentPage = (int)ViewBag.CurrentPage;
+                        var totalPages = (int)ViewBag.TotalPages;
+                        var startPage = Math.Max(1, currentPage - 2);
+                        var endPage = Math.Min(totalPages, currentPage + 2);
+
+                        <nav class="mt-4 d-flex justify-content-center">
+                            <ul class="pagination">
+
+                                <!-- Nút về đầu -->
+                                @if (currentPage > 1)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           asp-action="Index"
+                                           asp-route-page="1"
+                                           asp-route-category="@Context.Request.Query["category"]"
+                                           asp-route-search="@Context.Request.Query["search"]"
+                                           asp-route-sort="@Context.Request.Query["sort"]">«</a>
+                                    </li>
+                                }
+
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="page-item @(currentPage == i ? "active" : "")">
+                                        <a class="page-link"
+                                           asp-action="Index"
+                                           asp-route-page="@i"
+                                           asp-route-category="@Context.Request.Query["category"]"
+                                           asp-route-search="@Context.Request.Query["search"]"
+                                           asp-route-sort="@Context.Request.Query["sort"]">
+                                            @i
+                                        </a>
+                                    </li>
+                                }
+
+                                <!-- Nút đến cuối -->
+                                @if (currentPage < totalPages)
+                                {
+                                    <li class="page-item">
+                                        <a class="page-link"
+                                           asp-action="Index"
+                                           asp-route-page="@totalPages"
+                                           asp-route-category="@Context.Request.Query["category"]"
+                                           asp-route-search="@Context.Request.Query["search"]"
+                                           asp-route-sort="@Context.Request.Query["sort"]">»</a>
+                                    </li>
+                                }
+                            </ul>
+                        </nav>
+                    }
+
+
                 </div>
             }
         </div>
