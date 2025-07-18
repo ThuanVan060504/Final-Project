@@ -31,5 +31,6 @@ namespace Final_Project.Models.Shop
         public string TrangThaiDonHang { get; set; }
 
         public string? GhiChu { get; set; }
+        public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
     }
 }

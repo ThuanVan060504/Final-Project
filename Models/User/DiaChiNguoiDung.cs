@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema; // THÊM DÒNG NÀY
 
 namespace Final_Project.Models.User
 {
+    [Table("DiaChiNguoiDung")] 
     public class DiaChiNguoiDung
     {
         [Key]

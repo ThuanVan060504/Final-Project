@@ -16,5 +16,8 @@ namespace Final_Project.Models.Shop
         public int SoLuong { get; set; }
 
         public decimal DonGia { get; set; }
+        [ForeignKey("MaDonHang")]
+        public virtual DonHang DonHang { get; set; }
+        public SanPham SanPham { get; set; }
     }
 }
