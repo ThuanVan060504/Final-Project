@@ -1,54 +1,159 @@
-﻿@{
+﻿@using Final_Project.Models.Shop
+@{
     ViewData["Title"] = "Thông tin tài khoản";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-
-    var hoTen = User.Identity.Name;
-    var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
-    var role = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
+    var taiKhoan = ViewBag.TaiKhoan as Final_Project.Models.User.TaiKhoan;
+    var donHangs = Model as List<DonHang>;
 }
 
-<div class="container mt-5">
+<!-- ✅ CSS ngay trong file -->
+<style>
+    .sidebar-menu {
+        list-style: none;
+        padding: 0;
+    }
+
+        .sidebar-menu li {
+            padding: 10px 15px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+            .sidebar-menu li.active,
+            .sidebar-menu li:hover {
+                background-color: #198754;
+                color: white;
+                font-weight: bold;
+            }
+
+    .content-section {
+        display: none;
+    }
+
+        .content-section.active {
+            display: block;
+        }
+
+    .history-box {
+        border: 1px solid #ced4da;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 15px;
+        background-color: #ffffff;
+    }
+
+    .order-item {
+        margin-left: 15px;
+    }
+</style>
+
+<!-- ✅ Script để chuyển đổi nội dung -->
+<script>
+    function showSection(id, element) {
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        element.classList.add('active');
+    }
+
+    function toggleEdit(showEdit) {
+        document.getElementById("viewInfo").style.display = showEdit ? "none" : "block";
+        document.getElementById("editInfo").style.display = showEdit ? "block" : "none";
+    }
+</script>
+
+
+<div class="container mt-4">
     <div class="row">
-        <!-- Menu bên trái -->
-        <div class="col-md-3 mb-4">
-            <div class="list-group shadow rounded-3">
-                <a href="#" class="list-group-item list-group-item-action active">
-                    👤 Thông tin cá nhân
-                </a>
-                <a asp-controller="Order" asp-action="History" class="list-group-item list-group-item-action">
-                    📜 Lịch sử mua hàng
-                </a>
-                <a asp-controller="Cart" asp-action="Index" class="list-group-item list-group-item-action">
-                    🛒 Giỏ hàng đã thêm
-                </a>
-            </div>
+        <!-- Sidebar -->
+        <div class="col-md-3">
+            <ul class="sidebar-menu">
+                <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
+                <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
+            </ul>
         </div>
 
-        <!-- Nội dung chính -->
+        <!-- Nội dung -->
         <div class="col-md-9">
-            <div class="card shadow rounded-4">
-                <div class="card-header bg-primary text-white text-center fs-4 fw-bold rounded-top-4">
-                    👤 Thông tin người dùng
-                </div>
-                <div class="card-body p-4">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Họ tên:</label>
-                        <div class="form-control">@hoTen</div>
+            <!-- Thông tin cá nhân -->
+            <div id="profileSection" class="content-section active">
+                <h4 class="mb-3 text-success">👤 Thông tin tài khoản</h4>
+
+                <div id="viewInfo">
+                    <div class="border p-3 rounded shadow-sm mb-3">
+                        <p><strong>Họ tên:</strong> @taiKhoan?.HoTen</p>
+                        <p><strong>Email:</strong> @taiKhoan?.Email</p>
+                        <p><strong>SĐT:</strong> @taiKhoan?.SDT</p>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Email:</label>
-                        <div class="form-control">@email</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Vai trò:</label>
-                        <div class="form-control">@role</div>
-                    </div>
+                    <button class="btn btn-outline-success" onclick="toggleEdit(true)">✏️ Chỉnh sửa</button>
                 </div>
-                <div class="card-footer text-end">
-                    <a asp-controller="Auth" asp-action="Logout" class="btn btn-danger">
-                        🚪 Đăng xuất
-                    </a>
+
+                <div id="editInfo" style="display:none;">
+                    <form method="post" asp-action="UpdateProfile" asp-controller="User">
+                        <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
+                        <div class="mb-3">
+                            <label class="form-label">Họ tên</label>
+                            <input type="text" name="HoTen" class="form-control" value="@taiKhoan?.HoTen" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="Email" class="form-control" value="@taiKhoan?.Email" required />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="text" name="SDT" class="form-control" value="@taiKhoan?.SDT" required />
+                        </div>
+                        <button type="submit" class="btn btn-success">💾 Lưu</button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="toggleEdit(false)">❌ Hủy</button>
+                    </form>
                 </div>
+            </div>
+
+
+            <!-- Lịch sử mua hàng -->
+            <div id="historySection" class="content-section">
+                <h4 class="mb-3 text-primary">🛒 Lịch sử mua hàng</h4>
+                @if (donHangs != null && donHangs.Count > 0)
+                {
+                    foreach (var don in donHangs)
+                    {
+                        <div class="history-box">
+                            <h5>Đơn hàng #@don.MaDonHang - @don.NgayDat.ToString("dd/MM/yyyy")</h5>
+                            <p><strong>Trạng thái:</strong> @don.TrangThaiDonHang</p>
+                            <p><strong>Thanh toán:</strong> @don.TrangThaiThanhToan</p>
+                            <table class="table table-bordered table-sm mt-2">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>SL</th>
+                                        <th>Đơn giá</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ct in don.ChiTietDonHangs)
+                                    {
+                                        <tr>
+                                            <td>@ct.SanPham.TenSP</td>
+                                            <td>@ct.SoLuong</td>
+                                            <td>@ct.DonGia.ToString("N0") ₫</td>
+                                            <td>@(ct.SoLuong* ct.DonGia).ToString("N0") ₫</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            <div class="text-end fw-semibold">
+                                Tổng tiền: <span class="text-danger">@don.TongTien.ToString("N0") ₫</span>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Không có đơn hàng nào.</p>
+                }
             </div>
         </div>
     </div>
