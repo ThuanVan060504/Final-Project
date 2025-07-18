@@ -77,5 +77,107 @@ namespace Final_Project.Controllers
 
         }
 
+        [HttpPost]
+        public IActionResult CapNhatSoLuong(int maSP, int soLuong)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            var item = _context.GioHangs.FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
+            if (item != null)
+            {
+                item.SoLuong = soLuong;
+                item.NgayThem = DateTime.Now;
+                _context.SaveChanges();
+                TempData["Success"] = "Đã cập nhật số lượng.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult XoaKhoiGio(int maSP)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            var item = _context.GioHangs.FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
+            if (item != null)
+            {
+                _context.GioHangs.Remove(item);
+                _context.SaveChanges();
+                TempData["Success"] = "Đã xóa sản phẩm khỏi giỏ.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
+        [HttpPost]
+        public IActionResult ThanhToan()
+        {
+            // 1. Lấy tài khoản đang đăng nhập
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null)
+                return RedirectToAction("Login", "Auth");
+
+            // 2. Lấy danh sách sản phẩm trong giỏ hàng
+            var gioHang = _context.GioHangs
+                .Where(g => g.MaTK == maTK)
+                .ToList();
+
+            if (!gioHang.Any())
+            {
+                TempData["Success"] = "Không có sản phẩm trong giỏ hàng.";
+                return RedirectToAction("Index");
+            }
+
+            // 3. Tính tổng tiền
+            decimal tongTien = (from gh in gioHang
+                                join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
+                                select gh.SoLuong * sp.DonGia).Sum();
+
+            // 4. Tạo đơn hàng mới
+            var donHang = new DonHang
+            {
+                MaTK = maTK.Value,
+                MaDiaChi = 1, // Bạn cần gán đúng MaDiaChi nếu có địa chỉ người dùng
+                NgayDat = DateTime.Now,
+                NgayYeuCau = DateTime.Now.AddDays(3), // hoặc null
+                PhiVanChuyen = 0,
+                TongTien = tongTien,
+                GiamGia = 0,
+                PhuongThucThanhToan = "COD", // hoặc "VNPay", "Momo"
+                TrangThaiThanhToan = "DaThanhToan",
+                TrangThaiDonHang = "DangXuLy",
+                GhiChu = null
+            };
+
+            _context.DonHangs.Add(donHang);
+            _context.SaveChanges(); // cần Save để lấy được MaDonHang
+
+            // 5. Thêm từng chi tiết đơn hàng
+            foreach (var item in gioHang)
+            {
+                var sanPham = _context.SanPhams.First(sp => sp.MaSP == item.MaSP);
+                var chiTiet = new ChiTietDonHang
+                {
+                    MaDonHang = donHang.MaDonHang,
+                    MaSP = item.MaSP,
+                    SoLuong = item.SoLuong,
+                    DonGia = sanPham.DonGia
+                };
+                _context.ChiTietDonHangs.Add(chiTiet);
+            }
+
+            // 6. Xóa giỏ hàng sau khi đặt
+            _context.GioHangs.RemoveRange(gioHang);
+
+            // 7. Lưu thay đổi
+            _context.SaveChanges();
+
+            TempData["Success"] = "Thanh toán thành công! Đơn hàng của bạn đang được xử lý.";
+            return RedirectToAction("Index");
+        }
     }
 }

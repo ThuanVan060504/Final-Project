@@ -18,6 +18,7 @@ namespace Final_Project.Models.Shop
         public decimal DonGia { get; set; }
         [ForeignKey("MaDonHang")]
         public virtual DonHang DonHang { get; set; }
-        public SanPham SanPham { get; set; }
+        [ForeignKey("MaSP")]
+        public virtual SanPham SanPham { get; set; }
     }
 }
