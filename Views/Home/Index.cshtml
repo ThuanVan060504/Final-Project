@@ -152,3 +152,9 @@
             </div>
         }
     </div>
+@if (TempData["TestSession"] != null)
+{
+        <div class="alert alert-info">
+            @TempData["TestSession"]
+        </div>
+}

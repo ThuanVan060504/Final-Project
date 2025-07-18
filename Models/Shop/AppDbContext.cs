@@ -18,6 +18,9 @@ namespace Final_Project.Models.Shop
         public DbSet<PhanHoi> PhanHois { get; set; }
         public DbSet<HoaDon> HoaDons { get; set; }
         public DbSet<DanhGia> DanhGias { get; set; }
+        public DbSet<SanPham> SanPham { get; set; }
+        public DbSet<GioHang> GioHangs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

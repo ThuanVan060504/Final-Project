@@ -59,7 +59,11 @@ namespace Final_Project.Controllers
 
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");
-
+            HttpContext.Session.SetInt32("MaTK", user.MaTK);
+            // Kiểm tra log Session
+            var debugMaTK = HttpContext.Session.GetInt32("MaTK");
+            Console.WriteLine("✅ Session MaTK sau khi set: " + debugMaTK);
+            TempData["TestSession"] = "MaTK: " + debugMaTK;
 
             // ✅ Điều hướng theo vai trò
             if (user.VaiTro?.ToLower() == "admin")
