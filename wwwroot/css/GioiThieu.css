@@ -117,3 +117,55 @@ h2 {
         font-size: 1.1em;
         line-height: 1.6;
     }
+
+@media (max-width: 768px) {
+    .features {
+        flex-direction: column;
+    }
+
+    .feature {
+        flex: 1 1 100%;
+    }
+}
+
+.vision-mission-values {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+    margin: 50px 0;
+}
+
+.vmv-block {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+    .vmv-block h2 {
+        font-size: 1.8em;
+        margin-bottom: 15px;
+        color: #dc3545;
+    }
+
+    .vmv-block p,
+    .vmv-block ul {
+        font-size: 1.1em;
+        color: #444;
+        line-height: 1.7;
+    }
+
+    .vmv-block ul {
+        padding-left: 20px;
+    }
+
+    .vmv-block li {
+        margin-bottom: 12px;
+    }
+
+/* Responsive layout */
+@media (min-width: 768px) {
+    .vision-mission-values {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
