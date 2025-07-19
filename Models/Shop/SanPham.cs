@@ -15,12 +15,19 @@ namespace Final_Project.Models.Shop
         public string? MoTa { get; set; }
         [NotMapped]
         public string? ChiTiet { get; set; }
+        public int SoLuong { get; set; }
         public string? ImageURL { get; set; }
         public int? MaDanhMuc { get; set; }
         public int? ChieuRong { get; set; }
         public int? ChieuCao { get; set; }
         public int? ChieuSau { get; set; }
         public ICollection<DanhGia> DanhGias { get; set; }
+
+        public int? MaThuongHieu { get; set; }
+
+        [ForeignKey("MaThuongHieu")]
+        public ThuongHieu? ThuongHieu { get; set; }
+
 
     }
 }

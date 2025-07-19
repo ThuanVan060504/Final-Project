@@ -19,4 +19,9 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Adminboot\Admin\Models\" />
+    <Folder Include="Adminboot\Admin\Views\NewFolder\" />
+  </ItemGroup>
+
 </Project>

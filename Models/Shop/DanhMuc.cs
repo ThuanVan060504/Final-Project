@@ -17,5 +17,8 @@ namespace Final_Project.Models.Shop
 
         // ✅ Navigation property: Danh mục này có nhiều sản phẩm
         public ICollection<SanPham> SanPhams { get; set; }
+        // Không lưu trong DB – chỉ dùng cho hiển thị
+        [NotMapped]
+        public int TongSanPham { get; set; }
     }
 }

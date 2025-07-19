@@ -1,4 +1,5 @@
-﻿using Final_Project.Models.Shop;
+﻿
+using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,11 +18,13 @@ namespace Final_Project.Models.Shop
         public DbSet<DiaChiNguoiDung> DiaChiNguoiDungs { get; set; }
         public DbSet<PhanHoi> PhanHois { get; set; }
         public DbSet<HoaDon> HoaDons { get; set; }
+      
+
         public DbSet<DanhGia> DanhGias { get; set; }
-        public DbSet<SanPham> SanPham { get; set; }
+     
         public DbSet<GioHang> GioHangs { get; set; }
 
-
+        public DbSet<ThuongHieu> ThuongHieus { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!

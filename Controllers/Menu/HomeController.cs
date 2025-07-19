@@ -17,13 +17,15 @@ namespace Final_Project.Controllers.Menu
         public IActionResult Index()
         {
             var sanPhams = _context.SanPhams
-                .Include(sp => sp.DanhMuc) // lấy kèm tên danh mục
+                .Include(sp => sp.DanhMuc)
+                .Include(p => p.ThuongHieu)
                 .OrderByDescending(sp => sp.MaSP)
-                .Take(6) // Lấy 6 sản phẩm mới nhất
+                .Take(6)
                 .ToList();
 
             return View(sanPhams);
         }
+
 
         public IActionResult Details(int id)
         {
