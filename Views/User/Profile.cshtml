@@ -47,6 +47,77 @@
     .order-item {
         margin-left: 15px;
     }
+
+    .order-card {
+        background-color: #fff;
+        transition: box-shadow 0.3s;
+    }
+
+        .order-card:hover {
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+        }
+
+    .order-progress {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+        position: relative;
+        padding: 0 10px;
+    }
+
+        .order-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            right: 10px;
+            height: 4px;
+            background-color: #dee2e6;
+            z-index: 0;
+        }
+
+    .progress-step {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        flex: 1;
+    }
+
+        .progress-step .circle {
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            border-radius: 50%;
+            background-color: #dee2e6;
+            color: white;
+            margin: 0 auto;
+            font-size: 13px;
+        }
+
+        .progress-step.active .circle {
+            background-color: #198754;
+        }
+
+        .progress-step.cancelled .circle {
+            background-color: #dc3545;
+        }
+
+        .progress-step span {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .progress-step.active span {
+            color: #198754;
+            font-weight: bold;
+        }
+
+        .progress-step.cancelled span {
+            color: #dc3545;
+            font-weight: bold;
+        }
 </style>
 
 <!-- ✅ Script để chuyển đổi nội dung -->
@@ -72,6 +143,7 @@
             <ul class="sidebar-menu">
                 <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
                 <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
+                <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
             </ul>
         </div>
 
@@ -119,42 +191,176 @@
                 {
                     foreach (var don in donHangs)
                     {
-                        <div class="history-box">
-                            <h5>Đơn hàng #@don.MaDonHang - @don.NgayDat.ToString("dd/MM/yyyy")</h5>
-                            <p><strong>Trạng thái:</strong> @don.TrangThaiDonHang</p>
-                            <p><strong>Thanh toán:</strong> @don.TrangThaiThanhToan</p>
-                            <table class="table table-bordered table-sm mt-2">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Sản phẩm</th>
-                                        <th>SL</th>
-                                        <th>Đơn giá</th>
-                                        <th>Thành tiền</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var ct in don.ChiTietDonHangs)
+                        <div class="order-card shadow-sm rounded p-3 mb-4 border">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <span class="fw-semibold">Đơn hàng #@don.MaDonHang</span> -
+                                    <span class="text-muted">@don.NgayDat.ToString("dd/MM/yyyy")</span>
+                                </div>
+                                <div class="text-success fw-bold">🟢 @don.TrangThaiDonHang</div>
+                            </div>
+                            <!-- Thanh tiến trình trạng thái đơn hàng -->
+                            <div class="order-progress">
+                                @{
+                                    var trangThai = don.TrangThaiDonHang;
+                                    var isCancelled = trangThai == "HuyDon";
+
+                                    string[] steps = new[] { "ChoXacNhan", "DangXuLy", "DangGiao", "DaGiao" };
+
+                                    foreach (var step in steps)
                                     {
-                                        <tr>
-                                            <td>@ct.SanPham.TenSP</td>
-                                            <td>@ct.SoLuong</td>
-                                            <td>@ct.DonGia.ToString("N0") ₫</td>
-                                            <td>@(ct.SoLuong* ct.DonGia).ToString("N0") ₫</td>
-                                        </tr>
+                                        var isActive = steps.ToList().IndexOf(trangThai) >= steps.ToList().IndexOf(step);
+                                        var isCancelledStep = isCancelled && step == trangThai;
+
+                                        <div class="progress-step @(isCancelledStep ? "cancelled" : (isActive ? "active" : ""))">
+                                            <div class="circle">@step.Substring(0, 2)</div>
+                                            <span>@step</span>
+                                        </div>
                                     }
-                                </tbody>
-                            </table>
-                            <div class="text-end fw-semibold">
-                                Tổng tiền: <span class="text-danger">@don.TongTien.ToString("N0") ₫</span>
+
+                                    if (isCancelled && !steps.Contains(trangThai))
+                                    {
+                                        <div class="progress-step cancelled">
+                                            <div class="circle">Hu</div>
+                                            <span>HuyDon</span>
+                                        </div>
+                                    }
+                                }
+                            </div>
+
+                            @{
+                                var firstProduct = don.ChiTietDonHangs.FirstOrDefault();
+                                var otherProducts = don.ChiTietDonHangs.Skip(1).ToList();
+                            }
+
+                            <!-- Sản phẩm đầu tiên -->
+                            @if (firstProduct != null)
+                            {
+                                <div class="d-flex align-items-center border-top pt-3 mt-2">
+                                    <img src="@firstProduct.SanPham.ImageURL" class="img-thumbnail me-3" style="width: 80px; height: 80px;" />
+                                    <div class="flex-grow-1">
+                                        <div class="fw-semibold">@firstProduct.SanPham.TenSP</div>
+                                        <div class="text-muted">@firstProduct.SoLuong</div>
+                                    </div>
+                                    <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
+                                        @firstProduct.DonGia.ToString("N0") ₫
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Các sản phẩm khác (ẩn đi ban đầu) -->
+                            @if (otherProducts.Count > 0)
+                            {
+                                var sectionId = $"orderItems_{don.MaDonHang}";
+                                <div id="@sectionId" style="display:none;">
+                                    @foreach (var ct in otherProducts)
+                                    {
+                                        <div class="d-flex align-items-center border-top pt-3 mt-2">
+                                            <img src="@ct.SanPham.ImageURL" class="img-thumbnail me-3" style="width: 80px; height: 80px;" />
+                                            <div class="flex-grow-1">
+                                                <div class="fw-semibold">@ct.SanPham.TenSP</div>
+                                                <div class="text-muted">@ct.SoLuong</div>
+                                            </div>
+                                            <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
+                                                @ct.DonGia.ToString("N0") ₫
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <!-- Nút xem thêm / ẩn bớt -->
+                                <button class="btn btn-link px-0 text-decoration-none text-primary" type="button"
+                                        onclick="toggleOrderItems('@sectionId', this)">
+                                    + Xem thêm (@otherProducts.Count sản phẩm)
+                                </button>
+                            }
+
+
+                            <div class="d-flex justify-content-between align-items-center mt-3 border-top pt-3">
+                                <div class="text-muted">Thanh toán: @don.TrangThaiThanhToan</div>
+                                <div class="fw-bold">Tổng tiền: <span class="text-danger">@don.TongTien.ToString("N0") ₫</span></div>
                             </div>
                         </div>
                     }
                 }
                 else
                 {
-                    <p>Không có đơn hàng nào.</p>
+                    <p class="text-muted">Bạn chưa có đơn hàng nào được ghi nhận.</p>
                 }
             </div>
+
+            <!-- Địa chỉ đặt hàng -->
+            <div id="addressSection" class="content-section">
+                <h4 class="mb-3 text-warning">📍 Địa chỉ đặt hàng</h4>
+
+                @if (taiKhoan != null && taiKhoan.DiaChiNguoiDungs != null && taiKhoan.DiaChiNguoiDungs.Count > 0)
+                {
+                    foreach (var diaChi in taiKhoan.DiaChiNguoiDungs)
+                    {
+                        <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
+                            <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
+                            <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
+                            <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
+                            <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
+                            @if (diaChi.MacDinh)
+                            {
+                                <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
+                            }
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-muted">Bạn chưa có địa chỉ nào.</p>
+                }
+
+                <button class="btn btn-outline-warning" type="button" onclick="toggleNewAddress()">➕ Thêm địa chỉ mới</button>
+                <hr />
+                <h5 class="mt-3 text-secondary">➕ Nhập địa chỉ mới</h5>
+
+                <form id="newAddressForm" method="post" asp-action="ThemDiaChi" asp-controller="User" class="row g-3 mt-2" style="display: none;">
+                    <div class="col-md-12">
+                        <label class="form-label">Địa chỉ chi tiết</label>
+                        <input type="text" name="DiaChiChiTiet" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Phường/Xã</label>
+                        <input type="text" name="PhuongXa" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quận/Huyện</label>
+                        <input type="text" name="QuanHuyen" class="form-control" required />
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tỉnh/Thành phố</label>
+                        <input type="text" name="TinhTP" class="form-control" required />
+                    </div>
+                    <div class="col-md-12 form-check">
+                        <input type="checkbox" class="form-check-input" name="MacDinh" id="macDinhCheckbox" />
+                        <label class="form-check-label" for="macDinhCheckbox">Đặt làm địa chỉ mặc định</label>
+                    </div>
+                    <div class="col-md-12">
+                        <button type="submit" class="btn btn-success">📍 Lưu địa chỉ</button>
+                    </div>
+                </form>
+
+            </div>
+
         </div>
     </div>
 </div>
+<script>
+    function toggleOrderItems(sectionId, btn) {
+        const section = document.getElementById(sectionId);
+        const isHidden = getComputedStyle(section).display === "none";
+        section.style.display = isHidden ? "block" : "none";
+        btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
+    }
+
+    function toggleNewAddress() {
+        const form = document.getElementById("newAddressForm");
+        const isHidden = getComputedStyle(form).display === "none";
+        form.style.display = isHidden ? "block" : "none";
+    }
+</script>
+
+

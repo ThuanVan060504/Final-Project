@@ -18,5 +18,7 @@ namespace Final_Project.Models.User
         public string? PhuongXa { get; set; }
 
         public bool MacDinh { get; set; } = false;
+        [ForeignKey("MaTK")]
+        public TaiKhoan TaiKhoan { get; set; }
     }
 }

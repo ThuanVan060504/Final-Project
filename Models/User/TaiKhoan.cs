@@ -20,5 +20,7 @@ namespace Final_Project.Models.User
         public string MatKhau { get; set; }
         public string VaiTro { get; set; }
         public DateTime? NgayTao { get; set; }
+        public virtual ICollection<DiaChiNguoiDung> DiaChiNguoiDungs { get; set; }
+
     }
 }

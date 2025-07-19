@@ -20,24 +20,28 @@ public class UserController : Controller
             return RedirectToAction("DangNhap", "Auth");
         }
 
-        // Thông tin người dùng
+        // Lấy thông tin tài khoản
         var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+        // Sau khi lấy taiKhoan
+        _context.Entry(taiKhoan).Collection(t => t.DiaChiNguoiDungs).Load();
+
         if (taiKhoan == null)
         {
             return NotFound("Không tìm thấy tài khoản.");
         }
 
-        // Lịch sử đơn hàng
+        // Lấy đơn hàng của người dùng
         var donHangs = _context.DonHangs
             .Include(dh => dh.ChiTietDonHangs)
-            .ThenInclude(ct => ct.SanPham)
+                .ThenInclude(ct => ct.SanPham)
             .Where(dh => dh.MaTK == maTK)
             .OrderByDescending(dh => dh.NgayDat)
             .ToList();
 
         ViewBag.TaiKhoan = taiKhoan;
-        return View(donHangs); // Trả về danh sách đơn hàng cho View
+        return View(donHangs);
     }
+
     [HttpPost]
     public IActionResult UpdateProfile(TaiKhoan model)
     {
@@ -54,5 +58,33 @@ public class UserController : Controller
         return RedirectToAction("Profile");
     }
 
+    [HttpGet]
+    public IActionResult ThemDiaChi()
+    {
+        return View();
+    }
 
+    [HttpPost]
+    public IActionResult ThemDiaChi(DiaChiNguoiDung diaChi)
+    {
+        int? maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null)
+        {
+            return RedirectToAction("DangNhap", "Auth");
+        }
+
+        if (ModelState.IsValid)
+        {
+            diaChi.MaTK = maTK.Value;
+            _context.DiaChiNguoiDungs.Add(diaChi);
+            _context.SaveChanges();
+            TempData["Success"] = "Thêm địa chỉ thành công!";
+        }
+        else
+        {
+            TempData["Error"] = "Vui lòng điền đầy đủ thông tin địa chỉ!";
+        }
+
+        return RedirectToAction("Profile");
+    }
 }
