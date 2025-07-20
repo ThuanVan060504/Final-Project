@@ -33,11 +33,13 @@ public class UserController : Controller
 
         // Lấy đơn hàng của người dùng
         var donHangs = _context.DonHangs
-            .Include(dh => dh.ChiTietDonHangs)
-                .ThenInclude(ct => ct.SanPham)
-            .Where(dh => dh.MaTK == maTK)
-            .OrderByDescending(dh => dh.NgayDat)
-            .ToList();
+    .Where(d => d.MaTK == maTK)
+    .Include(d => d.ChiTietDonHangs)
+        .ThenInclude(ct => ct.SanPham)
+    .Include(d => d.DiaChiNguoiDung)
+    .OrderByDescending(d => d.NgayDat)
+    .ToList();
+
 
         ViewBag.TaiKhoan = taiKhoan;
         return View(donHangs);

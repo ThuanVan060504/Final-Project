@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Final_Project.Models.User;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema; // Thêm dòng này
 
@@ -32,5 +33,7 @@ namespace Final_Project.Models.Shop
 
         public string? GhiChu { get; set; }
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
+        [ForeignKey("MaDiaChi")]
+        public DiaChiNguoiDung DiaChiNguoiDung { get; set; }
     }
 }

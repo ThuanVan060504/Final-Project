@@ -196,6 +196,13 @@
                                 <div>
                                     <span class="fw-semibold">Đơn hàng #@don.MaDonHang</span> -
                                     <span class="text-muted">@don.NgayDat.ToString("dd/MM/yyyy")</span>
+                                     <span class="text-muted">
+        <strong>📍 Giao đến:</strong>
+        @don.DiaChiNguoiDung.DiaChiChiTiet,
+        @don.DiaChiNguoiDung.PhuongXa,
+        @don.DiaChiNguoiDung.QuanHuyen,
+        @don.DiaChiNguoiDung.TinhTP
+    </span>
                                 </div>
                                 <div class="text-success fw-bold">🟢 @don.TrangThaiDonHang</div>
                             </div>
