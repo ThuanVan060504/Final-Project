@@ -297,25 +297,35 @@
                     foreach (var diaChi in taiKhoan.DiaChiNguoiDungs)
                     {
                         <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
-                            <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
-                            <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
-                            <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
-                            <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
+    <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
+    <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
+    <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
+    <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
 
-                            @if (diaChi.MacDinh)
-                            {
-                                <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
-                            }
-                            else
-                            {
-                                <form asp-action="Profile" method="post" class="mt-2">
-                                    <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
-                                    <button type="submit" class="btn btn-sm btn-outline-primary">
-                                        Chọn làm mặc định
-                                    </button>
-                                </form>
-                            }
-                        </div>
+    @if (diaChi.MacDinh)
+{
+    <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
+}
+else
+{
+    <form asp-controller="DiaChi" asp-action="SetDefault" method="post" class="d-inline">
+        <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+        <button type="submit" class="btn btn-sm btn-outline-primary mt-2 me-2">
+            Chọn làm mặc định
+        </button>
+    </form>
+}
+
+
+    <!-- Nút chỉnh sửa -->
+    <form asp-controller="DiaChi" asp-action="Edit" method="get" class="d-inline">
+        <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+        <button type="submit" class="btn btn-sm btn-outline-warning mt-2">
+            ✏️ Sửa
+        </button>
+    </form>
+</div>
+
                     }
                 }
                 else

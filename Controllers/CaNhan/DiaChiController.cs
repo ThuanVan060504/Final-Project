@@ -45,9 +45,9 @@ public class DiaChiController : Controller
         var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaDiaChi == id);
         if (diaChi == null) return NotFound();
 
-        // Lấy các địa chỉ của userS
+        // Lấy các địa chỉ khác của cùng 1 tài khoản, trừ địa chỉ đang chọn
         var diaChiKhac = _context.DiaChiNguoiDungs
-            .Where(d => d.MaTK == diaChi.MaTK && d.MaTK != id).ToList();
+            .Where(d => d.MaTK == diaChi.MaTK && d.MaDiaChi != id).ToList();
 
         // Set tất cả về false
         foreach (var d in diaChiKhac)
@@ -60,8 +60,31 @@ public class DiaChiController : Controller
 
         _context.SaveChanges();
 
-        return RedirectToAction("ThongTinTaiKhoan", "TaiKhoan");
+        return RedirectToAction("Profile", "User");
     }
 
+
+    public IActionResult Edit(int id)
+    {
+        var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaDiaChi == id);
+        if (diaChi == null) return NotFound();
+        return View(diaChi);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(DiaChiNguoiDung model)
+    {
+        var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaDiaChi == model.MaDiaChi);
+        if (diaChi == null) return NotFound();
+
+        diaChi.DiaChiChiTiet = model.DiaChiChiTiet;
+        diaChi.TinhTP = model.TinhTP;
+        diaChi.QuanHuyen = model.QuanHuyen;
+        diaChi.PhuongXa = model.PhuongXa;
+        diaChi.MacDinh = model.MacDinh;
+
+        _context.SaveChanges();
+        return RedirectToAction("Profile", "User");
+    }
 
 }

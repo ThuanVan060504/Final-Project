@@ -66,7 +66,7 @@ public class UserController : Controller
 
         if (taiKhoan == null)
         {
-            return RedirectToAction("DangNhap", "Auth"); // hoặc trang đăng nhập
+            return RedirectToAction("DangNhap", "Auth");
         }
 
         // Nếu là địa chỉ mặc định mới thì bỏ MacDinh của các địa chỉ cũ
@@ -80,6 +80,9 @@ public class UserController : Controller
             {
                 d.MacDinh = false;
             }
+
+            // Cần save thay đổi trước khi thêm địa chỉ mới
+            _context.SaveChanges();
         }
 
         var diaChiMoi = new DiaChiNguoiDung
@@ -95,7 +98,7 @@ public class UserController : Controller
         _context.DiaChiNguoiDungs.Add(diaChiMoi);
         _context.SaveChanges();
 
-        return RedirectToAction("Profile"); // hoặc action nào em đang dùng để hiện view
+        return RedirectToAction("Profile");
     }
 
 }
