@@ -1,8 +1,9 @@
 ﻿
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Danh Mục";
+    ViewData["Title"] = "Thương Hiệu";
 }
+
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
 
 <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
@@ -23,13 +24,11 @@
 <div class="content">
 <div class="page-header">
 <div class="page-title">
-<h4>DANH MỤC SẢN PHẨM</h4>
-<h6>View/Search product Category</h6>
+<h4>Brand List</h4>
+<h6>Manage your Brand</h6>
 </div>
 <div class="page-btn">
-<a href="addcategory.html" class="btn btn-added">
-<img src="~/Admin/img/icons/plus.svg" class="me-1" alt="img">Add Category
-</a>
+<a href="addbrand.html" class="btn btn-added"><img src="~/Admin/img/icons/plus.svg" class="me-2" alt="img">Add Brand</a>
 </div>
 </div>
 
@@ -65,28 +64,14 @@
 <div class="card" id="filter_inputs">
 <div class="card-body pb-0">
 <div class="row">
-<div class="col-lg-2 col-sm-6 col-12">
+<div class="col-lg-3 col-sm-6 col-12">
 <div class="form-group">
-<select class="select">
-<option>Choose Category</option>
-<option>Computers</option>
-</select>
+<input type="text" placeholder="Enter Brand Name">
 </div>
 </div>
-<div class="col-lg-2 col-sm-6 col-12">
+<div class="col-lg-3 col-sm-6 col-12">
 <div class="form-group">
-<select class="select">
-<option>Choose Sub Category</option>
-<option>Fruits</option>
-</select>
-</div>
-</div>
-<div class="col-lg-2 col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Sub Brand</option>
-<option>Iphone</option>
-</select>
+<input type="text" placeholder="Enter Brand Description">
 </div>
 </div>
 <div class="col-lg-1 col-sm-6 col-12 ms-auto">
@@ -98,8 +83,6 @@
 </div>
 </div>
 
-@model List<Final_Project.Models.Shop.DanhMuc>
-
 <div class="table-responsive">
     <table class="table datanew">
         <thead>
@@ -110,40 +93,36 @@
                         <span class="checkmarks"></span>
                     </label>
                 </th>
-                <th>Tên Danh mục</th>
-                <th>Mã Danh Mục</th>
-                <th>Mô Tả</th>
-                <th>Tổng Số Sản Shẩm</th>
-                <th>Chỉnh Sửa</th>
+                 <th>Mã thương hiệu</th>
+                <th>Image</th>
+                <th>Brand Name</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model)
+              @foreach (var item in Model)
             {
                 <tr>
                     <td>
                         <label class="checkboxs">
-                            <input type="checkbox" />
+                            <input type="checkbox">
                             <span class="checkmarks"></span>
                         </label>
                     </td>
-                    <td class="productimgname">
-                        <a href="javascript:void(0);" class="product-img">
-                <img src="@(string.IsNullOrEmpty(item.Logo) ? Url.Content("~/Admin/img/product/noimage.png") : item.Logo)" 
-                     alt="category" 
-                     width="50" height="50" 
-                     style="object-fit: cover; border-radius: 8px;" />
-            </a>
-                        <a href="javascript:void(0);">@item.TenDanhMuc</a>
-                    </td>
-                    <td>@item.MaDanhMuc</td>
-                    <td>@item.MoTa</td>
-                    <td>@(item.SanPhams?.Count ?? 0)</td> <!-- Tổng sản phẩm -->
+                    <td>@item.MaThuongHieu</td> <!-- ✅ Hiển thị mã -->
                     <td>
-                        <a class="me-3" href="/Admin/DanhmucSP/Edit/@item.MaDanhMuc">
+                        <a class="product-img">
+                            <img src="@(string.IsNullOrEmpty(item.Logo) ? "/images/noimage.png" : item.Logo)"
+                                 alt="logo" style="width: 60px;" />
+                        </a>
+                    </td>
+                    <td>@item.TenThuongHieu</td>
+                    
+                    <td>
+                        <a class="me-3" href="/Admin/ThuongHieu/Edit/@item.MaThuongHieu">
                             <img src="~/Admin/img/icons/edit.svg" alt="edit" />
                         </a>
-                        <a class="me-3 confirm-text" href="/Admin/DanhmucSP/Delete/@item.MaDanhMuc">
+                        <a class="me-3 confirm-text" href="/Admin/ThuongHieu/Delete/@item.MaThuongHieu">
                             <img src="~/Admin/img/icons/delete.svg" alt="delete" />
                         </a>
                     </td>
@@ -152,7 +131,15 @@
         </tbody>
     </table>
 </div>
+</tbody>
+</table>
+</div>
+</div>
+</div>
 
+</div>
+</div>
+</div>
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
 
 <script src="~/Admin/js/feather.min.js"></script>
@@ -170,5 +157,3 @@
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 
 <script src="~/Admin/js/script.js"></script>
-
-</html>

@@ -194,7 +194,10 @@
 <a class="dropdown-item" href="profile.html"> <i class="me-2" data-feather="user"></i> My Profile</a>
 <a class="dropdown-item" href="generalsettings.html"><i class="me-2" data-feather="settings"></i>Settings</a>
 <hr class="m-0">
-<a class="dropdown-item logout pb-0" href="signin.html"><img src="~/Admin/img/icons/log-out.svg" class="me-2" alt="img">Logout</a>
+ <a class="dropdown-item logout pb-0" asp-controller="Auth" asp-action="Logout">
+       <img src="~/Admin/img/icons/log-out.svg" class="me-2" alt="img">Logout
+ </a>
+
 </div>
 </div>
 </li>
@@ -206,7 +209,10 @@
 <div class="dropdown-menu dropdown-menu-right">
 <a class="dropdown-item" href="profile.html">My Profile</a>
 <a class="dropdown-item" href="generalsettings.html">Settings</a>
-<a class="dropdown-item" href="signin.html">Logout</a>
+ <a class="dropdown-item logout pb-0" asp-controller="Auth" asp-action="Logout">
+       <img src="~/Admin/img/icons/log-out.svg" class="me-2" alt="img">Logout
+ </a>
+
 </div>
 </div>
 
@@ -229,7 +235,7 @@
 <li><a asp-area="Admin" asp-controller="ThemDanhmucSp" asp-action="">Add Category</a></li>
 <li><a href="subcategorylist.cshtml">Sub Category List</a></li>
 <li><a href="subaddcategory.cshtml">Add Sub Category</a></li>
-<li><a href="brandlist.cshtml">Brand List</a></li>
+<li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="">Brand List</a></li>
 <li><a href="addbrand.cshtml">Add Brand</a></li>
 <li><a href="importproduct.cshtml">Import Products</a></li>
 <li><a href="barcode.cshtml">Print Barcode</a></li>
