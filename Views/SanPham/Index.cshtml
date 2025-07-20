@@ -105,7 +105,13 @@
                                     <div class="card-body">
                                         <h6 class="fw-bold">@sp.TenSP</h6>
                                         <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
+
                                         <p class="text-muted small">@sp.MoTa</p>
+                                        @{
+                                            var soLuongDaBan = ViewBag.SoLuongDaBan.ContainsKey(sp.MaSP) ? ViewBag.SoLuongDaBan[sp.MaSP] : 0;
+                                        }
+                                        <p class="text-muted small">Đã bán: @soLuongDaBan sản phẩm</p>
+
                                     </div>
                                 </div>
                             </a>

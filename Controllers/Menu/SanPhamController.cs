@@ -56,6 +56,15 @@ namespace Final_Project.Controllers.Menu
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
+            // Tạo dictionary lưu số lượng đã bán theo MaSP
+            var soldQuantities = _context.ChiTietDonHangs
+                .GroupBy(ct => ct.MaSP)
+                .Select(g => new { MaSP = g.Key, SoLuongDaBan = g.Sum(ct => ct.SoLuong) })
+                .ToDictionary(x => x.MaSP, x => x.SoLuongDaBan);
+
+            // Truyền sang ViewBag
+            ViewBag.SoLuongDaBan = soldQuantities;
+
 
             // Truyền thông tin phân trang ra View
             ViewBag.CurrentPage = page;
@@ -85,6 +94,13 @@ namespace Final_Project.Controllers.Menu
                 .Where(d => d.SanPhamId == id)
                 .OrderByDescending(d => d.ThoiGian)
                 .ToList();
+
+            double diemTrungBinh = danhGiaList.Any()
+    ? Math.Round(danhGiaList.Average(d => d.Diem), 1)
+    : 0;
+
+            ViewBag.DiemTrungBinh = diemTrungBinh;
+
 
             ViewBag.SanPhamTuongTu = tuongTu;
             ViewBag.DanhGiaList = danhGiaList;
