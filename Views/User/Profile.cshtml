@@ -301,9 +301,19 @@
                             <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
                             <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
                             <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
+
                             @if (diaChi.MacDinh)
                             {
                                 <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
+                            }
+                            else
+                            {
+                                <form asp-action="Profile" method="post" class="mt-2">
+                                    <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                                        Chọn làm mặc định
+                                    </button>
+                                </form>
                             }
                         </div>
                     }
@@ -315,7 +325,6 @@
 
                 <button class="btn btn-outline-warning" type="button" onclick="toggleNewAddress()">➕ Thêm địa chỉ mới</button>
                 <hr />
-
 
                 <form id="newAddressForm" method="post" asp-action="ThemDiaChi" asp-controller="User" class="row g-3 mt-2" style="display: none;">
                     <div class="col-md-12">
@@ -342,8 +351,8 @@
                         <button type="submit" class="btn btn-success">📍 Lưu địa chỉ</button>
                     </div>
                 </form>
-
             </div>
+
 
         </div>
     </div>
