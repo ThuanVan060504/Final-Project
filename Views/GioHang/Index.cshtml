@@ -144,7 +144,53 @@
         </tr>
     </tbody>
 </table>
-
-<form asp-action="ThanhToan" method="post">
-    <button type="submit" class="btn-checkout">💳 Thanh toán</button>
+<!-- ✅ Giữ đúng 1 form này -->
+<form id="formThanhToan" asp-action="ThanhToan" method="post">
+    <!-- Nút mở modal -->
+    <button type="button" class="btn-checkout" onclick="moModalXacNhan()">💳 Thanh toán</button>
 </form>
+
+
+<!-- Modal xác nhận địa chỉ mặc định -->
+<div class="modal fade" id="xacNhanDiaChiModal" tabindex="-1" aria-labelledby="xacNhanDiaChiLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-warning" id="xacNhanDiaChiLabel">📍 Xác nhận địa chỉ giao hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có muốn giao đến địa chỉ mặc định sau không?</p>
+                <div id="diaChiMacDinh">
+                    <!-- Địa chỉ sẽ được gắn bằng JS -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Hủy</button>
+                <button type="submit" form="formThanhToan" class="btn btn-success">✅ Xác nhận thanh toán</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function moModalXacNhan() {
+            fetch('/GioHang/LayDiaChiMacDinh')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("diaChiMacDinh").innerHTML = `
+                            <div><strong>Địa chỉ:</strong> ${data.diaChiChiTiet}</div>
+                            <div><strong>Phường/Xã:</strong> ${data.phuongXa}</div>
+                            <div><strong>Quận/Huyện:</strong> ${data.quanHuyen}</div>
+                            <div><strong>Tỉnh/TP:</strong> ${data.tinhTP}</div>
+                        `;
+                        var modal = new bootstrap.Modal(document.getElementById("xacNhanDiaChiModal"));
+                        modal.show();
+                    } else {
+                        alert("Không tìm thấy địa chỉ mặc định. Hãy thêm địa chỉ trước khi thanh toán.");
+                    }
+                });
+        }
+    </script>
+}

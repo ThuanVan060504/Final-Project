@@ -121,7 +121,17 @@ namespace Final_Project.Controllers
             if (maTK == null)
                 return RedirectToAction("Login", "Auth");
 
-            // 2. Lấy danh sách sản phẩm trong giỏ hàng
+            // 2. Lấy địa chỉ mặc định của người dùng
+            var diaChiMacDinh = _context.DiaChiNguoiDungs
+                .FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+
+            if (diaChiMacDinh == null)
+            {
+                TempData["Success"] = "Bạn chưa có địa chỉ mặc định. Vui lòng thêm địa chỉ trước khi thanh toán.";
+                return RedirectToAction("Index");
+            }
+
+            // 3. Lấy danh sách sản phẩm trong giỏ hàng
             var gioHang = _context.GioHangs
                 .Where(g => g.MaTK == maTK)
                 .ToList();
@@ -132,31 +142,31 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index");
             }
 
-            // 3. Tính tổng tiền
+            // 4. Tính tổng tiền
             decimal tongTien = (from gh in gioHang
                                 join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
                                 select gh.SoLuong * sp.DonGia).Sum();
 
-            // 4. Tạo đơn hàng mới
+            // 5. Tạo đơn hàng mới
             var donHang = new DonHang
             {
                 MaTK = maTK.Value,
-                MaDiaChi = 1, // Bạn cần gán đúng MaDiaChi nếu có địa chỉ người dùng
+                MaDiaChi = diaChiMacDinh.MaDiaChi, // ✅ đúng địa chỉ mặc định
                 NgayDat = DateTime.Now,
-                NgayYeuCau = DateTime.Now.AddDays(3), // hoặc null
+                NgayYeuCau = DateTime.Now.AddDays(3),
                 PhiVanChuyen = 0,
                 TongTien = tongTien,
                 GiamGia = 0,
-                PhuongThucThanhToan = "COD", // hoặc "VNPay", "Momo"
+                PhuongThucThanhToan = "COD",
                 TrangThaiThanhToan = "DaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 GhiChu = null
             };
 
             _context.DonHangs.Add(donHang);
-            _context.SaveChanges(); // cần Save để lấy được MaDonHang
+            _context.SaveChanges(); // lấy được MaDonHang
 
-            // 5. Thêm từng chi tiết đơn hàng
+            // 6. Thêm chi tiết đơn hàng
             foreach (var item in gioHang)
             {
                 var sanPham = _context.SanPhams.First(sp => sp.MaSP == item.MaSP);
@@ -170,14 +180,39 @@ namespace Final_Project.Controllers
                 _context.ChiTietDonHangs.Add(chiTiet);
             }
 
-            // 6. Xóa giỏ hàng sau khi đặt
+            // 7. Xóa giỏ hàng
             _context.GioHangs.RemoveRange(gioHang);
 
-            // 7. Lưu thay đổi
+            // 8. Lưu thay đổi
             _context.SaveChanges();
 
             TempData["Success"] = "Thanh toán thành công! Đơn hàng của bạn đang được xử lý.";
             return RedirectToAction("Index");
         }
+
+
+        [HttpGet]
+        public IActionResult LayDiaChiMacDinh()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return Json(new { success = false });
+
+            var diaChi = _context.DiaChiNguoiDungs
+                .Where(d => d.MaTK == maTK && d.MacDinh)
+                .FirstOrDefault();
+
+            if (diaChi == null)
+                return Json(new { success = false });
+
+            return Json(new
+            {
+                success = true,
+                diaChiChiTiet = diaChi.DiaChiChiTiet,
+                phuongXa = diaChi.PhuongXa,
+                quanHuyen = diaChi.QuanHuyen,
+                tinhTP = diaChi.TinhTP
+            });
+        }
+
     }
 }
