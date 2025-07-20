@@ -152,6 +152,18 @@
             <!-- Thông tin cá nhân -->
             <div id="profileSection" class="content-section active">
                 <h4 class="mb-3 text-success">👤 Thông tin tài khoản</h4>
+                <div class="text-center mb-4">
+    <img src="@(string.IsNullOrEmpty(taiKhoan?.Avatar) ? "imagesdefault-avatar.png" : taiKhoan.Avatar)"
+         alt="Avatar"
+         class="rounded-circle shadow"
+         style="width: 120px; height: 120px; object-fit: cover;" />
+</div>
+
+<form asp-action="UploadAvatar" asp-controller="User" method="post" enctype="multipart/form-data" class="text-center mb-4">
+    <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
+    <input type="file" name="avatarFile" class="form-control w-50 d-inline-block mb-2" accept="image/*" required />
+    <button type="submit" class="btn btn-outline-primary btn-sm">📤 Đổi ảnh đại diện</button>
+</form>
 
                 <div id="viewInfo">
                     <div class="border p-3 rounded shadow-sm mb-3">

@@ -133,15 +133,20 @@
                     }
                     else
                     {
-                        <li class="nav-item">
-                            <a class="nav-link text-success fw-semibold" asp-controller="User" asp-action="Profile">
-                                👤 @hoTen
+                        <li class="nav-item d-flex align-items-center">
+                            <a class="nav-link d-flex align-items-center text-success fw-semibold" asp-controller="User" asp-action="Profile">
+                            <img src="@((ViewBag.Avatar != null) ? ViewBag.Avatar : Url.Content("~/uploads/avatars/Avatar.jpg"))"
+                                     alt="Avatar"
+                                     class="rounded-circle me-2"
+                                     style="width: 32px; height: 32px; object-fit: cover;" />
+                                @ViewBag.HoTen
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-danger fw-semibold" asp-controller="Auth" asp-action="Logout">Đăng xuất</a>
                         </li>
                     }
+
 
             </ul>
         </div>

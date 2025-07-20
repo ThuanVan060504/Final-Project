@@ -103,4 +103,35 @@ public class UserController : Controller
         return RedirectToAction("Profile");
     }
 
+    [HttpPost]
+    public async Task<IActionResult> UploadAvatar(int MaTK, IFormFile avatarFile)
+    {
+        if (avatarFile != null && avatarFile.Length > 0)
+        {
+            var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == MaTK);
+            if (taiKhoan == null) return NotFound();
+
+            // Tạo tên file duy nhất
+            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(avatarFile.FileName)}";
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
+
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+
+            var filePath = Path.Combine(path, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await avatarFile.CopyToAsync(stream);
+            }
+
+            // Lưu đường dẫn vào DB
+            taiKhoan.Avatar = $"/uploads/avatars/{fileName}";
+            _context.Update(taiKhoan);
+            await _context.SaveChangesAsync();
+        }
+
+        return RedirectToAction("Profile", "User");
+    }
+
 }

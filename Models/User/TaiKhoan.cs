@@ -21,6 +21,8 @@ namespace Final_Project.Models.User
         public string VaiTro { get; set; }
         public DateTime? NgayTao { get; set; }
         public virtual ICollection<DiaChiNguoiDung> DiaChiNguoiDungs { get; set; }
+        public string? Avatar { get; set; }
+
 
     }
 }

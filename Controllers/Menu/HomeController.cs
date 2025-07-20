@@ -16,6 +16,16 @@ namespace Final_Project.Controllers.Menu
 
         public IActionResult Index()
         {
+            // Lấy thông tin tài khoản đang đăng nhập
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
+
+            // Lấy danh sách sản phẩm
             var sanPhams = _context.SanPhams
                 .Include(sp => sp.DanhMuc)
                 .Include(p => p.ThuongHieu)
