@@ -1,4 +1,5 @@
 ﻿using Final_Project.Models;
+using Final_Project.Models.Helpers;
 using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Authentication;
@@ -50,12 +51,10 @@ namespace Final_Project.Controllers
 
             var identity = new ClaimsIdentity(claims, "MyCookie");
             var principal = new ClaimsPrincipal(identity);
-            await HttpContext.SignInAsync(
-    scheme: "MyCookie",  
-    principal: principal
-);
+            await HttpContext.SignInAsync("MyCookie", principal);
 
-
+            // Thêm dòng này:
+            HttpContext.Session.SetObjectAsJson("TaiKhoan", user); 
 
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");

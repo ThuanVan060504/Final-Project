@@ -2,6 +2,7 @@
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+namespace Final_Project.Models.Helpers;
 
 public class UserController : Controller
 {
@@ -58,33 +59,43 @@ public class UserController : Controller
         return RedirectToAction("Profile");
     }
 
-    [HttpGet]
-    public IActionResult ThemDiaChi()
-    {
-        return View();
-    }
-
     [HttpPost]
-    public IActionResult ThemDiaChi(DiaChiNguoiDung diaChi)
+    public IActionResult ThemDiaChi(ThemDiaChiViewModel model)
     {
-        int? maTK = HttpContext.Session.GetInt32("MaTK");
-        if (maTK == null)
+        var taiKhoan = HttpContext.Session.GetObjectFromJson<TaiKhoan>("TaiKhoan");
+
+        if (taiKhoan == null)
         {
-            return RedirectToAction("DangNhap", "Auth");
+            return RedirectToAction("DangNhap", "Auth"); // hoặc trang đăng nhập
         }
 
-        if (ModelState.IsValid)
+        // Nếu là địa chỉ mặc định mới thì bỏ MacDinh của các địa chỉ cũ
+        if (model.MacDinh)
         {
-            diaChi.MaTK = maTK.Value;
-            _context.DiaChiNguoiDungs.Add(diaChi);
-            _context.SaveChanges();
-            TempData["Success"] = "Thêm địa chỉ thành công!";
-        }
-        else
-        {
-            TempData["Error"] = "Vui lòng điền đầy đủ thông tin địa chỉ!";
+            var diaChiCu = _context.DiaChiNguoiDungs
+                .Where(d => d.MaTK == taiKhoan.MaTK && d.MacDinh)
+                .ToList();
+
+            foreach (var d in diaChiCu)
+            {
+                d.MacDinh = false;
+            }
         }
 
-        return RedirectToAction("Profile");
+        var diaChiMoi = new DiaChiNguoiDung
+        {
+            MaTK = taiKhoan.MaTK,
+            DiaChiChiTiet = model.DiaChiChiTiet,
+            PhuongXa = model.PhuongXa,
+            QuanHuyen = model.QuanHuyen,
+            TinhTP = model.TinhTP,
+            MacDinh = model.MacDinh
+        };
+
+        _context.DiaChiNguoiDungs.Add(diaChiMoi);
+        _context.SaveChanges();
+
+        return RedirectToAction("Profile"); // hoặc action nào em đang dùng để hiện view
     }
+
 }
