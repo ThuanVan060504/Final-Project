@@ -218,7 +218,7 @@
                 <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
                 <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
                 <li onclick="showSection('favoritesSection', this)">❤️ Sản phẩm yêu thích</li>
-
+                <li onclick="showSection('changePasswordSection', this)">🔐 Đổi mật khẩu</li>
             </ul>
         </div>
 
@@ -493,10 +493,36 @@
         </div>
     }
 </div>
+<!-- 🔐 Đổi mật khẩu -->
+<div id="changePasswordSection" class="content-section" style="display: none;">
+    <h4 class="mb-3 text-primary">Đổi mật khẩu</h4>
 
+    <form asp-controller="User" asp-action="DoiMatKhau" method="post">
+        <div class="form-group mb-2">
+            <label for="OldPassword">Mật khẩu hiện tại</label>
+            <input type="password" class="form-control" name="OldPassword" required />
+        </div>
+        <div class="form-group mb-2">
+            <label for="NewPassword">Mật khẩu mới</label>
+            <input type="password" class="form-control" name="NewPassword" required />
+        </div>
+        <div class="form-group mb-3">
+            <label for="ConfirmPassword">Xác nhận mật khẩu mới</label>
+            <input type="password" class="form-control" name="ConfirmPassword" required />
+        </div>
+        <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
+    </form>
+
+    @if (TempData["PasswordChangeMessage"] != null)
+    {
+        <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
+    }
+</div>
         </div>
     </div>
 </div>
+
+@section Scripts {
 <script>
     function toggleOrderItems(sectionId, btn) {
         const section = document.getElementById(sectionId);
@@ -510,6 +536,14 @@
         const isHidden = getComputedStyle(form).display === "none";
         form.style.display = isHidden ? "block" : "none";
     }
-</script>
+    function showSection(id, el) {
+    document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+    document.getElementById(id).style.display = 'block';
 
+    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+    el.classList.add('active');
+}
+
+</script>
+}
 

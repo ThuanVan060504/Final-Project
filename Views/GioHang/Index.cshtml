@@ -104,46 +104,52 @@
     <div class="alert">@TempData["Success"]</div>
 }
 
-<table class="cart-table">
-    <thead>
-        <tr>
-            <th>Ảnh</th>
-            <th>Tên SP</th>
-            <th>Đơn giá</th>
-            <th>Số lượng</th>
-            <th>Thành tiền</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
+<form asp-action="CapNhatNhieu" method="post" id="formGioHang">
+    <table class="cart-table">
+        <thead>
             <tr>
-                <td><img src="@item.ImageURL" alt="@item.TenSP" /></td>
-                <td>@item.TenSP</td>
-                <td>@item.DonGia.ToString("n0") ₫</td>
-                <td>
-                    <form asp-action="CapNhatSoLuong" method="post" style="display:inline-flex; justify-content:center;">
-                        <input type="hidden" name="maSP" value="@item.MaSP" />
-                        <input type="number" name="soLuong" value="@item.SoLuong" min="1" class="form-control" />
-                        <button type="submit" class="btn-sm btn-primary">Xác nhận</button>
-                    </form>
-                </td>
-                <td>@item.ThanhTien.ToString("n0") ₫</td>
-                <td>
-                    <form asp-action="XoaKhoiGio" method="post">
-                        <input type="hidden" name="maSP" value="@item.MaSP" />
-                        <button type="submit" class="btn-sm btn-danger">🗑Xóa</button>
-                    </form>
+                <th><input type="checkbox" id="checkAll" /></th>
+                <th>Ảnh</th>
+                <th>Tên SP</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="chonSP" value="@item.MaSP" class="chon-checkbox" />
+                    </td>
+                    <td><img src="@item.ImageURL" alt="@item.TenSP" /></td>
+                    <td>@item.TenSP</td>
+                    <td>@item.DonGia.ToString("n0") ₫</td>
+                    <td>
+                        <input type="number" name="soLuong[@item.MaSP]" value="@item.SoLuong" min="1" class="form-control" />
+                    </td>
+                    <td>@item.ThanhTien.ToString("n0") ₫</td>
+                    <td>
+                        <button type="submit" formaction="/GioHang/XoaKhoiGio?maSP=@item.MaSP" class="btn-sm btn-danger">🗑 Xóa</button>
+                    </td>
+                </tr>
+            }
+
+            <tr class="footer-row">
+                <td colspan="4"><strong>Tổng tiền:</strong></td>
+                <td class="tong-tien" colspan="2">@tongTien.ToString("n0") ₫</td>
+            </tr>
+            <tr>
+                <td colspan="7" style="text-align: right;">
+                    <button type="submit" formaction="/GioHang/CapNhatNhieu" class="btn-sm btn-primary">🔄 Cập nhật số lượng</button>
+                    <button type="submit" formaction="/GioHang/XoaNhieu" class="btn-sm btn-danger">🗑 Xóa đã chọn</button>
                 </td>
             </tr>
-        }
-        <tr class="footer-row">
-            <td colspan="4"><strong>Tổng tiền:</strong></td>
-            <td class="tong-tien" colspan="2">@tongTien.ToString("n0") ₫</td>
-        </tr>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</form>
 <!-- ✅ Giữ đúng 1 form này -->
 <form id="formThanhToan" asp-action="ThanhToan" method="post">
     <!-- Nút mở modal -->
@@ -179,12 +185,12 @@
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        document.getElementById("diaChiMacDinh").innerHTML = `
+                        document.getElementById("diaChiMacDinh").innerHTML =
                             <div><strong>Địa chỉ:</strong> ${data.diaChiChiTiet}</div>
                             <div><strong>Phường/Xã:</strong> ${data.phuongXa}</div>
                             <div><strong>Quận/Huyện:</strong> ${data.quanHuyen}</div>
                             <div><strong>Tỉnh/TP:</strong> ${data.tinhTP}</div>
-                        `;
+                        ;
                         var modal = new bootstrap.Modal(document.getElementById("xacNhanDiaChiModal"));
                         modal.show();
                     } else {
@@ -192,5 +198,20 @@
                     }
                 });
         }
+              document.getElementById("checkAll").addEventListener("change", function () {
+            const checkboxes = document.querySelectorAll(".chon-checkbox");
+            checkboxes.forEach(cb => cb.checked = this.checked);
+        });
+                const btnCapNhat = document.querySelector('button[formaction="/GioHang/CapNhatNhieu"]');
+        const btnXoaNhieu = document.querySelector('button[formaction="/GioHang/XoaNhieu"]');
+
+        document.querySelectorAll('.chon-checkbox').forEach(cb => {
+            cb.addEventListener('change', function () {
+                const isChecked = document.querySelectorAll('.chon-checkbox:checked').length > 0;
+                btnCapNhat.disabled = !isChecked;
+                btnXoaNhieu.disabled = !isChecked;
+            });
+        });
+
     </script>
 }

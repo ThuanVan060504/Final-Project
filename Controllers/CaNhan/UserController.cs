@@ -140,5 +140,33 @@ public class UserController : Controller
 
         return RedirectToAction("Profile", "User");
     }
+    [HttpPost]
+    public IActionResult DoiMatKhau(string OldPassword, string NewPassword, string ConfirmPassword)
+    {
+        var maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null)
+            return RedirectToAction("DangNhap", "Auth");
+
+        var user = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+        if (user == null)
+            return NotFound();
+
+        if (OldPassword != user.MatKhau)
+        {
+            TempData["PasswordChangeMessage"] = "❌ Mật khẩu hiện tại không đúng.";
+        }
+        else if (NewPassword != ConfirmPassword)
+        {
+            TempData["PasswordChangeMessage"] = "❌ Mật khẩu mới không khớp.";
+        }
+        else
+        {
+            user.MatKhau = NewPassword;
+            _context.SaveChanges();
+            TempData["PasswordChangeMessage"] = "✅ Đổi mật khẩu thành công!";
+        }
+
+        return RedirectToAction("Profile", "User");
+    }
 
 }

@@ -215,6 +215,30 @@ namespace Final_Project.Controllers
                 tinhTP = diaChi.TinhTP
             });
         }
+        [HttpPost]
+        public IActionResult CapNhatNhieu(List<int> chonSP, Dictionary<int, int> soLuong)
+        {
+            foreach (var maSP in chonSP)
+            {
+                if (soLuong.ContainsKey(maSP))
+                {
+                    CapNhatSoLuong(maSP, soLuong[maSP]); // xử lý cập nhật giỏ hàng
+                }
+            }
+            TempData["Success"] = "Đã cập nhật số lượng thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult XoaNhieu(List<int> chonSP)
+        {
+            foreach (var maSP in chonSP)
+            {
+                XoaKhoiGio(maSP); // xử lý xóa
+            }
+            TempData["Success"] = "Đã xóa sản phẩm đã chọn!";
+            return RedirectToAction("Index");
+        }
 
     }
 }
