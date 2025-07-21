@@ -1,4 +1,5 @@
 ﻿@using Final_Project.Models.Shop
+
 @model List<SanPham>
 @{
     ViewData["Title"] = "Sản phẩm";
@@ -37,6 +38,11 @@
         .pagination .page-item .page-link:hover {
             background-color: #e9ecef;
         }
+
+    .card-hover {
+        position: relative;
+    }
+
 </style>
 
 <div class="container mt-5">
@@ -99,8 +105,17 @@
                     @foreach (var sp in Model)
                     {
                         <div class="col">
-                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
-                                <div class="card card-hover h-100">
+                            <div class="card card-hover h-100 position-relative">
+                                <!-- ❤️ Nút yêu thích -->
+                                <form asp-controller="YeuThich" asp-action="Them" method="post"
+                                      class="position-absolute top-0 end-0 m-2 z-1">
+                                    <input type="hidden" name="maSP" value="@sp.MaSP" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="Thêm vào yêu thích">
+                                        ❤️
+                                    </button>
+                                </form>
+
+                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
                                     <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" />
                                     <div class="card-body">
                                         <h6 class="fw-bold">@sp.TenSP</h6>
@@ -111,11 +126,11 @@
                                             var soLuongDaBan = ViewBag.SoLuongDaBan.ContainsKey(sp.MaSP) ? ViewBag.SoLuongDaBan[sp.MaSP] : 0;
                                         }
                                         <p class="text-muted small">Đã bán: @soLuongDaBan sản phẩm</p>
-
                                     </div>
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
+
                     }
                     @if (ViewBag.TotalPages > 1)
                     {

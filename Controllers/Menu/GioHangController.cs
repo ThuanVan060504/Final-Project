@@ -22,7 +22,9 @@ namespace Final_Project.Controllers
             {
                 return RedirectToAction("DangNhap", "Auth");
             }
-
+            var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+            ViewBag.Avatar = taiKhoan?.Avatar;
+            ViewBag.HoTen = taiKhoan?.HoTen;
             var gioHang = from gh in _context.GioHangs
                           join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
                           where gh.MaTK == maTK

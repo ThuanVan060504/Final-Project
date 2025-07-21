@@ -144,6 +144,8 @@
                 <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
                 <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
                 <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
+                <li onclick="showSection('favoritesSection', this)">❤️ Sản phẩm yêu thích</li>
+
             </ul>
         </div>
 
@@ -382,6 +384,34 @@ else
                 </form>
             </div>
 
+            <!-- ❤️ Sản phẩm yêu thích -->
+<div id="favoritesSection" class="content-section">
+    <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
+
+    @if (ViewBag.SanPhamYeuThich == null || !((List<SanPham>)ViewBag.SanPhamYeuThich).Any())
+    {
+        <div class="alert alert-info">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích.</div>
+    }
+    else
+    {
+        var yeuThichList = (List<SanPham>)ViewBag.SanPhamYeuThich;
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            @foreach (var sp in yeuThichList)
+            {
+                <div class="col">
+                    <div class="card h-100">
+                        <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h6 class="fw-semibold">@sp.TenSP</h6>
+                            <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
+                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="btn btn-outline-success btn-sm">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
         </div>
     </div>

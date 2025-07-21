@@ -15,6 +15,13 @@ namespace Final_Project.Controllers.Menu
 
         public IActionResult Index(string category, string search, string sort, int page = 1)
         {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
             int pageSize = 6;
 
             var products = _context.SanPhams
@@ -76,6 +83,13 @@ namespace Final_Project.Controllers.Menu
 
         public IActionResult Details(int id)
         {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
             var sp = _context.SanPhams
                 .Include(s => s.DanhMuc)
                 .FirstOrDefault(s => s.MaSP == id);

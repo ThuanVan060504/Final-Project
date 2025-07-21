@@ -25,6 +25,8 @@ namespace Final_Project.Models.Shop
         public DbSet<GioHang> GioHangs { get; set; }
 
         public DbSet<ThuongHieu> ThuongHieus { get; set; }
+        public DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!
@@ -61,6 +63,7 @@ namespace Final_Project.Models.Shop
                 .HasOne(d => d.SanPham)
                 .WithMany(sp => sp.DanhGias)
                 .HasForeignKey(d => d.SanPhamId);
+            modelBuilder.Entity<SanPhamYeuThich>().ToTable("SanPhamYeuThich");
         }
     }
 }

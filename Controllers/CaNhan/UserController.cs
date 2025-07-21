@@ -25,7 +25,8 @@ public class UserController : Controller
         var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
         // Sau khi lấy taiKhoan
         _context.Entry(taiKhoan).Collection(t => t.DiaChiNguoiDungs).Load();
-
+        ViewBag.Avatar = taiKhoan?.Avatar;
+        ViewBag.HoTen = taiKhoan?.HoTen;
         if (taiKhoan == null)
         {
             return NotFound("Không tìm thấy tài khoản.");
@@ -39,7 +40,13 @@ public class UserController : Controller
     .Include(d => d.DiaChiNguoiDung)
     .OrderByDescending(d => d.NgayDat)
     .ToList();
+        var yeuThich = _context.SanPhamYeuThichs
+        .Where(y => y.MaTK == maTK)
+        .Include(y => y.SanPham)
+        .Select(y => y.SanPham)
+        .ToList();
 
+        ViewBag.SanPhamYeuThich = yeuThich;
 
         ViewBag.TaiKhoan = taiKhoan;
         return View(donHangs);
