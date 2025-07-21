@@ -7,6 +7,7 @@ namespace Final_Project.Models.Shop
     public class ThuongHieu
     {
         [Key] // ✅ THÊM dòng này
+
         public int MaThuongHieu { get; set; }
 
         public string TenThuongHieu { get; set; }

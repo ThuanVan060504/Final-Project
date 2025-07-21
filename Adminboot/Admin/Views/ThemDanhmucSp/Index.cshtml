@@ -19,59 +19,86 @@
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
 
+@{
+    ViewData["Title"] = "Thêm danh mục sản phẩm";
+}
+
 <div class="page-wrapper">
-<div class="content">
-<div class="page-header">
-<div class="page-title">
-<h4>Product Add Category</h4>
-<h6>Create new product Category</h6>
-</div>
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Product Add Category</h4>
+                <h6>Create new product Category</h6>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <form asp-action="Index" asp-controller="ThemDanhMuc" method="post" enctype="multipart/form-data">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <div class="col-lg-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Mã danh mục</label>
+                                <input type="number" class="form-control" name="MaDanhMuc" required />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Tên danh mục</label>
+                                <input type="text" class="form-control" name="TenDanhMuc" required />
+                                @if (ViewData.ModelState["TenDanhMuc"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["TenDanhMuc"].Errors[0].ErrorMessage</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Mô tả</label>
+                                <textarea class="form-control" name="MoTa" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Upload ảnh</label>
+                                <div class="image-upload">
+                                    <input type="file" name="Anh" accept="image/*" />
+                                    <div class="image-uploads">
+                                        <img src="~/Admin/img/icons/upload.svg" alt="upload">
+                                        <h4>Drag and drop a file to upload</h4>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Link ảnh từ URL</label>
+                                <input type="text" class="form-control" name="LinkLogo" placeholder="https://example.com/image.jpg" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Submit</button>
+                            <a href="/Admin/DanhMuc/Index" class="btn btn-cancel">Cancel</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
-<div class="card">
-<div class="card-body">
-<div class="row">
-<div class="col-lg-6 col-sm-6 col-12">
-<div class="form-group">
-<label>Category Name</label>
-<input type="text">
-</div>
-</div>
-<div class="col-lg-6 col-sm-6 col-12">
-<div class="form-group">
-<label>Category Code</label>
-<input type="text">
-</div>
-</div>
-<div class="col-lg-12">
-<div class="form-group">
-<label>Description</label>
-<textarea class="form-control"></textarea>
-</div>
-</div>
-<div class="col-lg-12">
-<div class="form-group">
-<label> Product Image</label>
-<div class="image-upload">
-<input type="file">
-<div class="image-uploads">
-<img src="assets/img/icons/upload.svg" alt="img">
-<h4>Drag and drop a file to upload</h4>
-</div>
-</div>
-</div>
-</div>
-<div class="col-lg-12">
-<a href="javascript:void(0);" class="btn btn-submit me-2">Submit</a>
-<a href="categorylist.html" class="btn btn-cancel">Cancel</a>
-</div>
-</div>
-</div>
-</div>
-
-</div>
-</div>
-</div>
 
 
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
