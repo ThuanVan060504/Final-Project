@@ -5,6 +5,7 @@
     var donHangs = Model as List<DonHang>;
 }
 
+
 <!-- ✅ CSS ngay trong file -->
 <style>
     .sidebar-menu {
@@ -118,6 +119,78 @@
             color: #dc3545;
             font-weight: bold;
         }
+        .button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.custom-btn {
+    flex: 1;
+    padding: 8px 12px;
+    text-align: center;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.custom-btn.green {
+    background-color: #198754;
+    color: white;
+}
+
+.custom-btn.green:hover {
+    background-color: #146c43;
+}
+
+.custom-btn.red {
+    background-color: #dc3545;
+    color: white;
+}
+
+.custom-btn.red:hover {
+    background-color: #b02a37;
+}
+.address-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.address-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.address-btn.blue {
+    background-color: #0d6efd;
+}
+
+.address-btn.blue:hover {
+    background-color: #0b5ed7;
+}
+
+.address-btn.orange {
+    background-color: #ffc107;
+    color: black;
+}
+
+.address-btn.orange:hover {
+    background-color: #e0a800;
+}
+
 </style>
 
 <!-- ✅ Script để chuyển đổi nội dung -->
@@ -262,6 +335,7 @@
                                     <div class="flex-grow-1">
                                         <div class="fw-semibold">@firstProduct.SanPham.TenSP</div>
                                         <div class="text-muted">@firstProduct.SoLuong</div>
+                                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@firstProduct.SanPham.MaSP"class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
                                     </div>
                                     <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
                                         @firstProduct.DonGia.ToString("N0") ₫
@@ -281,6 +355,7 @@
                                             <div class="flex-grow-1">
                                                 <div class="fw-semibold">@ct.SanPham.TenSP</div>
                                                 <div class="text-muted">@ct.SoLuong</div>
+                                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@ct.SanPham.MaSP"class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
                                             </div>
                                             <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
                                                 @ct.DonGia.ToString("N0") ₫
@@ -324,28 +399,25 @@
     <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
 
     @if (diaChi.MacDinh)
-{
-    <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
-}
-else
-{
-    <form asp-controller="DiaChi" asp-action="SetDefault" method="post" class="d-inline">
-        <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
-        <button type="submit" class="btn btn-sm btn-outline-primary mt-2 me-2">
-            Chọn làm mặc định
-        </button>
-    </form>
-}
+    {
+        <div class="badge bg-success mt-2">✅ Địa chỉ mặc định</div>
+    }
+    else
+    {
+        <div class="address-buttons mt-3">
+            <form asp-controller="DiaChi" asp-action="SetDefault" method="post">
+                <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+                <button type="submit" class="address-btn blue">Chọn làm mặc định</button>
+            </form>
 
-
-    <!-- Nút chỉnh sửa -->
-    <form asp-controller="DiaChi" asp-action="Edit" method="get" class="d-inline">
-        <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
-        <button type="submit" class="btn btn-sm btn-outline-warning mt-2">
-            ✏️ Sửa
-        </button>
-    </form>
+            <form asp-controller="DiaChi" asp-action="Edit" method="get">
+                <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+                <button type="submit" class="address-btn orange">✏️ Sửa</button>
+            </form>
+        </div>
+    }
 </div>
+
 
                     }
                 }
@@ -401,11 +473,20 @@ else
                 <div class="col">
                     <div class="card h-100">
                         <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
-                        <div class="card-body">
-                            <h6 class="fw-semibold">@sp.TenSP</h6>
-                            <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
-                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="btn btn-outline-success btn-sm">Xem chi tiết</a>
-                        </div>
+                       <div class="card-body d-flex flex-column">
+    <h6 class="fw-semibold">@sp.TenSP</h6>
+    <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
+
+    <div class="button-group">
+        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="custom-btn green">Xem chi tiết</a>
+
+        <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
+            <input type="hidden" name="maSP" value="@sp.MaSP" />
+            <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
+        </form>
+    </div>
+</div>
+
                     </div>
                 </div>
             }
