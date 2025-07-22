@@ -105,6 +105,7 @@
 }
 
 <form asp-action="CapNhatNhieu" method="post" id="formGioHang">
+
     <table class="cart-table">
         <thead>
             <tr>
@@ -145,16 +146,13 @@
                 <td colspan="7" style="text-align: right;">
                     <button type="submit" formaction="/GioHang/CapNhatNhieu" class="btn-sm btn-primary">🔄 Cập nhật số lượng</button>
                     <button type="submit" formaction="/GioHang/XoaNhieu" class="btn-sm btn-danger">🗑 Xóa đã chọn</button>
+                    <button type="button" class="btn-checkout" onclick="moModalXacNhan()">💳 Thanh toán</button>
                 </td>
             </tr>
         </tbody>
     </table>
 </form>
-<!-- ✅ Giữ đúng 1 form này -->
-<form id="formThanhToan" asp-action="ThanhToan" method="post">
-    <!-- Nút mở modal -->
-    <button type="button" class="btn-checkout" onclick="moModalXacNhan()">💳 Thanh toán</button>
-</form>
+
 
 
 <!-- Modal xác nhận địa chỉ mặc định -->
@@ -173,24 +171,30 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Hủy</button>
-                <button type="submit" form="formThanhToan" class="btn btn-success">✅ Xác nhận thanh toán</button>
+                <button type="button" class="btn btn-success" onclick="submitThanhToan()">✅ Xác nhận thanh toán</button>
             </div>
         </div>
     </div>
 </div>
 @section Scripts {
     <script>
-        function moModalXacNhan() {
+                        function moModalXacNhan() {
+            const checkboxes = document.querySelectorAll('.chon-checkbox:checked');
+            if (checkboxes.length === 0) {
+                alert('Bạn cần chọn ít nhất 1 sản phẩm để thanh toán.');
+                return;
+            }
+
             fetch('/GioHang/LayDiaChiMacDinh')
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        document.getElementById("diaChiMacDinh").innerHTML =
+                        document.getElementById("diaChiMacDinh").innerHTML = `
                             <div><strong>Địa chỉ:</strong> ${data.diaChiChiTiet}</div>
                             <div><strong>Phường/Xã:</strong> ${data.phuongXa}</div>
                             <div><strong>Quận/Huyện:</strong> ${data.quanHuyen}</div>
                             <div><strong>Tỉnh/TP:</strong> ${data.tinhTP}</div>
-                        ;
+                        `;
                         var modal = new bootstrap.Modal(document.getElementById("xacNhanDiaChiModal"));
                         modal.show();
                     } else {
@@ -198,6 +202,29 @@
                     }
                 });
         }
+
+                    function submitThanhToan() {
+            const form = document.getElementById("formGioHang");
+            const chonCheckboxes = document.querySelectorAll(".chon-checkbox:checked");
+
+            // Xoá các hidden input cũ
+            document.querySelectorAll('input[name="chonSP"]').forEach(e => e.remove());
+
+            // Tạo hidden input cho mỗi sp đã chọn
+            chonCheckboxes.forEach(cb => {
+                const input = document.createElement("input");
+                input.type = "hidden";
+                input.name = "chonSP";
+                input.value = cb.value;
+                form.appendChild(input);
+            });
+
+            form.action = "/GioHang/ThanhToan";
+            form.method = "post";
+            form.submit();
+        }
+
+
               document.getElementById("checkAll").addEventListener("change", function () {
             const checkboxes = document.querySelectorAll(".chon-checkbox");
             checkboxes.forEach(cb => cb.checked = this.checked);
