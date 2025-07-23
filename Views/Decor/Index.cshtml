@@ -1,8 +1,55 @@
-﻿@{
-    ViewData["Title"] = "Không gian sống";
+﻿@model List<Final_Project.Models.Shop.Decor>
+
+@{
+    ViewData["Title"] = "Trang Decor 3D";
 }
 
-<h2>Không gian sống</h2>
-<p>Trang này sẽ hiển thị các sản phẩm liên quan đến trang trí nhà ở.</p>
+<h2 class="text-center mb-4">🛋️ Danh sách Decor 3D</h2>
 
+<div class="container">
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 mb-5">
+                <div class="card shadow">
+                    <div class="card-header bg-dark text-white">
+                        <h5>@item.TenDecor</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>@item.MoTa</p>
 
+                        @if (!string.IsNullOrEmpty(item.Link3D))
+                        {
+                            string embedLink = item.Link3D;
+
+                            // Nếu link không có /embed/ thì thay thế
+                            if (!embedLink.Contains("/embed/"))
+                            {
+                                
+                                var modelId = embedLink.Split('/').Last();
+                                embedLink = $"https://sketchfab.com/models/{modelId}/embed";
+                            }
+
+                            // Thêm autostart
+                            if (!embedLink.Contains("?autostart=1"))
+                            {
+                                embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
+                            }
+
+                            <div class="ratio ratio-16x9">
+                                <iframe
+                                    title="3D Decor Viewer"
+                                    frameborder="0"
+                                    allowfullscreen
+                                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                                    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                                    src="@embedLink">
+                                </iframe>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -76,17 +76,18 @@
                     </li>
 
 
-
                     <!-- Dropdown Decor -->
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" asp-controller="Decor" asp-action="Index">Decor</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng khách">Phòng khách</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ngủ">Phòng ngủ</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng ăn">Phòng ăn</a></li>
-                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Category" asp-route-name="Phòng làm việc">Phòng làm việc</a></li>
+                            <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="1">Phòng khách</a></li>
+                            <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="2">Phòng ngủ</a></li>
+                            <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="3">Phòng ăn</a></li>
+                            <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="4">Phòng làm việc</a></li>
                         </ul>
                     </li>
+
 
                 <!-- Dropdown tin tức -->
                     <li class="nav-item dropdown">

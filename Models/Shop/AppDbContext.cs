@@ -27,6 +27,10 @@ namespace Final_Project.Models.Shop
         public DbSet<ThuongHieu> ThuongHieus { get; set; }
         public DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
 
+        public DbSet<Decor> Decors { get; set; }
+        public DbSet<DanhMucDecor> DanhMucDecors { get; set; }
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!

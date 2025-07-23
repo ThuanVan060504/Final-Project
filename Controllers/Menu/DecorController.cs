@@ -12,7 +12,7 @@ namespace Final_Project.Controllers.Menu
         {
             _context = context;
         }
-        public IActionResult Index()
+        public IActionResult Index(int? category)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK != null)
@@ -21,7 +21,24 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.Avatar = taiKhoan?.Avatar;
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
-            return View();
+
+            // 💚 load danh mục để làm sidebar / dropdown
+            var danhMucList = _context.DanhMucDecors.AsNoTracking().ToList();
+            ViewBag.DanhMuc = danhMucList;
+            ViewBag.CategorySelected = category;   // để highlight dropdown/danh mục
+
+            // 💚 query decor (kèm tên danh mục)
+            var query = _context.Decors
+                                .Include(d => d.DanhMuc)
+                                .AsQueryable();
+
+            if (category.HasValue)
+                query = query.Where(d => d.MaDanhMuc == category.Value);
+
+            var listDecor = query.ToList(); // ⚠ sửa ở đây, đừng dùng _context.Decors.ToList()
+
+            return View(listDecor);
         }
+
     }
 }
