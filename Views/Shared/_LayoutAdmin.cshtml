@@ -227,16 +227,16 @@
 <a href="/Admin/Home/Index" onclick="if(window.location.pathname === '/Admin/Home/Index'){ location.reload(); }">  <img src="~/Admin/img/icons/dashboard.svg" alt="img"><span> Dashboard</span> </a>
 </li>
 <li class="submenu">
-<a href="javascript:void(0);"><img src="~/Admin/img/icons/product.svg" alt="img"><span> Product</span> <span class="menu-arrow"></span></a>
+<a href="javascript:void(0);"><img src="~/Admin/img/icons/product.svg" alt="img"><span>Sản Phẩm</span> <span class="menu-arrow"></span></a>
 <ul>
-<li><a asp-area="Admin" asp-controller="Sanpham" asp-action="">Product List</a></li>
+<li><a asp-area="Admin" asp-controller="Sanpham" asp-action="">Sản Phẩm</a></li>
 <li><a asp-area="Admin" asp-controller="ThemSanpham" asp-action="">Add Product</a></li>
-<li><a asp-area="Admin" asp-controller="DanhmucSp" asp-action="">Category List</a></li>
-<li><a asp-area="Admin" asp-controller="ThemDanhmucSP" asp-action="">Add Category</a></li>
-<li><a href="subcategorylist.cshtml">Sub Category List</a></li>
-<li><a href="subaddcategory.cshtml">Add Sub Category</a></li>
-<li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="">Brand List</a></li>
-<li><a asp-area="Admin" asp-controller="ThemThuongHieu" asp-action="">Add Brand</a></li>
+<li><a asp-area="Admin" asp-controller="DanhmucSp" asp-action="">Danh mục</a></li>
+<li><a asp-area="Admin" asp-controller="DanhmucSp" asp-action="Create">Thêm Danh mục</a></li>
+<li><a href="subcategorylist.cshtml">Decor</a></li>
+<li><a href="subaddcategory.cshtml">Thêm Danh Muc Decor</a></li>
+<li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="">Thương Hiệu</a></li>
+<li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="Create">Thêm Thương Hiệu</a></li>
 
 <li><a href="importproduct.cshtml">Import Products</a></li>
 <li><a href="barcode.cshtml">Print Barcode</a></li>
