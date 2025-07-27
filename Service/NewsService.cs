@@ -33,7 +33,7 @@ namespace Final_Project.Services
             }
             catch (Exception ex)
             {
-                // Ghi log nếu cần: Console.WriteLine(ex.Message);
+                Console.WriteLine($"Error processing RSS feed: {ex.Message}");
             }
 
             return tinList;

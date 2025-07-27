@@ -1,8 +1,10 @@
 ﻿using Final_Project.Models.Shop;
+using Final_Project.Service.Vnpay;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//Connect VNPay API
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 // 1. Thêm các service cần thiết
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddAuthentication("MyCookie")
