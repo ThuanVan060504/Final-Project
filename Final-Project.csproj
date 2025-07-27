@@ -27,4 +27,8 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Libraries\" />
+  </ItemGroup>
+
 </Project>

@@ -140,123 +140,14 @@
                 <td colspan="7" style="text-align: right;">
                     <button type="submit" formaction="/GioHang/CapNhatNhieu" class="btn-sm btn-primary">🔄 Cập nhật số lượng</button>
                     <button type="submit" formaction="/GioHang/XoaNhieu" class="btn-sm btn-danger">🗑 Xóa đã chọn</button>
-                    <button type="button" class="btn-checkout" onclick="moModalXacNhan()">💳 Thanh toán</button>
+                 <!-- nút Thanh toán -->
+                <button type="submit" formaction="/GioHang/XacNhanThanhToan" class="btn-checkout">💳 Thanh toán</button>
+
                 </td>
             </tr>
         </tbody>
     </table>
 </form>
 
-<!-- Modal xác nhận địa chỉ -->
-<div class="modal fade" id="xacNhanDiaChiModal" tabindex="-1" aria-labelledby="xacNhanDiaChiLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title text-warning" id="xacNhanDiaChiLabel">📍 Xác nhận địa chỉ giao hàng</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-            </div>
-            <div class="modal-body">
-                <p>Bạn có muốn giao đến địa chỉ mặc định sau không?</p>
-                <div id="diaChiMacDinh"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">❌ Hủy</button>
-                <button type="button" class="btn btn-success" onclick="submitThanhToan()">✅ Xác nhận thanh toán</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@section Scripts {
-    <script>
-        function moModalXacNhan() {
-            const checkboxes = document.querySelectorAll('.chon-checkbox:checked');
-            if (checkboxes.length === 0) {
-                alert('Bạn cần chọn ít nhất 1 sản phẩm để thanh toán.');
-                return;
-            }
-
-            fetch('/GioHang/LayDiaChiMacDinh')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        document.getElementById("diaChiMacDinh").innerHTML = `
-                            <div><strong>Địa chỉ:</strong> ${data.diaChiChiTiet}</div>
-                            <div><strong>Phường/Xã:</strong> ${data.phuongXa}</div>
-                            <div><strong>Quận/Huyện:</strong> ${data.quanHuyen}</div>
-                            <div><strong>Tỉnh/TP:</strong> ${data.tinhTP}</div>
-                        `;
-                        var modal = new bootstrap.Modal(document.getElementById("xacNhanDiaChiModal"));
-                        modal.show();
-                    } else {
-                        alert("Không tìm thấy địa chỉ mặc định. Hãy thêm địa chỉ trước khi thanh toán.");
-                    }
-                });
-        }
-
-        function submitThanhToan() {
-            const form = document.getElementById("formGioHang");
-            const chonCheckboxes = document.querySelectorAll(".chon-checkbox:checked");
-
-            // Xóa các input name="chonSP" cũ
-            document.querySelectorAll('input[name="chonSP"]').forEach(e => e.remove());
-
-            // Thêm input hidden cho sản phẩm chọn
-            chonCheckboxes.forEach(cb => {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = "chonSP";
-                input.value = cb.value;
-                form.appendChild(input);
-            });
-
-            // Tính tổng tiền
-            let tongTien = 0;
-            chonCheckboxes.forEach(cb => {
-                const row = cb.closest("tr");
-                const thanhTien = row.querySelector("td:nth-child(6)").innerText.replace(/[^\d]/g, "");
-                tongTien += parseInt(thanhTien);
-            });
-
-            // Thêm các input cần thiết cho VNPAY
-                   // Thêm các input cần thiết cho VNPAY
-        const paymentInputs = [
-            { name: "OrderType", value: "other" },
-            { name: "Amount", value: tongTien },
-            { name: "OrderDescription", value: "Thanh toán đơn hàng nội thất" },
-            { name: "Name", value: "Khách hàng" }
-        ];
 
 
-            paymentInputs.forEach(p => {
-                const input = document.createElement("input");
-                input.type = "hidden";
-                input.name = p.name;
-                input.value = p.value;
-                form.appendChild(input);
-            });
-
-            // Đổi action và submit form
-            form.setAttribute("action", "/Payment/CreatePaymentUrlVnpay");
-            form.setAttribute("method", "post");
-            form.submit();
-        }
-
-        // Check all
-        document.getElementById("checkAll").addEventListener("change", function () {
-            const checkboxes = document.querySelectorAll(".chon-checkbox");
-            checkboxes.forEach(cb => cb.checked = this.checked);
-        });
-
-        const btnCapNhat = document.querySelector('button[formaction="/GioHang/CapNhatNhieu"]');
-        const btnXoaNhieu = document.querySelector('button[formaction="/GioHang/XoaNhieu"]');
-
-        document.querySelectorAll('.chon-checkbox').forEach(cb => {
-            cb.addEventListener('change', function () {
-                const isChecked = document.querySelectorAll('.chon-checkbox:checked').length > 0;
-                btnCapNhat.disabled = !isChecked;
-                btnXoaNhieu.disabled = !isChecked;
-            });
-        });
-    </script>
-}

@@ -1,0 +1,221 @@
+﻿@model List<Final_Project.Models.Shop.GioHangViewModel>
+
+@{
+    ViewData["Title"] = "Trang đặt hàng";
+    var diaChi = ViewBag.DiaChi as Final_Project.Models.User.DiaChiNguoiDung;
+    var hoTen = ViewBag.HoTen as string;
+    var soDienThoai = ViewBag.SoDienThoai as string;
+    var tongTien = Model.Sum(m => m.ThanhTien);
+    var phiVanChuyen = 17000;
+    var tongThanhToan = tongTien + phiVanChuyen;
+}
+
+<!-- CSS -->
+<style>
+    .section-title {
+        font-weight: bold;
+        margin-top: 20px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+    .product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+    }
+    .order-summary {
+        text-align: right;
+    }
+    .btn-place-order {
+        background-color: #ee4d2d;
+        color: white;
+        border: none;
+    }
+    .address-box {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    .address-box.default {
+        border-color: #ee4d2d;
+        background-color: #fff6f0;
+    }
+</style>
+
+<body class="container py-4">
+
+    <!-- Địa chỉ -->
+    <h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
+    <div id="defaultAddress">
+        <p><strong id="name">@diaChi?.TenNguoiNhan</strong> (<span id="phone">@diaChi?.SoDienThoai</span>)</p>
+        <p id="address">@diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP</p>
+        <button class="btn btn-sm btn-outline-primary" type="button" onclick="toggleAddressList()">Thay đổi</button>
+    </div>
+
+    <!-- Danh sách địa chỉ -->
+    <div id="addressList" style="display: none;" class="mb-4">
+        <div id="addresses"></div>
+        <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
+        <div id="addForm" style="display: none;">
+            <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
+            <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
+            <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết"></div>
+            <button class="btn btn-primary btn-sm" type="button" onclick="addAddress()">Lưu địa chỉ</button>
+        </div>
+    </div>
+
+    <!-- Sản phẩm -->
+    <h4 class="section-title">📦 Sản phẩm</h4>
+    @foreach (var sp in Model)
+    {
+        <div class="row align-items-center border p-3 mb-2">
+            <div class="col-md-1">
+                <img src="@sp.ImageURL" alt="product" class="product-image" />
+            </div>
+            <div class="col-md-5">
+                <p class="mb-0">@sp.TenSP</p>
+                <small>Số lượng: @sp.SoLuong</small>
+            </div>
+            <div class="col-md-2 text-center">₫@sp.DonGia.ToString("n0")</div>
+            <div class="col-md-2 text-center">x @sp.SoLuong</div>
+            <div class="col-md-2 text-end">₫@sp.ThanhTien.ToString("n0")</div>
+        </div>
+    }
+
+    <!-- Vận chuyển -->
+    <h4 class="section-title">🚚 Phương thức vận chuyển</h4>
+    <div class="border p-3 mb-3">
+        <p><strong>Vận Chuyển Nhanh</strong> - ₫@phiVanChuyen.ToString("n0")</p>
+        <small>Dự kiến nhận hàng từ 1 Tháng 8 - 5 Tháng 8</small>
+    </div>
+
+    <!-- Voucher -->
+    <h4 class="section-title">🎁 Voucher & Shopee Xu</h4>
+    <div class="d-flex justify-content-between mb-3">
+        <p>Không sử dụng Xu</p>
+        <button class="btn btn-sm btn-outline-primary">Chọn Voucher</button>
+    </div>
+
+   <!-- Thanh toán -->
+<h4 class="section-title">💳 Phương thức thanh toán</h4>
+<form method="post" action="/GioHang/ThanhToan" id="checkoutForm">
+    @foreach (var sp in Model)
+    {
+        <input type="hidden" name="chonSP" value="@sp.MaSP" />
+    }
+    <input type="hidden" name="paymentMethod" id="paymentMethod" />
+
+    <div class="d-flex gap-3 flex-wrap mb-3">
+        <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnChuyenKhoan">Ví ShopeePay</button>
+    </div>
+
+    <p class="text-muted">Phí thu hộ: ₫0 VND</p>
+
+    <!-- Tổng tiền -->
+    <h4 class="section-title">🧾 Tổng thanh toán</h4>
+    <div class="order-summary">
+        <p>Tổng tiền hàng: ₫@tongTien.ToString("n0")</p>
+        <p>Phí vận chuyển: ₫@phiVanChuyen.ToString("n0")</p>
+        <h5><strong>Tổng thanh toán: ₫@tongThanhToan.ToString("n0")</strong></h5>
+    </div>
+
+    <div class="text-end mt-4">
+        <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
+    </div>
+</form>
+<script>
+    let selectedMethod = "";
+
+    document.getElementById("btnCOD").addEventListener("click", function () {
+        selectedMethod = "COD";
+        highlightSelected(this);
+    });
+
+    document.getElementById("btnChuyenKhoan").addEventListener("click", function () {
+        selectedMethod = "ChuyenKhoan";
+        highlightSelected(this);
+    });
+
+    function highlightSelected(button) {
+        document.querySelectorAll("#btnCOD, #btnChuyenKhoan").forEach(btn => {
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-outline-secondary");
+        });
+
+        button.classList.remove("btn-outline-secondary");
+        button.classList.add("btn-danger");
+    }
+
+    function submitFinalOrder() {
+        if (!selectedMethod) {
+            alert("Vui lòng chọn phương thức thanh toán.");
+            return;
+        }
+
+        document.getElementById("paymentMethod").value = selectedMethod;
+        document.getElementById("checkoutForm").submit();
+    }
+</script>
+
+
+    <!-- Script quản lý địa chỉ -->
+    <script>
+        let addressData = [
+            {
+                name: "@hoTen",
+                phone: "@soDienThoai",
+                address: "@diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP"
+            }
+        ];
+        function toggleAddressList() {
+            const list = document.getElementById("addressList");
+            list.style.display = list.style.display === "none" ? "block" : "none";
+            renderAddressList();
+        }
+        function toggleAddForm() {
+            const form = document.getElementById("addForm");
+            form.style.display = form.style.display === "none" ? "block" : "none";
+        }
+        function renderAddressList() {
+            const container = document.getElementById("addresses");
+            container.innerHTML = "";
+            addressData.forEach((addr, index) => {
+                const box = document.createElement("div");
+                box.className = "address-box" + (index === 0 ? " default" : "");
+                box.innerHTML = `
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="addressSelect" ${index === 0 ? "checked" : ""} onclick="setDefault(${index})">
+                        <label class="form-check-label">
+                            <strong>${addr.name}</strong> (${addr.phone})<br>
+                            ${addr.address}
+                        </label>
+                    </div>
+                `;
+                container.appendChild(box);
+            });
+        }
+        function setDefault(index) {
+            const selected = addressData[index];
+            document.getElementById("name").textContent = selected.name;
+            document.getElementById("phone").textContent = selected.phone;
+            document.getElementById("address").textContent = selected.address;
+            document.getElementById("addressList").style.display = "none";
+        }
+        function addAddress() {
+            const name = document.getElementById("newName").value.trim();
+            const phone = document.getElementById("newPhone").value.trim();
+            const address = document.getElementById("newAddr").value.trim();
+            if (!name || !phone || !address) {
+                alert("Vui lòng điền đầy đủ thông tin.");
+                return;
+            }
+            addressData.push({ name, phone, address });
+            renderAddressList();
+            toggleAddForm();
+        }
+        renderAddressList();
+    </script>
+
+</body>

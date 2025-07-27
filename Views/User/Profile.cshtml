@@ -400,7 +400,10 @@
                 {
                     foreach (var diaChi in taiKhoan.DiaChiNguoiDungs)
                     {
-                        <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
+                       
+                       <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
+    <div><strong>Họ tên:</strong> @diaChi.TenNguoiNhan</div>
+    <div><strong>Số điện thoại:</strong> @diaChi.SoDienThoai</div>
     <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
     <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
     <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
@@ -438,6 +441,15 @@
                 <hr />
 
                 <form id="newAddressForm" method="post" asp-action="ThemDiaChi" asp-controller="User" class="row g-3 mt-2" style="display: none;">
+                    <div class="col-md-6">
+                    <label class="form-label">Họ tên người nhận</label>
+                    <input type="text" name="TenNguoiNhan" class="form-control" required />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Số điện thoại</label>
+                    <input type="text" name="SoDienThoai" class="form-control" required />
+                </div>
+
                     <div class="col-md-12">
                         <label class="form-label">Địa chỉ chi tiết</label>
                         <input type="text" name="DiaChiChiTiet" class="form-control" required />

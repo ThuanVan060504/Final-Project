@@ -1,34 +1,62 @@
 ﻿@model Final_Project.Models.User.DiaChiNguoiDung
+
 @{
     ViewData["Title"] = "Chỉnh sửa địa chỉ";
 }
 
-<h4 class="mb-3">✏️ Chỉnh sửa địa chỉ</h4>
+<h2 class="mb-4 text-primary">✏️ Chỉnh sửa địa chỉ</h2>
 
 <form asp-action="Edit" method="post" class="row g-3">
+    @* Hidden for MaDiaChi *@
     <input type="hidden" asp-for="MaDiaChi" />
+
+    <div class="col-md-6">
+        <label asp-for="TenNguoiNhan" class="form-label">Tên người nhận</label>
+        <input asp-for="TenNguoiNhan" class="form-control" />
+        <span asp-validation-for="TenNguoiNhan" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-6">
+        <label asp-for="SoDienThoai" class="form-label">Số điện thoại</label>
+        <input asp-for="SoDienThoai" class="form-control" />
+        <span asp-validation-for="SoDienThoai" class="text-danger"></span>
+    </div>
+
     <div class="col-md-12">
-        <label class="form-label">Địa chỉ chi tiết</label>
+        <label asp-for="DiaChiChiTiet" class="form-label">Địa chỉ chi tiết</label>
         <input asp-for="DiaChiChiTiet" class="form-control" />
+        <span asp-validation-for="DiaChiChiTiet" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
-        <label class="form-label">Phường/Xã</label>
+        <label asp-for="PhuongXa" class="form-label">Phường/Xã</label>
         <input asp-for="PhuongXa" class="form-control" />
+        <span asp-validation-for="PhuongXa" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
-        <label class="form-label">Quận/Huyện</label>
+        <label asp-for="QuanHuyen" class="form-label">Quận/Huyện</label>
         <input asp-for="QuanHuyen" class="form-control" />
+        <span asp-validation-for="QuanHuyen" class="text-danger"></span>
     </div>
+
     <div class="col-md-4">
-        <label class="form-label">Tỉnh/TP</label>
+        <label asp-for="TinhTP" class="form-label">Tỉnh/TP</label>
         <input asp-for="TinhTP" class="form-control" />
+        <span asp-validation-for="TinhTP" class="text-danger"></span>
     </div>
+
     <div class="col-md-12 form-check">
         <input asp-for="MacDinh" class="form-check-input" />
-        <label class="form-check-label" for="MacDinh">Đặt làm địa chỉ mặc định</label>
+        <label class="form-check-label" asp-for="MacDinh">Đặt làm địa chỉ mặc định</label>
     </div>
+
     <div class="col-md-12">
         <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
         <a asp-action="Index" class="btn btn-secondary">⬅️ Quay lại</a>
     </div>
 </form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

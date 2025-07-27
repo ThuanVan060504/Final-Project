@@ -115,7 +115,7 @@ namespace Final_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult ThanhToan(List<int> chonSP)
+        public IActionResult ThanhToan(List<int> chonSP, string paymentMethod)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
@@ -146,9 +146,29 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index");
             }
 
-            decimal tongTien = (from gh in gioHang
-                                join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
-                                select gh.SoLuong * sp.DonGia).Sum();
+            decimal tongTien = gioHang.Sum(gh =>
+            {
+                var sanPham = _context.SanPhams.First(sp => sp.MaSP == gh.MaSP);
+                return gh.SoLuong * sanPham.DonGia;
+            });
+
+            string trangThaiThanhToan;
+            string phuongThuc;
+
+            switch (paymentMethod)
+            {
+                case "COD":
+                    trangThaiThanhToan = "ChuaThanhToan";
+                    phuongThuc = "Thanh toán khi nhận hàng";
+                    break;
+                case "ChuyenKhoan":
+                    trangThaiThanhToan = "DaThanhToan";
+                    phuongThuc = "Chuyển khoản";
+                    break;
+                default:
+                    TempData["Success"] = "Phương thức thanh toán không hợp lệ.";
+                    return RedirectToAction("XacNhanThanhToan", new { chonSP = string.Join(",", chonSP) });
+            }
 
             var donHang = new DonHang
             {
@@ -156,17 +176,17 @@ namespace Final_Project.Controllers
                 MaDiaChi = diaChiMacDinh.MaDiaChi,
                 NgayDat = DateTime.Now,
                 NgayYeuCau = DateTime.Now.AddDays(3),
-                PhiVanChuyen = 0,
-                TongTien = tongTien,
+                PhiVanChuyen = 17000,
+                TongTien = tongTien + 17000,
                 GiamGia = 0,
-                PhuongThucThanhToan = "COD",
-                TrangThaiThanhToan = "DaThanhToan",
+                PhuongThucThanhToan = phuongThuc,
+                TrangThaiThanhToan = trangThaiThanhToan,
                 TrangThaiDonHang = "DangXuLy",
                 GhiChu = null
             };
 
             _context.DonHangs.Add(donHang);
-            _context.SaveChanges();
+            _context.SaveChanges(); // Cần SaveChanges để có MaDonHang cho ChiTietDonHang
 
             foreach (var item in gioHang)
             {
@@ -178,14 +198,13 @@ namespace Final_Project.Controllers
                     return RedirectToAction("Index");
                 }
 
-                var chiTiet = new ChiTietDonHang
+                _context.ChiTietDonHangs.Add(new ChiTietDonHang
                 {
                     MaDonHang = donHang.MaDonHang,
                     MaSP = item.MaSP,
                     SoLuong = item.SoLuong,
                     DonGia = sanPham.DonGia
-                };
-                _context.ChiTietDonHangs.Add(chiTiet);
+                });
 
                 sanPham.SoLuong -= item.SoLuong;
             }
@@ -245,6 +264,44 @@ namespace Final_Project.Controllers
             TempData["Success"] = "Đã xóa sản phẩm đã chọn!";
             return RedirectToAction("Index");
         }
+        [HttpPost]
+        public IActionResult XacNhanThanhToan(List<int> chonSP)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null || chonSP == null || !chonSP.Any())
+                return RedirectToAction("Index", "GioHang");
+
+            // Lấy địa chỉ mặc định của người dùng
+            var diaChiMacDinh = _context.DiaChiNguoiDungs
+                .FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+
+            if (diaChiMacDinh == null)
+            {
+                TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng cập nhật trước khi thanh toán.";
+                return RedirectToAction("DanhSachDiaChi", "User");
+            }
+
+            // Lấy thông tin sản phẩm trong giỏ hàng
+            var gioHang = (from gh in _context.GioHangs
+                           join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
+                           where gh.MaTK == maTK && chonSP.Contains(sp.MaSP)
+                           select new GioHangViewModel
+                           {
+                               MaSP = sp.MaSP,
+                               TenSP = sp.TenSP,
+                               SoLuong = gh.SoLuong,
+                               DonGia = sp.DonGia,
+                              
+                               ImageURL = sp.ImageURL
+                           }).ToList();
+
+            ViewBag.DiaChi = diaChiMacDinh;
+            ViewBag.TongTien = gioHang.Sum(g => g.ThanhTien);
+
+            return View("XacNhanThanhToan", gioHang);
+        }
+
+
 
     }
 }

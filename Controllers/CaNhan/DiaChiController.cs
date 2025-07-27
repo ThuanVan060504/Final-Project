@@ -2,6 +2,7 @@
 using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 
 public class DiaChiController : Controller
@@ -45,24 +46,20 @@ public class DiaChiController : Controller
         var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaDiaChi == id);
         if (diaChi == null) return NotFound();
 
-        // Lấy các địa chỉ khác của cùng 1 tài khoản, trừ địa chỉ đang chọn
         var diaChiKhac = _context.DiaChiNguoiDungs
             .Where(d => d.MaTK == diaChi.MaTK && d.MaDiaChi != id).ToList();
 
-        // Set tất cả về false
         foreach (var d in diaChiKhac)
         {
             d.MacDinh = false;
         }
 
-        // Set địa chỉ được chọn thành mặc định
         diaChi.MacDinh = true;
 
         _context.SaveChanges();
 
         return RedirectToAction("Profile", "User");
     }
-
 
     public IActionResult Edit(int id)
     {
@@ -82,9 +79,10 @@ public class DiaChiController : Controller
         diaChi.QuanHuyen = model.QuanHuyen;
         diaChi.PhuongXa = model.PhuongXa;
         diaChi.MacDinh = model.MacDinh;
+        diaChi.TenNguoiNhan = model.TenNguoiNhan;
+        diaChi.SoDienThoai = model.SoDienThoai;
 
         _context.SaveChanges();
         return RedirectToAction("Profile", "User");
     }
-
 }
