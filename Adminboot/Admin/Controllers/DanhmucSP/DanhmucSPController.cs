@@ -2,9 +2,11 @@
 using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Final_Project.Adminboot.Admin.Controllers.DanhmucSP
+namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class DanhmucSPController : Controller
@@ -16,14 +18,70 @@ namespace Final_Project.Adminboot.Admin.Controllers.DanhmucSP
             _context = context;
         }
 
-
+        // Hiển thị danh sách danh mục
         public IActionResult Index()
         {
             var danhMucList = _context.DanhMucs
-                                      .Include(dm => dm.SanPhams) // Để đếm tổng sản phẩm
+                                      .Include(dm => dm.SanPhams)
                                       .ToList();
             return View("~/Adminboot/Admin/Views/DanhmucSP/Index.cshtml", danhMucList);
         }
 
+        // GET: Form thêm danh mục
+        public IActionResult Create()
+        {
+            return View("~/Adminboot/Admin/Views/DanhmucSP/Create.cshtml");
+        }
+
+        // POST: Xử lý thêm danh mục
+        [HttpPost]
+        public async Task<IActionResult> Create(string TenDanhMuc, string MoTa, IFormFile Anh, string LinkLogo)
+        {
+            if (string.IsNullOrEmpty(TenDanhMuc))
+            {
+                ModelState.AddModelError("TenDanhMuc", "Tên danh mục là bắt buộc.");
+                return View("~/Adminboot/Admin/Views/DanhmucSP/Create.cshtml");
+            }
+
+            string logoPath = null;
+
+            if (Anh != null && Anh.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                if (!Directory.Exists(uploadsDir))
+                    Directory.CreateDirectory(uploadsDir);
+
+                var fileName = Path.GetFileName(Anh.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Anh.CopyToAsync(stream);
+                }
+
+                logoPath = "/uploads/" + fileName;
+            }
+            else if (!string.IsNullOrEmpty(LinkLogo))
+            {
+                logoPath = LinkLogo;
+            }
+            else
+            {
+                logoPath = "/images/no-image.png"; // ảnh mặc định
+            }
+
+            var danhMuc = new DanhMuc
+            {
+                TenDanhMuc = TenDanhMuc,
+                MoTa = MoTa,
+                Logo = logoPath
+            };
+
+            _context.DanhMucs.Add(danhMuc);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Thêm danh mục thành công!";
+            return RedirectToAction("Index");
+        }
     }
 }
