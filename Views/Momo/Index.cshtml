@@ -1,0 +1,9 @@
+﻿
+<form method="post" asp-action="TaoMomoQRCode" asp-controller="ThanhToan">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        <input type="hidden" name="chonSP" value="@Model[i].MaSP" />
+    }
+    <input type="hidden" name="tongTien" value="@ViewBag.TongTien" />
+    <button type="submit" class="btn btn-danger">Ví MOMO</button>
+</form>

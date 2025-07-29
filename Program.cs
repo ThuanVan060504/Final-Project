@@ -1,8 +1,17 @@
-﻿using Final_Project.Models.Shop;
+﻿using Final_Project.Models.Momo;
+using Final_Project.Models.Shop;
+
 
 using Microsoft.EntityFrameworkCore;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.Configure<MomoConfig>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.AddSingleton<MomoService>(); // ✅ thêm service Momo
+
+
+
+
 
 // 1. Thêm các service cần thiết
 builder.Services.AddDistributedMemoryCache();

@@ -99,7 +99,7 @@
 
    <!-- Thanh toán -->
 <h4 class="section-title">💳 Phương thức thanh toán</h4>
-<form method="post" action="/GioHang/ThanhToan" id="checkoutForm">
+<form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
     @foreach (var sp in Model)
     {
         <input type="hidden" name="chonSP" value="@sp.MaSP" />
@@ -108,7 +108,7 @@
 
     <div class="d-flex gap-3 flex-wrap mb-3">
         <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
-        <button type="button" class="btn btn-outline-secondary" id="btnChuyenKhoan">Ví ShopeePay</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnChuyenKhoan">Chuyển Khoảng</button>
     </div>
 
     <p class="text-muted">Phí thu hộ: ₫0 VND</p>
