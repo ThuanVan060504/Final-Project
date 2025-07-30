@@ -138,7 +138,7 @@ namespace Final_Project.Controllers
             {
                 var paymentModel = new PaymentInformationModel
                 {
-                    Amount = (double)donHang.TongTien,
+                    Amount = (decimal)donHang.TongTien,
 
                     Name = $"DonHang#{donHang.MaDonHang}",
                     OrderDescription = "Thanh toán đơn hàng",
@@ -279,6 +279,97 @@ namespace Final_Project.Controllers
             return Redirect(response.PayUrl);
         }
 
+        [HttpGet]
+        public IActionResult TaoVnpayQRCode(List<int> chonSP, decimal tongTien)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            // 1. Lấy địa chỉ mặc định
+            var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+            if (diaChi == null)
+            {
+                TempData["Error"] = "⚠ Bạn chưa có địa chỉ mặc định.";
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // 2. Lấy giỏ hàng đã chọn
+            var gioHang = _context.GioHangs
+                .Where(g => g.MaTK == maTK && chonSP.Contains(g.MaSP))
+                .ToList();
+
+            if (!gioHang.Any())
+            {
+                TempData["Error"] = "Không có sản phẩm nào trong giỏ.";
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // 3. Tính tổng tiền đơn hàng
+            decimal tongTienHang = gioHang.Sum(g =>
+            {
+                var sp = _context.SanPhams.FirstOrDefault(s => s.MaSP == g.MaSP);
+                return g.SoLuong * sp.DonGia;
+            });
+
+            // 4. Tạo đơn hàng
+            var donHang = new DonHang
+            {
+                MaTK = maTK.Value,
+                MaDiaChi = diaChi.MaDiaChi,
+                NgayDat = DateTime.Now,
+                NgayYeuCau = DateTime.Now.AddDays(3),
+                PhiVanChuyen = 17000,
+                TongTien = tongTienHang + 17000,
+                GiamGia = 0,
+                PhuongThucThanhToan = "Ví VNPAY",
+                TrangThaiThanhToan = "DaThanhToan",
+                TrangThaiDonHang = "DangXuLy"
+            };
+
+            _context.DonHangs.Add(donHang);
+            _context.SaveChanges();
+
+            // 5. Thêm chi tiết đơn hàng và cập nhật kho
+            foreach (var item in gioHang)
+            {
+                var sp = _context.SanPhams.First(s => s.MaSP == item.MaSP);
+
+                if (item.SoLuong > sp.SoLuong)
+                {
+                    TempData["Error"] = $"❌ Sản phẩm {sp.TenSP} không đủ hàng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                {
+                    MaDonHang = donHang.MaDonHang,
+                    MaSP = item.MaSP,
+                    SoLuong = item.SoLuong,
+                    DonGia = sp.DonGia
+                });
+
+                sp.SoLuong -= item.SoLuong;
+            }
+
+            // 6. Xóa giỏ hàng
+            _context.GioHangs.RemoveRange(gioHang);
+            _context.SaveChanges();
+
+            // 7. Gửi request tạo thanh toán VNPAY
+            var paymentModel = new PaymentInformationModel
+            {
+                Amount = (decimal)donHang.TongTien,
+                OrderId = donHang.MaDonHang.ToString(),
+                Name = $"DonHang#{donHang.MaDonHang}",
+                OrderDescription = "Thanh toán đơn hàng",
+                OrderType = "billpayment"
+            };
+
+            var url = _vnPayService.CreatePaymentUrl(paymentModel, HttpContext);
+
+            TempData["Success"] = "✅ Đang chuyển hướng đến VNPAY...";
+            return Redirect(url);
+        }
 
         public IActionResult KetQuaThanhToan(int maDonHang, string resultCode, string amount)
         {
@@ -303,6 +394,11 @@ namespace Final_Project.Controllers
 
             return RedirectToAction("Index", "GioHang");
         }
+        public IActionResult CreatePaymentUrlVnpay(PaymentInformationModel model)
+        {
+            var url = _vnPayService.CreatePaymentUrl(model, HttpContext);
+            return Redirect(url);
+        }
 
         [HttpGet]
         public IActionResult PaymentCallbackVnpay()
@@ -311,6 +407,7 @@ namespace Final_Project.Controllers
 
             if (response.Success)
             {
+                // Thành công
                 if (int.TryParse(response.OrderId, out int maDonHang))
                 {
                     var donHang = _context.DonHangs.FirstOrDefault(x => x.MaDonHang == maDonHang);
@@ -332,12 +429,21 @@ namespace Final_Project.Controllers
             }
             else
             {
-                TempData["Error"] = "❌ Thanh toán thất bại hoặc bị hủy.";
+                // ✨ THÊM ĐOẠN NÀY: Nếu huỷ hoặc lỗi
+                var responseCode = Request.Query["vnp_ResponseCode"].ToString();
+                if (responseCode == "24")
+                {
+                    TempData["Error"] = "🚫 Bạn đã huỷ thanh toán VNPAY.";
+                }
+                else
+                {
+                    TempData["Error"] = "❌ Thanh toán VNPAY thất bại.";
+                }
             }
 
+            // 👉 Sau cùng: luôn trở về giỏ hàng
             return RedirectToAction("Index", "GioHang");
         }
-
 
     }
 }
