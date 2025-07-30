@@ -1,13 +1,19 @@
 ﻿using Final_Project.Models.Momo;
 using Final_Project.Models.Shop;
+using Final_Project.Service.Momo;
+using Final_Project.Service.VnPay;
+using Final_Project.Services;
 
 
 using Microsoft.EntityFrameworkCore;
 using System.Configuration;
 
+
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.Configure<MomoConfig>(builder.Configuration.GetSection("MomoAPI"));
-builder.Services.AddSingleton<MomoService>(); // ✅ thêm service Momo
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
+builder.Services.AddScoped<IMomoService, MomoService>();
+
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 
 
