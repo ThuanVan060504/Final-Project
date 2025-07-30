@@ -47,16 +47,25 @@
 
     <!-- Địa chỉ -->
     <h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
-    <div id="defaultAddress">
-        <p><strong id="name">@diaChi?.TenNguoiNhan</strong> (<span id="phone">@diaChi?.SoDienThoai</span>)</p>
-        <p id="address">@diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP</p>
-        <button class="btn btn-sm btn-outline-primary" type="button" onclick="toggleAddressList()">Thay đổi</button>
+    <div id="default-address" class="mb-3">
+        <p>
+            <strong id="default-name">@diaChi?.TenNguoiNhan</strong>
+            (<span id="default-phone">@diaChi?.SoDienThoai</span>)
+        </p>
+        <p id="default-full-address">
+            @diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP
+        </p>
+        <button class="btn btn-link" type="button" onclick="toggleAddressList()">Thay đổi</button>
     </div>
 
     <!-- Danh sách địa chỉ -->
     <div id="addressList" style="display: none;" class="mb-4">
-        <div id="addresses"></div>
+        <div id="addresses">
+            
+        </div>
+
         <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
+
         <div id="addForm" style="display: none;">
             <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
             <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
@@ -190,60 +199,46 @@
 
     <!-- Script quản lý địa chỉ -->
     <script>
-        let addressData = [
-            {
-                name: "@hoTen",
-                phone: "@soDienThoai",
-                address: "@diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP"
-            }
-        ];
         function toggleAddressList() {
-            const list = document.getElementById("addressList");
-            list.style.display = list.style.display === "none" ? "block" : "none";
-            renderAddressList();
-        }
-        function toggleAddForm() {
-            const form = document.getElementById("addForm");
-            form.style.display = form.style.display === "none" ? "block" : "none";
-        }
-        function renderAddressList() {
-            const container = document.getElementById("addresses");
-            container.innerHTML = "";
-            addressData.forEach((addr, index) => {
-                const box = document.createElement("div");
-                box.className = "address-box" + (index === 0 ? " default" : "");
-                box.innerHTML = `
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="addressSelect" ${index === 0 ? "checked" : ""} onclick="setDefault(${index})">
-                        <label class="form-check-label">
-                            <strong>${addr.name}</strong> (${addr.phone})<br>
-                            ${addr.address}
-                        </label>
-                    </div>
-                `;
-                container.appendChild(box);
-            });
-        }
-        function setDefault(index) {
-            const selected = addressData[index];
-            document.getElementById("name").textContent = selected.name;
-            document.getElementById("phone").textContent = selected.phone;
-            document.getElementById("address").textContent = selected.address;
-            document.getElementById("addressList").style.display = "none";
-        }
-        function addAddress() {
-            const name = document.getElementById("newName").value.trim();
-            const phone = document.getElementById("newPhone").value.trim();
-            const address = document.getElementById("newAddr").value.trim();
-            if (!name || !phone || !address) {
-                alert("Vui lòng điền đầy đủ thông tin.");
-                return;
+            const addressList = document.getElementById('addressList');
+            addressList.style.display = addressList.style.display === 'none' ? 'block' : 'none';
+
+            if (addressList.style.display === 'block') {
+                fetch('/ThanhToan/LayDanhSachDiaChi')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const container = document.getElementById('addresses');
+                            container.innerHTML = ''; // Xóa cũ
+
+                            data.data.forEach(d => {
+                                const div = document.createElement('div');
+                                div.className = 'border rounded p-2 mb-2';
+                                div.innerHTML = `
+                                    <p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
+                                    <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDC})">Chọn địa chỉ này</button>
+                                `;
+                                container.appendChild(div);
+                            });
+                        } else {
+                            alert(data.message || 'Không thể tải địa chỉ.');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        alert('Có lỗi xảy ra khi tải địa chỉ.');
+                    });
             }
-            addressData.push({ name, phone, address });
-            renderAddressList();
-            toggleAddForm();
         }
-        renderAddressList();
+
+        function chonDiaChi(maDiaChi) {
+            // Gửi request lên server để chọn địa chỉ, hoặc cập nhật UI tạm thời
+            console.log("Địa chỉ được chọn:", maDiaChi);
+            // Ví dụ: reload lại trang hoặc update div defaultAddress
+            location.reload(); // Giải pháp tạm
+        }
     </script>
+
 
 </body>

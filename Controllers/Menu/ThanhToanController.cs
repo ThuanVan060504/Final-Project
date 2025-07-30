@@ -22,7 +22,81 @@ namespace Final_Project.Controllers
             _momoService = momoService;
             _vnPayService = vnPayService;
         }
+        public IActionResult Index()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
+            return View();
+        }
+        [HttpGet]
+        public IActionResult LayDanhSachDiaChi()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null)
+            {
+                return Json(new { success = false, message = "Chưa đăng nhập" });
+            }
 
+            var danhSach = _context.DiaChiNguoiDungs
+                .Where(d => d.MaTK == maTK)
+                .Select(d => new
+                {
+                    d.MaDiaChi,
+                    d.TenNguoiNhan,
+                    d.SoDienThoai,
+                    d.DiaChiChiTiet,
+                    d.PhuongXa,
+                    d.QuanHuyen,
+                    d.TinhTP
+                })
+                .ToList();
+
+            return Json(new { success = true, data = danhSach });
+        }
+        [HttpPost]
+        public IActionResult ChonDiaChiMacDinh(int maDiaChi)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            // Xóa mặc định cũ
+            var diaChiCu = _context.DiaChiNguoiDungs.FirstOrDefault(dc => dc.MaTK == maTK && dc.MacDinh);
+            if (diaChiCu != null)
+            {
+                diaChiCu.MacDinh = false;
+            }
+
+            // Cập nhật mới
+            var diaChiMoi = _context.DiaChiNguoiDungs.FirstOrDefault(dc => dc.MaDiaChi == maDiaChi && dc.MaTK == maTK);
+            if (diaChiMoi != null)
+            {
+                diaChiMoi.MacDinh = true;
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("ThanhToan"); // hoặc trả về JSON nếu dùng fetch()
+        }
+        [HttpPost]
+        public IActionResult SetDefault(int id)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            var diaChiList = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK).ToList();
+            foreach (var dc in diaChiList)
+            {
+                dc.MacDinh = dc.MaDiaChi == id;
+            }
+
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "ThanhToan"); // hoặc action nào chứa view danh sách
+        }
 
         [HttpPost]
         public IActionResult ThanhToan(List<int> chonSP, string paymentMethod)
@@ -37,8 +111,20 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
-            var diaChiMacDinh = _context.DiaChiNguoiDungs
-                .FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+            var danhSachDiaChi = _context.DiaChiNguoiDungs
+    .Where(d => d.MaTK == maTK)
+    .ToList();
+
+            var diaChiMacDinh = danhSachDiaChi.FirstOrDefault(d => d.MacDinh);
+
+            if (diaChiMacDinh == null)
+            {
+                TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng cập nhật trước khi thanh toán.";
+                return RedirectToAction("DanhSachDiaChi", "User");
+            }
+            ViewBag.DiaChiMacDinh = diaChiMacDinh;
+            ViewBag.DanhSachDiaChi = danhSachDiaChi;
+
 
             if (diaChiMacDinh == null)
             {

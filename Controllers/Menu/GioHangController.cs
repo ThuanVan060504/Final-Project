@@ -163,8 +163,32 @@ namespace Final_Project.Controllers
             TempData["Success"] = "Đã xóa sản phẩm đã chọn!";
             return RedirectToAction("Index");
         }
-       
-       
+
+        [HttpGet]
+        public IActionResult LayTatCaDiaChi()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null)
+                return Json(new { success = false, message = "Chưa đăng nhập" });
+
+            var danhSachDiaChi = _context.DiaChiNguoiDungs
+                .Where(d => d.MaTK == maTK)
+                .Select(d => new
+                {
+                    id = d.MaDiaChi,
+                    tenNguoiNhan = d.TenNguoiNhan,
+                    soDienThoai = d.SoDienThoai,
+                    diaChiChiTiet = d.DiaChiChiTiet,
+                    phuongXa = d.PhuongXa,
+                    quanHuyen = d.QuanHuyen,
+                    tinhTP = d.TinhTP,
+                    macDinh = d.MacDinh
+                })
+                .ToList();
+
+            return Json(new { success = true, data = danhSachDiaChi });
+        }
+
 
 
 

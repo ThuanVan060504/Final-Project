@@ -150,4 +150,28 @@
 </form>
 
 
+@section Scripts {
+    <script>
+           window.addEventListener("DOMContentLoaded", function () {
+            // Tick tất cả checkbox khi vừa vào trang
+            document.getElementById("checkAll").checked = true;
+
+            let checkboxes = document.querySelectorAll(".chon-checkbox");
+            checkboxes.forEach(cb => cb.checked = true);
+
+            // Khi tick/bỏ chọn checkbox "chọn tất cả"
+            document.getElementById("checkAll").addEventListener("change", function () {
+                checkboxes.forEach(cb => cb.checked = this.checked);
+            });
+
+            // Nếu bỏ tick một ô => bỏ tick "Chọn tất cả"
+            checkboxes.forEach(cb => {
+                cb.addEventListener("change", function () {
+                    const allChecked = document.querySelectorAll(".chon-checkbox:checked").length === checkboxes.length;
+                    document.getElementById("checkAll").checked = allChecked;
+                });
+            });
+        });
+    </script>
+}
 
