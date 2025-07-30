@@ -196,45 +196,114 @@ namespace Final_Project.Controllers
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
-            string orderId = Guid.NewGuid().ToString();
-            string redirectUrl = Url.Action("KetQuaThanhToan", "ThanhToan", new { orderId }, Request.Scheme);
+            // 1. Lấy địa chỉ mặc định
+            var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+            if (diaChi == null)
+            {
+                TempData["Error"] = "⚠ Bạn chưa có địa chỉ mặc định.";
+                return RedirectToAction("Index", "GioHang");
+            }
 
+            // 2. Lấy giỏ hàng đã chọn
+            var gioHang = _context.GioHangs
+                .Where(g => g.MaTK == maTK && chonSP.Contains(g.MaSP))
+                .ToList();
+
+            if (!gioHang.Any())
+            {
+                TempData["Error"] = "Không có sản phẩm nào trong giỏ.";
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // 3. Tính tổng tiền đơn hàng
+            decimal tongTienHang = gioHang.Sum(g =>
+            {
+                var sp = _context.SanPhams.FirstOrDefault(s => s.MaSP == g.MaSP);
+                return g.SoLuong * sp.DonGia;
+            });
+
+            var donHang = new DonHang
+            {
+                MaTK = maTK.Value,
+                MaDiaChi = diaChi.MaDiaChi,
+                NgayDat = DateTime.Now,
+                NgayYeuCau = DateTime.Now.AddDays(3),
+                PhiVanChuyen = 17000,
+                TongTien = tongTienHang + 17000,
+                GiamGia = 0,
+                PhuongThucThanhToan = "Ví MOMO",
+                TrangThaiThanhToan = "DaThanhToan", // ✅ Chưa thanh toán
+                TrangThaiDonHang = "DangXuLy"
+            };
+
+            // 4. Lưu đơn hàng vào database
+            _context.DonHangs.Add(donHang);
+            _context.SaveChanges();
+
+            // 5. Lưu chi tiết đơn hàng và cập nhật số lượng tồn kho
+            foreach (var item in gioHang)
+            {
+                var sp = _context.SanPhams.First(s => s.MaSP == item.MaSP);
+
+                if (item.SoLuong > sp.SoLuong)
+                {
+                    TempData["Error"] = $"❌ Sản phẩm {sp.TenSP} không đủ hàng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                _context.ChiTietDonHangs.Add(new ChiTietDonHang
+                {
+                    MaDonHang = donHang.MaDonHang,
+                    MaSP = item.MaSP,
+                    SoLuong = item.SoLuong,
+                    DonGia = sp.DonGia
+                });
+
+                sp.SoLuong -= item.SoLuong;
+            }
+
+            _context.GioHangs.RemoveRange(gioHang);
+            _context.SaveChanges();
+
+            // 6. Tạo QR MOMO
             var orderInfo = new OrderInfoModel
             {
                 FullName = "Người dùng " + maTK,
-                OrderInfo = "Thanh toán đơn hàng #" + orderId,
-                Amount = tongTien.ToString()
+                OrderInfo = $"Thanh toán đơn hàng #{donHang.MaDonHang}",
+                Amount = ((double)donHang.TongTien).ToString()
             };
 
             var response = _momoService.CreatePaymentAsync(orderInfo).Result;
 
-            TempData["chonSP"] = string.Join(",", chonSP);
-            TempData["orderId"] = orderId;
-            TempData["amount"] = tongTien.ToString();
-
+            TempData["Success"] = "✅ Vui lòng quét mã QR để hoàn tất thanh toán.";
             return Redirect(response.PayUrl);
         }
-        public IActionResult KetQuaThanhToan(string orderId, string resultCode, string amount)
+
+
+        public IActionResult KetQuaThanhToan(int maDonHang, string resultCode, string amount)
         {
-            // resultCode = "0" tức là thanh toán thành công
-            if (resultCode == "0")
+            var donHang = _context.DonHangs.FirstOrDefault(x => x.MaDonHang == maDonHang);
+            if (donHang == null)
             {
-                var chonSPString = TempData["chonSP"] as string;
-                if (string.IsNullOrEmpty(chonSPString))
-                {
-                    TempData["Error"] = "Không thể xác nhận sản phẩm đã chọn.";
-                    return RedirectToAction("Index", "GioHang");
-                }
-
-                var chonSP = chonSPString.Split(',').Select(int.Parse).ToList();
-
-                // Gọi lại phương thức ThanhToan để lưu đơn hàng (phương thức POST bạn đã làm)
-                return ThanhToan(chonSP, "ChuyenKhoan");
+                TempData["Error"] = "Không tìm thấy đơn hàng.";
+                return RedirectToAction("Index", "GioHang");
             }
 
-            TempData["Error"] = "❌ Thanh toán thất bại hoặc bị hủy.";
+            if (resultCode == "0") // ✅ Thành công
+            {
+                donHang.TrangThaiThanhToan = "DaThanhToan";
+                _context.SaveChanges();
+
+                TempData["Success"] = "✅ Đơn hàng đã thanh toán thành công.";
+            }
+            else
+            {
+                TempData["Error"] = "❌ Thanh toán MOMO thất bại hoặc bị hủy. Đơn hàng vẫn được lưu với trạng thái Chưa thanh toán.";
+            }
+
             return RedirectToAction("Index", "GioHang");
         }
+
         [HttpGet]
         public IActionResult PaymentCallbackVnpay()
         {
