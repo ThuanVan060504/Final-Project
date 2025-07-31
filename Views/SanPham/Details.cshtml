@@ -30,7 +30,7 @@
                     @Model.DonGia.ToString("N0") đ
                 </h4>
                 <h5 class="text-muted d-inline me-3" style="text-decoration: line-through;">
-                    @((Model.DonGia * 1.2M).ToString("N0")) đ
+                    @(Model.GiaGoc.HasValue ? Model.GiaGoc.Value.ToString("N0") : "")
                 </h5>
                 
             </div>

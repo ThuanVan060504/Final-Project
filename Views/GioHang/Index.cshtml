@@ -123,7 +123,21 @@
                     <td><input type="checkbox" name="chonSP" value="@item.MaSP" class="chon-checkbox" /></td>
                     <td><img src="@item.ImageURL" alt="@item.TenSP" /></td>
                     <td>@item.TenSP</td>
-                    <td>@item.DonGia.ToString("n0") ₫</td>
+                    <td>
+                        @if (item.DiscountPercent.HasValue)
+                        {
+                            <span class="text-danger fw-bold">@item.DonKhuyenMai.ToString("n0") ₫</span>
+                            <br />
+                            <span class="text-decoration-line-through text-muted" style="font-size: 0.85em;">
+                                @item.DonGia.ToString("n0") ₫
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-dark">@item.DonGia.ToString("n0") ₫</span>
+                        }
+                    </td>
+
                     <td><input type="number" name="soLuong[@item.MaSP]" value="@item.SoLuong" min="1" class="form-control" /></td>
                     <td>@item.ThanhTien.ToString("n0") ₫</td>
                     <td>

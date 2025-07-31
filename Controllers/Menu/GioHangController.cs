@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Final_Project.Models.Shop;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Final_Project.Controllers
 {
@@ -36,17 +37,28 @@ namespace Final_Project.Controllers
             ViewBag.Avatar = taiKhoan?.Avatar;
             ViewBag.HoTen = taiKhoan?.HoTen;
 
-            var gioHang = from gh in _context.GioHangs
-                          join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
-                          where gh.MaTK == maTK
-                          select new GioHangViewModel
-                          {
-                              MaSP = sp.MaSP,
-                              TenSP = sp.TenSP,
-                              SoLuong = gh.SoLuong,
-                              DonGia = sp.DonGia,
-                              ImageURL = sp.ImageURL
-                          };
+            var now = DateTime.Now;
+
+            var gioHang = _context.GioHangs
+                .Where(g => g.MaTK == maTK)
+                .Join(_context.SanPhams,
+                    gh => gh.MaSP,
+                    sp => sp.MaSP,
+                    (gh, sp) => new { gh, sp })
+                .GroupJoin(
+                    _context.FlashSales.Where(fs => fs.ThoiGianKetThuc > now),
+                    x => x.sp.MaSP,
+                    fs => fs.MaSP,
+                    (x, flashSales) => new { x.gh, x.sp, flashSale = flashSales.FirstOrDefault() })
+                .Select(result => new GioHangViewModel
+                {
+                    MaSP = result.sp.MaSP,
+                    TenSP = result.sp.TenSP,
+                    SoLuong = result.gh.SoLuong,
+                    DonGia = result.sp.DonGia,
+                    ImageURL = result.sp.ImageURL
+                }).ToList();
+
 
             return View(gioHang.ToList());
         }

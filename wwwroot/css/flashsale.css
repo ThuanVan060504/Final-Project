@@ -1,0 +1,140 @@
+﻿/* === TIÊU ĐỀ FLASH SALE CHÍNH === */
+.flashy-title {
+    text-align: center;
+    font-size: 3rem;
+    font-weight: 900;
+    color: #ff3d00;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    animation: flickerText 1.5s infinite alternate;
+    background-color: #fff3e0; /* Nền vàng cam nhạt dịu */
+    padding: 12px 16px;
+    border-radius: 12px;
+    display: inline-block;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+/* Hiệu ứng chữ giật giật 🔥 */
+@keyframes flickerText {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    100% {
+        opacity: 0.85;
+        transform: scale(1.02);
+    }
+}
+
+/* === SUB TIÊU ĐỀ (PHỤ ĐỀ) === */
+.flashy-sub {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: #444;
+    margin-bottom: 10px;
+}
+
+/* === ALERT BÊN DƯỚI === */
+.flashy-alert {
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #d84315;
+    background-color: #fff3e0;
+    padding: 20px 22px;
+    border-radius: 10px;
+    display: block;
+    max-width: 820px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+    animation: alertPulse 1.8s infinite;
+}
+
+/* Animation cho alert */
+@keyframes alertPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* === BADGE FLASH SALE === */
+.flashsale-badge {
+    position: absolute;
+    top: 10px;
+    left: -8px;
+    color: #fff;
+    padding: 8px 16px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 0 5px 5px 0;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.15);
+    animation: badgeGlow 1.5s infinite alternate;
+}
+
+/* Badge nền chuyển màu */
+@keyframes badgeGlow {
+    0% {
+        background-color: #c62828; /* Đỏ */
+    }
+
+    33% {
+        background-color: #ff6f00; /* Cam */
+    }
+
+    66% {
+        background-color: #ec407a; /* Hồng */
+    }
+
+    100% {
+        background-color: #ffd600; /* Vàng */
+    }
+}
+/* === TỈ LỆ PHẦN TRĂM GIẢM GIÁ (NỀN RIÊNG + NHẤP NHÁY) === */
+.badge-percent {
+    margin-left: 6px;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e53935;
+    border-radius: 4px;
+    animation: percentFlash 1.2s infinite alternate;
+    box-shadow: 0 0 6px rgba(255, 0, 0, 0.4);
+}
+
+/* Hiệu ứng nền % giảm giá */
+@keyframes percentFlash {
+    0% {
+        background-color: #e53935;
+        transform: scale(1);
+    }
+
+    50% {
+        background-color: #d32f2f;
+        transform: scale(1.1);
+    }
+
+    100% {
+        background-color: #f44336;
+        transform: scale(1);
+    }
+}

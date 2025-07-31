@@ -90,6 +90,7 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.Avatar = taiKhoan?.Avatar;
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
+
             var sp = _context.SanPhams
                 .Include(s => s.DanhMuc)
                 .FirstOrDefault(s => s.MaSP == id);
@@ -97,30 +98,44 @@ namespace Final_Project.Controllers.Menu
             if (sp == null)
                 return NotFound();
 
-            // Lấy sản phẩm tương tự
+            // 🔥 Kiểm tra sản phẩm có trong FlashSale không
+            var flashSale = _context.FlashSales
+                .Include(f => f.SanPham)
+                .FirstOrDefault(f => f.MaSP == id && f.ThoiGianKetThuc > DateTime.Now);
+
+            if (flashSale != null)
+            {
+                ViewBag.FlashSale = flashSale;
+                ViewBag.GiaSauGiam = flashSale.GiaKhuyenMai;
+            }
+            else
+            {
+                ViewBag.FlashSale = null;
+            }
+
+            // Sản phẩm tương tự
             var tuongTu = _context.SanPhams
                 .Where(s => s.DanhMuc == sp.DanhMuc && s.MaSP != sp.MaSP)
                 .Take(4)
                 .ToList();
 
-            // Lấy đánh giá
+            // Đánh giá
             var danhGiaList = _context.DanhGias
                 .Where(d => d.SanPhamId == id)
                 .OrderByDescending(d => d.ThoiGian)
                 .ToList();
 
             double diemTrungBinh = danhGiaList.Any()
-    ? Math.Round(danhGiaList.Average(d => d.Diem), 1)
-    : 0;
+                ? Math.Round(danhGiaList.Average(d => d.Diem), 1)
+                : 0;
 
             ViewBag.DiemTrungBinh = diemTrungBinh;
-
-
             ViewBag.SanPhamTuongTu = tuongTu;
             ViewBag.DanhGiaList = danhGiaList;
 
             return View(sp);
         }
+
 
         [HttpPost]
         public IActionResult GuiDanhGia(int SanPhamId, int Diem, string BinhLuan)

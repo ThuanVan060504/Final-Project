@@ -12,8 +12,8 @@ using System.Configuration;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
-
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+builder.Services.AddHostedService<FlashSaleCleanupService>();
 
 
 
