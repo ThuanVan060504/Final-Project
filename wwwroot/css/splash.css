@@ -1,0 +1,30 @@
+﻿/* Màn mở đầu chiếm toàn màn hình */
+#splash-screen {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: white;
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: slideUpV2 1.2s ease-out forwards;
+    animation-delay: 1.5s;
+}
+
+/* Nội dung trong splash */
+.splash-content {
+    text-align: center;
+}
+
+@keyframes slideUpV2 {
+    0% {
+        transform: translateY(0%);
+    }
+
+    100% {
+        transform: translateY(-100%);
+    }
+}
