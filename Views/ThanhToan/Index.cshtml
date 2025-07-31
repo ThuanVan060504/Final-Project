@@ -18,29 +18,34 @@
         border-bottom: 2px solid #eee;
         padding-bottom: 10px;
     }
+
     .product-image {
         width: 60px;
         height: 60px;
         object-fit: cover;
     }
+
     .order-summary {
         text-align: right;
     }
+
     .btn-place-order {
         background-color: #ee4d2d;
         color: white;
         border: none;
     }
+
     .address-box {
         border: 1px solid #ddd;
         border-radius: 6px;
         padding: 10px;
         margin-bottom: 10px;
     }
-    .address-box.default {
-        border-color: #ee4d2d;
-        background-color: #fff6f0;
-    }
+
+        .address-box.default {
+            border-color: #ee4d2d;
+            background-color: #fff6f0;
+        }
 </style>
 
 <body class="container py-4">
@@ -61,7 +66,6 @@
     <!-- Danh sách địa chỉ -->
     <div id="addressList" style="display: none;" class="mb-4">
         <div id="addresses">
-            
         </div>
 
         <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
@@ -106,95 +110,95 @@
         <button class="btn btn-sm btn-outline-primary">Chọn Voucher</button>
     </div>
 
-   <!-- Thanh toán -->
-<h4 class="section-title">💳 Phương thức thanh toán</h4>
-<form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
-    @foreach (var sp in Model)
-    {
-        <input type="hidden" name="chonSP" value="@sp.MaSP" />
-    }
-    <input type="hidden" name="paymentMethod" id="paymentMethod" />
+    <!-- Thanh toán -->
+    <h4 class="section-title">💳 Phương thức thanh toán</h4>
+    <form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
+        @foreach (var sp in Model)
+        {
+            <input type="hidden" name="chonSP" value="@sp.MaSP" />
+        }
+        <input type="hidden" name="paymentMethod" id="paymentMethod" />
 
-    <div class="d-flex gap-3 flex-wrap mb-3">
-        <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
-    
-        <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
-        <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
+        <div class="d-flex gap-3 flex-wrap mb-3">
+            <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
 
-    </div>
-    <input type="hidden" name="paymentMethod" id="paymentMethod" />
+            <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
+            <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
 
-    <p class="text-muted">Phí thu hộ: ₫0 VND</p>
+        </div>
+        <input type="hidden" name="paymentMethod" id="paymentMethod" />
 
-    <!-- Tổng tiền -->
-    <h4 class="section-title">🧾 Tổng thanh toán</h4>
-    <div class="order-summary">
-        <p>Tổng tiền hàng: ₫@tongTien.ToString("n0")</p>
-        <p>Phí vận chuyển: ₫@phiVanChuyen.ToString("n0")</p>
-        <h5><strong>Tổng thanh toán: ₫@tongThanhToan.ToString("n0")</strong></h5>
-    </div>
+        <p class="text-muted">Phí thu hộ: ₫0 VND</p>
 
-    <div class="text-end mt-4">
-        <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
-    </div>
-</form>
-<script>
-    let selectedMethod = "";
+        <!-- Tổng tiền -->
+        <h4 class="section-title">🧾 Tổng thanh toán</h4>
+        <div class="order-summary">
+            <p>Tổng tiền hàng: ₫@tongTien.ToString("n0")</p>
+            <p>Phí vận chuyển: ₫@phiVanChuyen.ToString("n0")</p>
+            <h5><strong>Tổng thanh toán: ₫@tongThanhToan.ToString("n0")</strong></h5>
+        </div>
 
-    document.getElementById("btnCOD").addEventListener("click", function () {
-        selectedMethod = "COD";
-        highlightSelected(this);
-    });
+        <div class="text-end mt-4">
+            <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
+        </div>
+    </form>
+    <script>
+            let selectedMethod = "";
 
-
-
-    document.getElementById("btnMomo").addEventListener("click", function () {
-        selectedMethod = "MOMO";
-        highlightSelected(this);
-    });
-
-    document.getElementById("btnVnpay").addEventListener("click", function () {
-    selectedMethod = "VNPAY";
-    highlightSelected(this);
-});
+            document.getElementById("btnCOD").addEventListener("click", function () {
+                selectedMethod = "COD";
+                highlightSelected(this);
+            });
 
 
-    function highlightSelected(button) {
-    document.querySelectorAll("#btnCOD, #btnMomo, #btnVnpay").forEach(btn => {
-        btn.classList.remove("btn-danger");
-        btn.classList.add("btn-outline-secondary");
-    });
-    button.classList.remove("btn-outline-secondary");
-    button.classList.add("btn-danger");
-}
 
-   function submitFinalOrder() {
-    if (!selectedMethod) {
-        alert("Vui lòng chọn phương thức thanh toán.");
-        return;
-    }
+            document.getElementById("btnMomo").addEventListener("click", function () {
+                selectedMethod = "MOMO";
+                highlightSelected(this);
+            });
 
-    if (selectedMethod === "MOMO") {
-        let url = "/ThanhToan/TaoMomoQRCode?";
-        document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-            url += "chonSP=" + sp.value + "&";
+            document.getElementById("btnVnpay").addEventListener("click", function () {
+            selectedMethod = "VNPAY";
+            highlightSelected(this);
         });
-        url += "tongTien=" + @tongThanhToan;
-        window.location.href = url;
-    } else if (selectedMethod === "VNPAY") {
-        let url = "/ThanhToan/TaoVnpayQRCode?";
-        document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-            url += "chonSP=" + sp.value + "&";
-        });
-        url += "tongTien=" + @tongThanhToan;
-        window.location.href = url;
-    } else {
-        document.getElementById("paymentMethod").value = selectedMethod;
-        document.getElementById("checkoutForm").submit();
-    }
-}
 
-</script>
+
+            function highlightSelected(button) {
+            document.querySelectorAll("#btnCOD, #btnMomo, #btnVnpay").forEach(btn => {
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-outline-secondary");
+            });
+            button.classList.remove("btn-outline-secondary");
+            button.classList.add("btn-danger");
+        }
+
+           function submitFinalOrder() {
+            if (!selectedMethod) {
+                alert("Vui lòng chọn phương thức thanh toán.");
+                return;
+            }
+
+            if (selectedMethod === "MOMO") {
+                let url = "/ThanhToan/TaoMomoQRCode?";
+                document.querySelectorAll("input[name='chonSP']").forEach(sp => {
+                    url += "chonSP=" + sp.value + "&";
+                });
+                url += "tongTien=" + @tongThanhToan;
+                window.location.href = url;
+            } else if (selectedMethod === "VNPAY") {
+                let url = "/ThanhToan/TaoVnpayQRCode?";
+                document.querySelectorAll("input[name='chonSP']").forEach(sp => {
+                    url += "chonSP=" + sp.value + "&";
+                });
+                url += "tongTien=" + @tongThanhToan;
+                window.location.href = url;
+            } else {
+                document.getElementById("paymentMethod").value = selectedMethod;
+                document.getElementById("checkoutForm").submit();
+            }
+        }
+
+    </script>
 
 
     <!-- Script quản lý địa chỉ -->
@@ -214,11 +218,11 @@
                             data.data.forEach(d => {
                                 const div = document.createElement('div');
                                 div.className = 'border rounded p-2 mb-2';
-                                div.innerHTML = `
+                                div.innerHTML =
                                     <p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
                                     <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
                                     <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDC})">Chọn địa chỉ này</button>
-                                `;
+                                ;
                                 container.appendChild(div);
                             });
                         } else {

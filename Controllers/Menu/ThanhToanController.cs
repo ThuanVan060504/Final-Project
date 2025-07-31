@@ -13,7 +13,6 @@ namespace Final_Project.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IMomoService _momoService;
-
         private readonly IVnPayService _vnPayService;
 
         public ThanhToanController(AppDbContext context, IMomoService momoService, IVnPayService vnPayService)
@@ -22,17 +21,18 @@ namespace Final_Project.Controllers
             _momoService = momoService;
             _vnPayService = vnPayService;
         }
-        public IActionResult Index()
+
+        private void GanThongTinNguoiDung()
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK != null)
             {
                 var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
-                ViewBag.Avatar = taiKhoan?.Avatar;
-                ViewBag.HoTen = taiKhoan?.HoTen;
+                ViewBag.Avatar = taiKhoan?.Avatar ?? "Avatar.jpg";
+                ViewBag.HoTen = taiKhoan?.HoTen ?? "Ẩn danh";
             }
-            return View();
         }
+
         [HttpGet]
         public IActionResult LayDanhSachDiaChi()
         {
@@ -245,6 +245,7 @@ namespace Final_Project.Controllers
         [HttpPost]
         public IActionResult XacNhanThanhToan(List<int> chonSP)
         {
+            GanThongTinNguoiDung();
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null || chonSP == null || !chonSP.Any())
                 return RedirectToAction("Index", "GioHang");
