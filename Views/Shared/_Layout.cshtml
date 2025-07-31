@@ -118,7 +118,23 @@
               
 
                 <li class="nav-item"><a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index"></a></li>
-                <li class="nav-item ms-auto"><a class="nav-link" asp-controller="GioHang" asp-action="Index">🛒 Giỏ hàng</a></li>      
+                    @{
+                        int soLuongGioHang = Context.Session.GetInt32("SoLuongGioHang") ?? 0;
+                    }
+                    <li class="nav-item ms-auto position-relative">
+                        <a class="nav-link d-inline-flex align-items-center gap-1" asp-controller="GioHang" asp-action="Index">
+                            <i class="bi bi-cart3 fs-5 position-relative">
+                                @if (soLuongGioHang > 0)
+                                {
+                                    <span class="badge bg-danger text-white position-absolute top-0 start-100 translate-middle-y translate-middle-x rounded-pill" style="font-size: 0.7rem; padding: 3px 6px;">
+                                        @soLuongGioHang
+                                    </span>
+                                }
+                            </i>
+                            <span class="fw-bold text-danger">Giỏ hàng</span>
+                        </a>
+                    </li>
+
                     @{
                         var hoTen = User.Identity.Name ?? "Ẩn danh";
                     }

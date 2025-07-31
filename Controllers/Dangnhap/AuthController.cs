@@ -59,6 +59,13 @@ namespace Final_Project.Controllers
             HttpContext.Session.SetString("UserEmail", user.Email);
             HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");
             HttpContext.Session.SetInt32("MaTK", user.MaTK);
+
+            // 🔥 Thêm dòng này:
+            int tongSoLuong = _context.GioHangs
+                .Where(g => g.MaTK == user.MaTK)
+                .Sum(g => g.SoLuong);
+
+            HttpContext.Session.SetInt32("SoLuongGioHang", tongSoLuong);
             // Kiểm tra log Session
             var debugMaTK = HttpContext.Session.GetInt32("MaTK");
             Console.WriteLine("✅ Session MaTK sau khi set: " + debugMaTK);

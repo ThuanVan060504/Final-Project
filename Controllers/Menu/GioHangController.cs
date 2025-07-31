@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Final_Project.Models.Shop;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace Final_Project.Controllers
 {
@@ -14,17 +15,27 @@ namespace Final_Project.Controllers
             _context = context;
         }
 
+        private void CapNhatSessionSoLuong(int maTK)
+        {
+            int tongSoLuong = _context.GioHangs
+                .Where(g => g.MaTK == maTK)
+                .Sum(g => g.SoLuong);
+
+            HttpContext.Session.SetInt32("SoLuongGioHang", tongSoLuong);
+        }
+
         public IActionResult Index()
         {
-
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
             {
                 return RedirectToAction("DangNhap", "Auth");
             }
+
             var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
             ViewBag.Avatar = taiKhoan?.Avatar;
             ViewBag.HoTen = taiKhoan?.HoTen;
+
             var gioHang = from gh in _context.GioHangs
                           join sp in _context.SanPhams on gh.MaSP equals sp.MaSP
                           where gh.MaTK == maTK
@@ -39,32 +50,28 @@ namespace Final_Project.Controllers
 
             return View(gioHang.ToList());
         }
+
         [HttpPost]
         public IActionResult ThemGioHang(int maSP, int soLuong = 1)
         {
-            // Kiểm tra đăng nhập
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
                 return RedirectToAction("Login", "Auth");
 
-
-            // Kiểm tra sản phẩm đã tồn tại trong giỏ chưa
             var gioHangItem = _context.GioHangs
                 .FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
 
             if (gioHangItem != null)
             {
-                // Đã có → tăng số lượng
                 gioHangItem.SoLuong += soLuong;
                 gioHangItem.NgayThem = DateTime.Now;
                 _context.Update(gioHangItem);
             }
             else
             {
-                // Chưa có → tạo mới
                 var newItem = new GioHang
                 {
-                    MaTK = maTK.Value, // ✅ ép kiểu từ int? → int
+                    MaTK = maTK.Value,
                     MaSP = maSP,
                     SoLuong = soLuong,
                     NgayThem = DateTime.Now
@@ -73,10 +80,10 @@ namespace Final_Project.Controllers
             }
 
             _context.SaveChanges();
+            CapNhatSessionSoLuong(maTK.Value);
 
             TempData["Success"] = "Đã thêm vào giỏ hàng!";
             return RedirectToAction("Index", "GioHang");
-
         }
 
         [HttpPost]
@@ -91,6 +98,7 @@ namespace Final_Project.Controllers
                 item.SoLuong = soLuong;
                 item.NgayThem = DateTime.Now;
                 _context.SaveChanges();
+                CapNhatSessionSoLuong(maTK.Value);
                 TempData["Success"] = "Đã cập nhật số lượng.";
             }
 
@@ -108,14 +116,58 @@ namespace Final_Project.Controllers
             {
                 _context.GioHangs.Remove(item);
                 _context.SaveChanges();
+                CapNhatSessionSoLuong(maTK.Value);
                 TempData["Success"] = "Đã xóa sản phẩm khỏi giỏ.";
             }
 
             return RedirectToAction("Index");
         }
 
-      
+        [HttpPost]
+        public IActionResult CapNhatNhieu(List<int> chonSP, Dictionary<int, int> soLuong)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
 
+            foreach (var maSP in chonSP)
+            {
+                if (soLuong.ContainsKey(maSP))
+                {
+                    var item = _context.GioHangs.FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
+                    if (item != null)
+                    {
+                        item.SoLuong = soLuong[maSP];
+                        item.NgayThem = DateTime.Now;
+                    }
+                }
+            }
+
+            _context.SaveChanges();
+            CapNhatSessionSoLuong(maTK.Value);
+            TempData["Success"] = "Đã cập nhật số lượng thành công!";
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public IActionResult XoaNhieu(List<int> chonSP)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null) return RedirectToAction("Login", "Auth");
+
+            foreach (var maSP in chonSP)
+            {
+                var item = _context.GioHangs.FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
+                if (item != null)
+                {
+                    _context.GioHangs.Remove(item);
+                }
+            }
+
+            _context.SaveChanges();
+            CapNhatSessionSoLuong(maTK.Value);
+            TempData["Success"] = "Đã xóa sản phẩm đã chọn!";
+            return RedirectToAction("Index");
+        }
 
         [HttpGet]
         public IActionResult LayDiaChiMacDinh()
@@ -124,8 +176,7 @@ namespace Final_Project.Controllers
             if (maTK == null) return Json(new { success = false });
 
             var diaChi = _context.DiaChiNguoiDungs
-                .Where(d => d.MaTK == maTK && d.MacDinh)
-                .FirstOrDefault();
+                .FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
 
             if (diaChi == null)
                 return Json(new { success = false });
@@ -138,30 +189,6 @@ namespace Final_Project.Controllers
                 quanHuyen = diaChi.QuanHuyen,
                 tinhTP = diaChi.TinhTP
             });
-        }
-        [HttpPost]
-        public IActionResult CapNhatNhieu(List<int> chonSP, Dictionary<int, int> soLuong)
-        {
-            foreach (var maSP in chonSP)
-            {
-                if (soLuong.ContainsKey(maSP))
-                {
-                    CapNhatSoLuong(maSP, soLuong[maSP]); // xử lý cập nhật giỏ hàng
-                }
-            }
-            TempData["Success"] = "Đã cập nhật số lượng thành công!";
-            return RedirectToAction("Index");
-        }
-
-        [HttpPost]
-        public IActionResult XoaNhieu(List<int> chonSP)
-        {
-            foreach (var maSP in chonSP)
-            {
-                XoaKhoiGio(maSP); // xử lý xóa
-            }
-            TempData["Success"] = "Đã xóa sản phẩm đã chọn!";
-            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -188,9 +215,5 @@ namespace Final_Project.Controllers
 
             return Json(new { success = true, data = danhSachDiaChi });
         }
-
-
-
-
     }
 }
