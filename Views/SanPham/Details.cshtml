@@ -45,15 +45,29 @@
                 </ul>
             </div>
 
-
-            <!-- Nút thêm vào giỏ hàng -->
-            <form asp-controller="GioHang" asp-action="ThemGioHang" method="post">
-                <input type="hidden" name="maSP" value="@Model.MaSP" />
+            @{
+                int soLuongBanDau = Model.SoLuong;
+                int soLuongDaBan = ViewBag.SoLuongDaBan != null && ((Dictionary<int, int>)ViewBag.SoLuongDaBan).ContainsKey(Model.MaSP)
+                ? ((Dictionary<int, int>)ViewBag.SoLuongDaBan)[Model.MaSP]
+                : 0;
+                int soLuongTon = soLuongBanDau - soLuongDaBan;
+            }
+            @if (soLuongTon <= 0)
+            {
+                <div class="alert alert-danger mt-3">
+                    ❌ Sản phẩm đã hết hàng. Vui lòng quay lại sau!
+                </div>
+            }
+            else
+            {
+                <!-- Nút thêm vào giỏ hàng -->
+                <form asp-controller="GioHang" asp-action="ThemGioHang" method="post">
+                    <input type="hidden" name="maSP" value="@Model.MaSP" />
                 <div class="mt-3">
                     <label for="soLuong" class="form-label">Số lượng:</label>
                     <div class="input-group" style="width: 150px;">
                         <button class="btn btn-outline-secondary" type="button" onclick="thayDoiSoLuong(-1)"> − </button>
-                        <input type="number" id="soLuong" name="soLuong" class="form-control text-center" value="1" min="1" />
+                            <input type="number" id="soLuong" name="soLuong" class="form-control text-center" value="1" min="1" max="@soLuongTon" />
                         <button class="btn btn-outline-secondary" type="button" onclick="thayDoiSoLuong(1)"> + </button>
                     </div>
                 </div>
@@ -61,6 +75,7 @@
                     🛒 Thêm vào giỏ hàng
                 </button>
             </form>
+            }
             <script>
                 function thayDoiSoLuong(delta) {
                     const input = document.getElementById("soLuong");
