@@ -9,9 +9,13 @@
 
   <ItemGroup>
     <Compile Remove="Adminboot\Admin\Models\**" />
+    <Compile Remove="Libraries\**" />
     <Content Remove="Adminboot\Admin\Models\**" />
+    <Content Remove="Libraries\**" />
     <EmbeddedResource Remove="Adminboot\Admin\Models\**" />
+    <EmbeddedResource Remove="Libraries\**" />
     <None Remove="Adminboot\Admin\Models\**" />
+    <None Remove="Libraries\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,7 +34,6 @@
 
   <ItemGroup>
     <Folder Include="Controllers\Momo\" />
-    <Folder Include="Libraries\" />
   </ItemGroup>
 
 </Project>
