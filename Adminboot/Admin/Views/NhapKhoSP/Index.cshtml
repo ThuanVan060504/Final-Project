@@ -1,0 +1,203 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Nhập Kho";
+}
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+
+<div class="page-wrapper">
+  <div class="content">
+    <div class="page-header">
+      <div class="page-title">
+        <h4>Nhập Kho</h4>
+        <h6>Thêm sản phẩm vào kho từ nhà cung cấp</h6>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <!-- Tìm kiếm sản phẩm -->
+          <div class="col-lg-12 col-sm-12 col-12">
+            <div class="form-group">
+              <label>Nhập mã hoặc tên sản phẩm</label>
+              <div class="input-groupicon">
+                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
+                <div class="addonset">
+                  <img src="~/Admin/img/icons/search.svg" alt="search">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bảng sản phẩm -->
+          <div class="col-lg-12">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>STT</th>
+                    <th>Mã hàng</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá nhập</th>
+                    <th>Thành tiền</th>
+                  </tr>
+                </thead>
+                <tbody id="product-list">
+                  <tr>
+                    <td colspan="6" class="text-success text-center bg-light">
+                      Gõ mã hoặc tên sản phẩm vào hộp tìm kiếm để thêm hàng vào đơn hàng
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thông tin thêm -->
+        <div class="row mt-4">
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Nhà cung cấp</label>
+              <div class="input-group">
+                <input type="text" class="form-control" placeholder="Tìm nhà cung cấp">
+                <div class="input-group-append">
+                  <button class="btn btn-primary" type="button">+</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Ngày nhập</label>
+              <div class="input-groupicon">
+                <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
+                <div class="addonset">
+                  <img src="~/Admin/img/icons/calendars.svg" alt="calendar">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Người nhập</label>
+              <select class="form-control select">
+                <option>admin</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label>Ghi chú</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thông tin thanh toán -->
+        <div class="row mt-4">
+          <div class="col-lg-12">
+            <h5><i class="fas fa-info-circle text-primary"></i> Thông tin thanh toán</h5>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Hình thức</label>
+              <div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" checked name="hinhthuc" id="tienmat">
+                  <label class="form-check-label" for="tienmat">Tiền mặt</label>
+                </div>
+                <div class="form-check form-check-inline">
+                  <input class="form-check-input" type="radio" name="hinhthuc" id="the">
+                  <label class="form-check-label" for="the">Thẻ</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Tiền hàng</label>
+              <input id="tien-hang" type="text" class="form-control" value="0" readonly>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Chiết khấu</label>
+              <input id="chiet-khau" type="number" class="form-control" value="0">
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Tổng cộng</label>
+              <input id="tong-cong" type="text" class="form-control" value="0" readonly>
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Thanh toán</label>
+              <input id="thanh-toan" type="number" class="form-control" value="0">
+            </div>
+          </div>
+
+          <div class="col-lg-4 col-sm-6 col-12">
+            <div class="form-group">
+              <label>Còn nợ</label>
+              <input id="con-no" type="text" class="form-control" value="0" readonly>
+            </div>
+          </div>
+
+          <div class="col-lg-12 mt-3">
+            <div class="form-group d-flex gap-2">
+              <button class="btn btn-secondary me-2">Lưu tạm</button>
+              <button class="btn btn-primary me-2">Lưu</button>
+              <button class="btn btn-info me-2">Lưu và in</button>
+              <button class="btn btn-danger">Trở lại</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+
+<script src="~/Admin/js/feather.min.js"></script>
+
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+
+<script src="~/Admin/js/script.js"></script>
