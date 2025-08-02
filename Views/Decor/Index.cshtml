@@ -8,48 +8,82 @@
 
 <div class="container">
     <div class="row">
-        @foreach (var item in Model)
-        {
-            <div class="col-md-6 mb-5">
-                <div class="card shadow">
-                    <div class="card-header bg-dark text-white">
-                        <h5>@item.TenDecor</h5>
-                    </div>
-                    <div class="card-body">
-                        <p>@item.MoTa</p>
+        <!-- 🔍 Sidebar -->
+        <div class="col-md-3 mb-4">
+            <form method="get" asp-action="Index" class="card shadow-sm p-3">
+                <h5 class="fw-semibold mb-3">🎯 Bộ lọc</h5>
 
-                        @if (!string.IsNullOrEmpty(item.Link3D))
-                        {
-                            string embedLink = item.Link3D;
-
-                            // Nếu link không có /embed/ thì thay thế
-                            if (!embedLink.Contains("/embed/"))
-                            {
-                                
-                                var modelId = embedLink.Split('/').Last();
-                                embedLink = $"https://sketchfab.com/models/{modelId}/embed";
-                            }
-
-                            // Thêm autostart
-                            if (!embedLink.Contains("?autostart=1"))
-                            {
-                                embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
-                            }
-
-                            <div class="ratio ratio-16x9">
-                                <iframe
-                                    title="3D Decor Viewer"
-                                    frameborder="0"
-                                    allowfullscreen
-                                    allow="autoplay; fullscreen; xr-spatial-tracking"
-                                    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
-                                    src="@embedLink">
-                                </iframe>
-                            </div>
-                        }
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Danh mục</label>
+                    <select class="form-select" name="category">
+                        <option value="">Tất cả</option>
+                        <option value="Phòng khách">Phòng khách</option>
+                        <option value="Phòng ngủ">Phòng ngủ</option>
+                        <option value="Phòng ăn">Phòng ăn</option>
+                        <option value="Phòng làm việc">Phòng làm việc</option>
+                    </select>
                 </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Tìm kiếm</label>
+                    <input class="form-control" type="text" name="search" placeholder="Tên decor..."
+                           value="@Context.Request.Query["search"]" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Sắp xếp theo</label>
+                    <select class="form-select" name="sort">
+                        <option value="">Mặc định</option>
+                        <option value="asc">Tên A-Z</option>
+                        <option value="desc">Tên Z-A</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Lọc Decor</button>
+            </form>
+        </div>
+
+        <!-- 📦 Danh sách Decor -->
+        <div class="col-md-9">
+            <div class="row">
+                @foreach (var item in Model)
+                {
+                    <div class="col-md-6 mb-5">
+                        <div class="card shadow">
+                            <div class="card-header bg-dark text-white">
+                                <h5>@item.TenDecor</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>@item.MoTa</p>
+
+                                @if (!string.IsNullOrEmpty(item.Link3D))
+                                {
+                                    string embedLink = item.Link3D;
+                                    if (!embedLink.Contains("/embed/"))
+                                    {
+                                        var modelId = embedLink.Split('/').Last();
+                                        embedLink = $"https://sketchfab.com/models/{modelId}/embed";
+                                    }
+                                    if (!embedLink.Contains("?autostart=1"))
+                                    {
+                                        embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
+                                    }
+
+                                    <div class="ratio ratio-16x9">
+                                        <iframe title="3D Decor Viewer"
+                                                frameborder="0"
+                                                allowfullscreen
+                                                allow="autoplay; fullscreen; xr-spatial-tracking"
+                                                xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                                                src="@embedLink">
+                                        </iframe>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-        }
+        </div>
     </div>
 </div>

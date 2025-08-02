@@ -9,12 +9,16 @@
 
   <ItemGroup>
     <Compile Remove="Adminboot\Admin\Models\**" />
+    <Compile Remove="Controllers\Momo\**" />
     <Compile Remove="Libraries\**" />
     <Content Remove="Adminboot\Admin\Models\**" />
+    <Content Remove="Controllers\Momo\**" />
     <Content Remove="Libraries\**" />
     <EmbeddedResource Remove="Adminboot\Admin\Models\**" />
+    <EmbeddedResource Remove="Controllers\Momo\**" />
     <EmbeddedResource Remove="Libraries\**" />
     <None Remove="Adminboot\Admin\Models\**" />
+    <None Remove="Controllers\Momo\**" />
     <None Remove="Libraries\**" />
   </ItemGroup>
 
@@ -30,10 +34,6 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.7" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controllers\Momo\" />
   </ItemGroup>
 
 </Project>

@@ -267,6 +267,7 @@ main {
                     padding-left: 4px;
                 }
 
+
 @media (max-width: 768px) {
     .footer .footer-content {
         flex-direction: column;
@@ -284,3 +285,17 @@ main {
         transform: translateX(-50%);
     }
 }
+.search-bar {
+    height: 100%;
+}
+
+    .search-bar input {
+        height: 44px;
+        font-size: 1rem;
+    }
+
+    .search-bar button {
+        height: 44px;
+        font-size: 1rem;
+    }
+
