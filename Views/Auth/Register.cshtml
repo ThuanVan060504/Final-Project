@@ -4,72 +4,158 @@
     Layout = null;
     ViewData["Title"] = "Đăng ký";
 }
-<link rel="stylesheet" href="~/css/dangky.css" />
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+    <meta name="description" content="POS - Giao diện quản trị bằng Bootstrap" />
+    <meta name="keywords" content="quản trị, bootstrap, doanh nghiệp, hóa đơn, responsive, html5" />
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Đăng ký - Quản trị POS</title>
 
-<div class="auth-container">
-    <h2 class="auth-title">📝 Đăng ký tài khoản</h2>
+    <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg" />
+    <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css" />
+    <link rel="stylesheet" href="~/Admin/css/style.css" />
+</head>
+<body class="account-page">
+    <div class="main-wrapper">
+        <div class="account-content">
+            <div class="login-wrapper">
+                <div class="login-content">
+                    <div class="login-userset">
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert success">@TempData["Success"]</div>
+                        <div class="login-logo">
+                            <img src="~/images/Logo.jpg" alt="logo" />
+                        </div>
+
+                        <div class="login-userheading">
+                            <h3>Tạo tài khoản</h3>
+                            <h4>Tiếp tục nơi bạn đã dừng lại</h4>
+                        </div>
+
+                        @if (TempData["Success"] != null)
+                        {
+                            <div class="alert alert-success text-center">@TempData["Success"]</div>
+                        }
+
+                        @if (ViewData.ModelState.ErrorCount > 0)
+                        {
+                            <div class="alert alert-danger">
+                                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                                {
+                                    <div>@error.ErrorMessage</div>
+                                }
+                            </div>
+                        }
+
+                        <form asp-controller="Auth" asp-action="Register" method="post">
+                            <div class="form-login">
+                                <label asp-for="HoTen">Họ và tên</label>
+                                <div class="form-addons">
+                                    <input asp-for="HoTen" class="form-control" placeholder="Nhập họ và tên của bạn" />
+                                    <img src="~/Admin/img/icons/users1.svg" alt="user icon" />
+                                </div>
+                                <span asp-validation-for="HoTen" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <label asp-for="Email">Email</label>
+                                <div class="form-addons">
+                                    <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ email" />
+                                    <img src="~/Admin/img/icons/mail.svg" alt="mail icon" />
+                                </div>
+                                <span asp-validation-for="Email" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <label asp-for="SDT">Số điện thoại</label>
+                                <div class="form-addons">
+                                    <input asp-for="SDT" class="form-control" placeholder="Nhập số điện thoại" />
+                                    <img src="~/Admin/img/icons/phone.svg" alt="phone icon" />
+                                </div>
+                                <span asp-validation-for="SDT" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <label asp-for="DiaChi">Địa chỉ</label>
+                                <div class="form-addons">
+                                    <input asp-for="DiaChi" class="form-control" placeholder="Nhập địa chỉ của bạn" />
+                                    <img src="~/Admin/img/icons/map.svg" alt="map icon" />
+                                </div>
+                                <span asp-validation-for="DiaChi" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <label asp-for="MatKhau">Mật khẩu</label>
+                                <div class="pass-group">
+                                    <input asp-for="MatKhau" type="password" class="form-control pass-input" placeholder="Nhập mật khẩu" />
+                                    <span class="fas toggle-password fa-eye-slash"></span>
+                                </div>
+                                <span asp-validation-for="MatKhau" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <label asp-for="XacNhanMatKhau">Xác nhận mật khẩu</label>
+                                <div class="pass-group">
+                                    <input asp-for="XacNhanMatKhau" type="password" class="form-control pass-input" placeholder="Xác nhận lại mật khẩu" />
+                                    <span class="fas toggle-password fa-eye-slash"></span>
+                                </div>
+                                <span asp-validation-for="XacNhanMatKhau" class="text-danger small"></span>
+                            </div>
+
+                            <div class="form-login">
+                                <button type="submit" class="btn btn-login">Đăng ký</button>
+                            </div>
+                        </form>
+
+                        <div class="signinform text-center">
+                            <h4>
+                                Đã có tài khoản?
+                                <a asp-controller="Auth" asp-action="Login" class="hover-a">Đăng nhập</a>
+                            </h4>
+                        </div>
+
+                        <div class="form-setlogin">
+                            <h4>Hoặc đăng ký bằng</h4>
+                        </div>
+
+                        <div class="form-sociallink">
+                            <ul>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <img src="~/Admin/img/icons/google.png" class="me-2" alt="google">
+                                        Đăng ký bằng Google
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);">
+                                        <img src="~/Admin/img/icons/facebook.png" class="me-2" alt="facebook">
+                                        Đăng ký bằng Facebook
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="login-img">
+                    <img src="~/images/Login.jpg" alt="ảnh đăng nhập" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+    <script src="~/Admin/js/feather.min.js"></script>
+    <script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Admin/js/script.js"></script>
+
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
     }
-
-    @if (ViewData.ModelState.ErrorCount > 0)
-    {
-        <div class="alert error">
-            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
-            {
-                <div>@error.ErrorMessage</div>
-            }
-        </div>
-    }
-
-    <form asp-controller="Auth" asp-action="Register" method="post" class="auth-form">
-        <div class="auth-box">
-            <input asp-for="HoTen" placeholder=" " class="auth-input" />
-            <label asp-for="HoTen" class="auth-label">Họ tên</label>
-            <span asp-validation-for="HoTen" class="text-danger small"></span>
-        </div>
-
-        <div class="auth-box">
-            <input asp-for="Email" placeholder=" " class="auth-input" />
-            <label asp-for="Email" class="auth-label">Email</label>
-            <span asp-validation-for="Email" class="text-danger small"></span>
-        </div>
-
-        <div class="auth-box">
-            <input asp-for="SDT" placeholder=" " class="auth-input" />
-            <label asp-for="SDT" class="auth-label">Số điện thoại</label>
-            <span asp-validation-for="SDT" class="text-danger small"></span>
-        </div>
-
-        <div class="auth-box">
-            <input asp-for="DiaChi" placeholder=" " class="auth-input" />
-            <label asp-for="DiaChi" class="auth-label">Địa chỉ</label>
-            <span asp-validation-for="DiaChi" class="text-danger small"></span>
-        </div>
-
-        <div class="auth-box">
-            <input asp-for="MatKhau" type="password" placeholder=" " class="auth-input" />
-            <label asp-for="MatKhau" class="auth-label">Mật khẩu</label>
-            <span asp-validation-for="MatKhau" class="text-danger small"></span>
-        </div>
-
-        <div class="auth-box">
-            <input asp-for="XacNhanMatKhau" type="password" placeholder=" " class="auth-input" />
-            <label asp-for="XacNhanMatKhau" class="auth-label">Xác nhận mật khẩu</label>
-            <span asp-validation-for="XacNhanMatKhau" class="text-danger small"></span>
-        </div>
-
-        <button type="submit" class="auth-button">Đăng ký</button>
-    </form>
-
-    <p class="auth-switch">
-        Đã có tài khoản?
-        <a asp-controller="Auth" asp-action="Login">Đăng nhập</a>
-    </p>
-</div>
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+</body>
+</html>
