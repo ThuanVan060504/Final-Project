@@ -249,7 +249,7 @@
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/purchase1.svg" alt="img"><span> Đơn Hàng</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="purchaselist.html">Danh Sách Đơn Hàng</a></li>
+                                <li><a asp-area="Admin" asp-controller="DonHang" asp-action="" > Danh Sách Đơn Hàng</a></li>
                                 <li><a href="addpurchase.html">Add Purchase</a></li>
                                 <li><a href="importpurchase.html">Import Purchase</a></li>
                             </ul>
@@ -276,7 +276,7 @@
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/users1.svg" alt="img"><span> Khách Hàng</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="customerlist.html">Customer List</a></li>
+                                 <li><a asp-area="Admin" asp-controller="KhachHang" asp-action="" > Danh Sách Khách Hàng</a></li>
                                 <li><a href="addcustomer.html">Add Customer </a></li>
                                 <li><a href="supplierlist.html">Supplier List</a></li>
                                 <li><a href="addsupplier.html">Add Supplier </a></li>
@@ -306,7 +306,7 @@
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/product.svg" alt="img"><span> Tin Nhắn</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="chat.html">Chat</a></li>
+                                <li><a asp-area="Admin" asp-controller="TinNhan" asp-action="" >Tin Nhắn</a></li> 
                                 <li><a href="calendar.html">Calendar</a></li>
                                 <li><a href="email.html">Email</a></li>
                             </ul>

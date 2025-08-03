@@ -1,0 +1,111 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Đơn Hàng";
+}
+
+<!-- ✅ CSS Assets -->
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Danh Sách Đơn Hàng</h4>
+                <h6>Quản lý đơn hàng của khách</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <!-- Bảng dữ liệu -->
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Sản Phẩm</th>
+                                <th>Ngày Đặt</th>
+                                <th>Phương Thức</th>
+                                <th>Trạng Thái</th>
+                                <th>Đơn Giá</th>
+                                <th>Số Lượng</th>
+                                <th>Tổng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.MaDonHang</td>
+                                    <td class="productimgname">
+                                        <a href="javascript:void(0);" class="product-img">
+                                            <img src="@item.ImageURL" alt="product" width="40" height="40" />
+                                        </a>
+                                        <a href="javascript:void(0);">@item.TenSP</a>
+                                    </td>
+                                    <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.PhuongThucThanhToan</td>
+                                    
+                                    <td>
+                                        <select class="form-select form-control status-dropdown" data-id="@item.MaDonHang">
+                                            <option value="DangXuLy" @(item.TrangThaiDonHang == "DangXuLy" ? "selected" : "")>Đang xử lý</option>
+                                            <option value="DangGiao" @(item.TrangThaiDonHang == "DangGiao" ? "selected" : "")>Đang giao</option>
+                                            <option value="DaGiao" @(item.TrangThaiDonHang == "DaGiao" ? "selected" : "")>Đã giao</option>
+                                            <option value="HuyDon" @(item.TrangThaiDonHang == "HuyDon" ? "selected" : "")>Hủy đơn</option>
+                                        </select>
+                                    </td>
+
+
+                                    <td>@item.DonGiaBan.ToString("N0") ₫</td>
+                                    <td>@item.SoLuongDat</td>
+                                    <td>@item.TongTien.ToString("N0") ₫</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ✅ JS Assets -->
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
+<script>
+   $('.status-dropdown').change(function () {
+    var maDonHang = $(this).data('id');
+    var trangThaiMoi = $(this).val();
+
+    $.ajax({
+        url: '/Admin/DonHang/UpdateTrangThai',
+        method: 'POST',
+        data: {
+            maDonHang: maDonHang,
+            trangThai: trangThaiMoi
+        },
+        success: function () {
+            alert("Cập nhật trạng thái thành công!");
+        },
+        error: function () {
+            alert("Lỗi khi cập nhật trạng thái.");
+        }
+    });
+});
+
+</script>

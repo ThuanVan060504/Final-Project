@@ -1,0 +1,85 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Danh sách khách hàng";
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Khách hàng</h4>
+                <h6>Danh sách tất cả tài khoản khách hàng</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Ảnh</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>SĐT</th>
+                                <th>Địa chỉ</th>
+                                <th>Ngày tạo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var kh in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <img src="@kh.Avatar" width="40" height="40" class="rounded-circle" />
+                                    </td>
+                                    <td>@kh.HoTen</td>
+                                    <td>@kh.Email</td>
+                                    <td>@kh.SDT</td>
+                                    <td>@kh.DiaChi</td>
+                                    <td>@kh.NgayTao?.ToString("dd/MM/yyyy")</td>
+
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+
+<script src="~/Admin/js/feather.min.js"></script>
+
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+
+<script src="~/Admin/js/script.js"></script>

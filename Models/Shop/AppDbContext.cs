@@ -28,7 +28,9 @@ namespace Final_Project.Models.Shop
 
         public DbSet<Decor> Decors { get; set; }
         public DbSet<DanhMucDecor> DanhMucDecors { get; set; }
-
+        public object DonHang { get; internal set; }
+        public object ChiTietDonHang { get; internal set; }
+        public object SanPham { get; internal set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
