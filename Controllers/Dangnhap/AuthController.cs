@@ -18,16 +18,15 @@ namespace Final_Project.Controllers
         }
 
         // GET: /Dangnhap
-        [HttpGet("/Dangnhap")]
+        [HttpGet("Auth/Login")]
         public IActionResult Login()
         {
             return View("Login");
         }
 
         // POST: /Dangnhap
-        [HttpPost("/Dangnhap")]
+        [HttpPost("Auth/Login")]
         public async Task<IActionResult> Login(LoginViewModel model)
-
         {
             if (!ModelState.IsValid)
                 return View("Login", model);
@@ -85,7 +84,7 @@ namespace Final_Project.Controllers
         }
 
         // GET: /Dangxuat
-        [HttpGet("/Dangxuat")]
+        [HttpGet("Auth/Logout")]
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("MyCookie"); 

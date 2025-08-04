@@ -43,3 +43,20 @@ document.addEventListener("DOMContentLoaded", function () {
     updateCountdowns();
     setInterval(updateCountdowns, 1000);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Bắt tất cả nút mua
+    const buyButtons = document.querySelectorAll(".btn-buy-hover");
+
+    buyButtons.forEach(btn => {
+        btn.addEventListener("mouseenter", function () {
+            const card = btn.closest(".card");
+            card.classList.add("floating-effect");
+        });
+
+        btn.addEventListener("mouseleave", function () {
+            const card = btn.closest(".card");
+            card.classList.remove("floating-effect");
+        });
+    });
+});

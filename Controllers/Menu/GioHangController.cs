@@ -24,13 +24,36 @@ namespace Final_Project.Controllers
 
             HttpContext.Session.SetInt32("SoLuongGioHang", tongSoLuong);
         }
+        private int? LayMaTK()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+                return maTK;
+
+            var email = User?.Identity?.IsAuthenticated == true
+                ? User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Email)?.Value
+                : null;
+
+            if (email != null)
+            {
+                var user = _context.TaiKhoans.FirstOrDefault(u => u.Email == email);
+                if (user != null)
+                {
+                    HttpContext.Session.SetInt32("MaTK", user.MaTK);
+                    CapNhatSessionSoLuong(user.MaTK);
+                    return user.MaTK;
+                }
+            }
+
+            return null;
+        }
 
         public IActionResult Index()
         {
-            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            int? maTK = LayMaTK();
             if (maTK == null)
             {
-                return RedirectToAction("DangNhap", "Auth");
+                return RedirectToAction("Login", "Auth");
             }
 
             var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);

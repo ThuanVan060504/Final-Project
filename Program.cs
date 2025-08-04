@@ -24,8 +24,12 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddAuthentication("MyCookie")
     .AddCookie("MyCookie", options =>
     {
-        options.LoginPath = "/Dangnhap";
+        options.LoginPath = "/Auth/Login"; 
+        options.LogoutPath = "/Auth/Logout"; 
+        options.ExpireTimeSpan = TimeSpan.FromDays(7); 
+        options.SlidingExpiration = true; 
     });
+
 
 builder.Services.AddSession(options =>
 {
