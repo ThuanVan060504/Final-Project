@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-<<<<<<< HEAD
 using System.Configuration;
 using System.Net.Http;
 using System.Text;
@@ -19,18 +18,10 @@ namespace Final_Project.Controllers.Menu
             _configuration = configuration;
         }
 
-=======
-
-namespace Final_Project.Controllers
-{
-    public class ChatController : Controller
-    {
->>>>>>> 24a5830b4320cc33a3f3de6146dfc06e9e4dedb9
         public IActionResult Index()
         {
             return View();
         }
-<<<<<<< HEAD
 
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] ChatRequest model)
@@ -84,7 +75,3 @@ namespace Final_Project.Controllers
         }
     }
 }
-=======
-    }
-}
->>>>>>> 24a5830b4320cc33a3f3de6146dfc06e9e4dedb9
