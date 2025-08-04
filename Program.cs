@@ -14,9 +14,7 @@ builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("Mo
 builder.Services.AddScoped<IMomoService, MomoService>();
 builder.Services.AddScoped<IVnPayService, VnPayService>();
 builder.Services.AddHostedService<FlashSaleCleanupService>();
-
-
-
+builder.Services.AddHttpClient();
 
 
 // 1. Thêm các service cần thiết
@@ -24,10 +22,10 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddAuthentication("MyCookie")
     .AddCookie("MyCookie", options =>
     {
-        options.LoginPath = "/Auth/Login"; 
-        options.LogoutPath = "/Auth/Logout"; 
-        options.ExpireTimeSpan = TimeSpan.FromDays(7); 
-        options.SlidingExpiration = true; 
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.SlidingExpiration = true;
     });
 
 
@@ -35,9 +33,10 @@ builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true; 
+    options.Cookie.IsEssential = true;
 });
 
+builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>

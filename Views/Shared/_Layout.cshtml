@@ -11,13 +11,13 @@
 </head>
 <body>
 
-    @{
-        var controller = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
-        var action = ViewContext.RouteData.Values["action"]?.ToString().ToLower();
-    }
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString().ToLower();
+    var action = ViewContext.RouteData.Values["action"]?.ToString().ToLower();
+}
 
-    @if (controller == "home" && action == "index")
-    {
+@if (controller == "home" && action == "index")
+{
         <!-- Splash screen -->
         <div id="splash-screen" class="position-fixed top-0 start-0 w-100 h-100 bg-white d-flex justify-content-center align-items-center" style="z-index: 9999;">
             <div class="text-center">
@@ -30,7 +30,7 @@
         </div>
         <link rel="stylesheet" href="@Url.Content("~/css/splash.css")" />
         <script src="@Url.Content("~/js/splash.js")"></script>
-    }
+}
 
 
     <div class="page-wrapper d-flex flex-column min-vh-100">
@@ -45,34 +45,34 @@
                 <a href="#" class="social-icon"><i class="bi bi-whatsapp"></i></a>
             </div>
         </div>
-    <!-- Header -->
-    <header class="bg-white border-bottom py-4 shadow-sm">
-        <div class="container d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-3">
+        <!-- Header -->
+        <header class="bg-white border-bottom py-4 shadow-sm">
+            <div class="container d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-3">
                     <img src="~/images/logo.jpg" alt="img" style="height: 80px; width: auto;" />
-        
-            </div>
+
+                </div>
                 <form class="d-flex w-50 search-bar" method="get" asp-controller="SanPham" asp-action="Search">
                     <input name="keyword" class="form-control form-control-lg" placeholder="Thỏa mãn nhu cầu trang trí nhà..." />
                     <button class="btn btn-danger ms-2 px-3">🔍</button>
                 </form>
 
 
-            <div class="text-end">
-                <div class="fw-semibold">Tư vấn: <span class="text-danger">09*********</span></div>
-                <div class="fw-semibold">Đại lý: <span class="text-danger">09*********</span></div>
+                <div class="text-end">
+                    <div class="fw-semibold">Tư vấn: <span class="text-danger">09*********</span></div>
+                    <div class="fw-semibold">Đại lý: <span class="text-danger">09*********</span></div>
+                </div>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Nav -->
+        <!-- Nav -->
         <nav class="bg-light border-bottom" style="background-color: #ffffdd !important">
 
-        <div class="container">
-            <ul class="nav">
-                <li class="nav-item">
-                    <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
-                </li>
+            <div class="container">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Index">Trang chủ</a>
+                    </li>
 
 
                     <!-- Menu: Giới thiệu -->
@@ -100,9 +100,8 @@
 
 
                     <!-- Dropdown Decor -->
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" asp-controller="Decor" asp-action="Index">Decor</a>
+<a class="nav-link dropdown-toggle" asp-controller="Decor" asp-action="Index">Decor</a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="1">Phòng khách</a></li>
                             <li><a class="dropdown-item" asp-controller="Decor" asp-action="Index" asp-route-category="2">Phòng ngủ</a></li>
@@ -179,7 +178,8 @@
                     @if (!User.Identity.IsAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Auth" asp-action="Login">Đăng nhập>
+                            <a class="nav-link" asp-controller="Auth" asp-action="Login">
+                                Đăng nhập>
                                 <i class="bi bi-person-circle"></i>
                             </a>
                         </li>
@@ -191,7 +191,7 @@
                     {
                         <li class="nav-item d-flex align-items-center">
                             <a class="nav-link d-flex align-items-center text-success fw-semibold" asp-controller="User" asp-action="Profile">
-                            <img src="@((ViewBag.Avatar != null) ? ViewBag.Avatar : Url.Content("~/uploads/avatars/Avatar.jpg"))"
+                                <img src="@((ViewBag.Avatar != null) ? ViewBag.Avatar : Url.Content("~/uploads/avatars/Avatar.jpg"))"
                                      alt="Avatar"
                                      class="rounded-circle me-2"
                                      style="width: 32px; height: 32px; object-fit: cover;" />
@@ -204,33 +204,33 @@
                     }
 
 
-            </ul>
-        </div>
-    </nav>
+                </ul>
+            </div>
+        </nav>
 
 
-    <!-- Main content -->
-    <main class="flex-fill container my-4">
-        @RenderBody()
-    </main>
+        <!-- Main content -->
+        <main class="flex-fill container my-4">
+            @RenderBody()
+        </main>
 
-    <!-- Footer nội dung -->
-    <section class="footer">
-        <div class="container">
-            <div class="footer-content row">
-                <div class="col-md-3 footer-brand">
-                    <h2>🛋️ Nội Thất HomeDecor</h2>
-                    <p>Chúng tôi cung cấp các sản phẩm nội thất chất lượng...</p>
-                </div>
-                <div class="col-md-3 footer-column">
-                    <h5>Về Chúng Tôi</h5>
-                    <ul>
+        <!-- Footer nội dung -->
+        <section class="footer">
+            <div class="container">
+                <div class="footer-content row">
+                    <div class="col-md-3 footer-brand">
+                        <h2>🛋️ Nội Thất HomeDecor</h2>
+                        <p>Chúng tôi cung cấp các sản phẩm nội thất chất lượng...</p>
+                    </div>
+                    <div class="col-md-3 footer-column">
+                        <h5>Về Chúng Tôi</h5>
+                        <ul>
                             <li><a asp-controller="GioiThieu" asp-action="Index">Giới Thiệu</a></li>
                             <li><a asp-controller="SanPham" asp-action="Index">Sản Phẩm</a></li>
                             <li><a asp-controller="Decor" asp-action="Index">Decor</a></li>
                             <li><a asp-controller="TinTuc" asp-action="Index">Tin Tức</a></li>
                         </ul>
-                </div>
+                    </div>
                     <div class="col-md-3 footer-column">
                         <h5>Hỗ Trợ</h5>
                         <ul>
@@ -240,26 +240,58 @@
                             <li><a asp-controller="ThongTin" asp-action="BaoMat">Bảo Mật</a></li>
                         </ul>
                     </div>
-                <div class="col-md-3 footer-column">
-                    <h5>Tài Nguyên</h5>
-                    <ul>
-                        <li><a href="#">Tư Vấn Miễn Phí</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">YouTube</a></li>
-                    </ul>
+                    <div class="col-md-3 footer-column">
+                        <h5>Tài Nguyên</h5>
+                        <ul>
+                            <li><a href="#">Tư Vấn Miễn Phí</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">YouTube</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Footer bản quyền -->
-    <footer class="bg-dark text-white text-center py-3">
-        © 2025 G3TD-SHOP - All rights reserved.
-    </footer>
+        <!-- Footer bản quyền -->
+        <footer class="bg-dark text-white text-center py-3">
+            © 2025 G3TD-SHOP - All rights reserved.
+        </footer>
 
     </div> <!-- đóng page-wrapper -->
     <!-- Script -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleChat() {
+            const box = document.getElementById("chat-box");
+            box.style.display = box.style.display === "none" ? "block" : "none";
+        }
+
+        function sendChat() {
+            const input = document.getElementById("chat-input");
+            const content = document.getElementById("chat-content");
+            const userMessage = input.value;
+
+            if (!userMessage.trim()) return;
+
+            content.innerHTML += `<div><strong>Bạn:</strong> ${userMessage}</div>`;
+            input.value = "";
+
+                    fetch("/Chat/SendMessage", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+        body: JSON.stringify({ message: userMessage })
+                })
+
+                    .then(res => res.json())
+                    .then(data => {
+                content.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+                                content.scrollTop = content.scrollHeight;
+                            });
+                        }
+    </script>
+
 
     <!-- Facebook Messenger Plugin chat -->
     <div id="fb-root"></div>
@@ -282,7 +314,21 @@
         }(document, 'script', 'facebook-jssdk'));
     </script>
     @RenderSection("Scripts", required: false)
+    <!-- Chat button -->
+    <div id="chat-icon" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;">
+        <button class="btn btn-primary rounded-circle" onclick="toggleChat()">
+            💬
+        </button>
+    </div>
+
+    <!-- Chat box -->
+    <div id="chat-box" style="display: none; position: fixed; bottom: 80px; right: 20px; width: 300px; background: white; border: 1px solid #ccc; border-radius: 8px; padding: 10px; z-index: 9999;">
+        <div style="height: 300px; overflow-y: auto;" id="chat-content"></div>
+        <div class="mt-2 d-flex">
+            <input type="text" id="chat-input" class="form-control" placeholder="Gõ gì đó..." />
+            <button class="btn btn-success ms-2" onclick="sendChat()">Gửi</button>
+        </div>
+    </div>
+
 </body>
 </html>
-
-    

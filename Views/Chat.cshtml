@@ -1,0 +1,42 @@
+
+﻿@{
+    ViewData["Title"] = "Chat AI";
+}
+
+<div class="container mt-5">
+    <h3 class="mb-3">Chat với AI 🤖</h3>
+    <div id="chatBox" class="border p-3 mb-3" style="height: 300px; overflow-y: auto;">
+    </div>
+
+    <form id="chatForm">
+        <div class="input-group">
+            <input type="text" id="userInput" class="form-control" placeholder="Nhập tin nhắn..." />
+            <button class="btn btn-primary">Gửi</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        $("#chatForm").submit(function (e) {
+            e.preventDefault();
+            let userMessage = $("#userInput").val();
+            if (!userMessage.trim()) return;
+
+            $("#chatBox").append(`<div><strong>Bạn:</strong> ${userMessage}</div>`);
+            $("#userInput").val("");
+
+            $.post("/Chat/SendMessage", { message: userMessage }, function (data) {
+                $("#chatBox").append(`<div><strong>AI:</strong> ${data.reply}</div>`);
+                $("#chatBox").scrollTop($("#chatBox")[0].scrollHeight);
+            });
+        });
+    </script>
+}
+
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
