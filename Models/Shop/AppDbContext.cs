@@ -31,7 +31,7 @@ namespace Final_Project.Models.Shop
         public object DonHang { get; internal set; }
         public object ChiTietDonHang { get; internal set; }
         public object SanPham { get; internal set; }
-
+        public DbSet<NhaCungCap> NhaCungCaps { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!

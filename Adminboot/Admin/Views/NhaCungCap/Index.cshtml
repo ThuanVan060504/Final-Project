@@ -1,0 +1,98 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Nhà Cung Cấp";
+}
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>DANH SÁCH NHÀ CUNG CẤP</h4>
+                <h6>View/Search Supplier</h6>
+            </div>
+            <a href="@Url.Action("Create", "NhaCungCap", new { area = "Admin" })" class="btn btn-added">
+                <img src="~/Admin/img/icons/plus.svg" class="me-1" alt="img"> Add Supplier
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-top">
+                <div class="search-set">
+                    <div class="search-input">
+                        <a class="btn btn-searchset"><img src="~/Admin/img/icons/search-white.svg" alt="img"></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table datanew">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="checkboxs">
+                                    <input type="checkbox" id="select-all">
+                                    <span class="checkmarks"></span>
+                                </label>
+                            </th>
+                            <th>Mã NCC</th>
+                            <th>Tên Nhà Cung Cấp</th>
+                            <th>Địa Chỉ</th>
+                            <th>Số Điện Thoại</th>
+                            <th>Email</th>
+                            <th>Chỉnh Sửa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <label class="checkboxs">
+                                        <input type="checkbox" />
+                                        <span class="checkmarks"></span>
+                                    </label>
+                                </td>
+                                <td>@item.MaNCC</td>
+                                <td>@item.TenNCC</td>
+                                <td>@item.DiaChi</td>
+                                <td>@item.SoDienThoai</td>
+                                <td>@item.Email</td>
+                                <td>
+                                    <a class="me-3" href="/Admin/NhaCungCap/Edit/@item.MaNCC">
+                                        <img src="~/Admin/img/icons/edit.svg" alt="edit" />
+                                    </a>
+                                    <a class="me-3 confirm-text" href="/Admin/NhaCungCap/Delete/@item.MaNCC">
+                                        <img src="~/Admin/img/icons/delete.svg" alt="delete" />
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
