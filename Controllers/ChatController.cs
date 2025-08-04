@@ -29,6 +29,12 @@ namespace Final_Project.Controllers.Menu
             var message = model?.Message;
             var client = _httpClientFactory.CreateClient();
 
+            var apiKey = _configuration["OpenRouter:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                return Json(new { reply = "❗ API Key không được tìm thấy. Kiểm tra lại appsettings.json" });
+            }
+
             var requestData = new
             {
                 model = "gpt-3.5-turbo",
@@ -39,15 +45,18 @@ namespace Final_Project.Controllers.Menu
             };
 
             var requestContent = new StringContent(JsonSerializer.Serialize(requestData), Encoding.UTF8, "application/json");
-            var apiKey = _configuration["OpenRouter:ApiKey"];
-            // Sử dụng key OpenRouter
-            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}"); client.DefaultRequestHeaders.Add("HTTP-Referer", "http://localhost:5001"); // bắt buộc (điền domain project hoặc localhost)
+
+            client.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+            client.DefaultRequestHeaders.Add("HTTP-Referer", "http://localhost:5001"); // OpenRouter yêu cầu
             client.DefaultRequestHeaders.Add("X-Title", "Chatbox Demo MVC");
 
             var response = await client.PostAsync("https://openrouter.ai/api/v1/chat/completions", requestContent);
             var responseString = await response.Content.ReadAsStringAsync();
 
-            Console.WriteLine("💬 OpenRouter trả về:\n" + responseString);
+            if (!response.IsSuccessStatusCode)
+            {
+                return Json(new { reply = $"❗ Lỗi gọi API: {(int)response.StatusCode} - {response.ReasonPhrase}\n{responseString}" });
+            }
 
             try
             {
@@ -55,9 +64,8 @@ namespace Final_Project.Controllers.Menu
 
                 if (!jsonDoc.RootElement.TryGetProperty("choices", out var choices))
                 {
-                    return Json(new { reply = "❗ OpenRouter không trả về choices:\n" + responseString });
+                    return Json(new { reply = "❗ OpenRouter không trả về 'choices':\n" + responseString });
                 }
-
 
                 var reply = choices[0].GetProperty("message").GetProperty("content").GetString();
                 return Json(new { reply });
