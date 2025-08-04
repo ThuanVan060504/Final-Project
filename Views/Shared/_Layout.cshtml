@@ -52,11 +52,11 @@
                     <img src="~/images/logo.jpg" alt="img" style="height: 80px; width: auto;" />
         
             </div>
-                <form class="d-flex w-50 search-bar">
-
-                    <input class="form-control form-control-lg" placeholder="Thỏa mãn nhu cầu trang trí nhà..." />
+                <form class="d-flex w-50 search-bar" method="get" asp-controller="SanPham" asp-action="Search">
+                    <input name="keyword" class="form-control form-control-lg" placeholder="Thỏa mãn nhu cầu trang trí nhà..." />
                     <button class="btn btn-danger ms-2 px-3">🔍</button>
                 </form>
+
 
             <div class="text-end">
                 <div class="fw-semibold">Tư vấn: <span class="text-danger">09*********</span></div>

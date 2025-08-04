@@ -68,6 +68,17 @@
 
 <div class="container mt-5">
     <h2 class="fw-bold mb-4 text-center">🛒 Tất cả sản phẩm</h2>
+    @if (ViewBag.Keyword != null)
+    {
+        <h4>Kết quả tìm kiếm cho: "<span class="text-danger">@ViewBag.Keyword</span>"</h4>
+
+        @if (!Model.Any())
+        {
+            <div class="alert alert-warning text-center">
+                😥 Không tìm thấy sản phẩm nào phù hợp với từ khóa "<strong>@ViewBag.Keyword</strong>"
+            </div>
+        }
+    }
 
     <div class="row">
         <!-- 🔍 Sidebar -->
