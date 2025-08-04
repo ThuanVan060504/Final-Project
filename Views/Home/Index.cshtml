@@ -12,7 +12,100 @@
         transition: all 0.3s ease-in-out;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
     }
+
+    .product-section {
+        margin-top: 60px;
+    }
+
+        .product-section h2 {
+            font-weight: 700;
+            margin-bottom: 30px;
+            border-left: 6px solid #e63946;
+            padding-left: 15px;
+            font-size: 1.75rem;
+        }
+
+    .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .card-body p.text-muted {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .card .card-text {
+        font-size: 0.875rem;
+        color: #555;
+    }
+
+    .card {
+        transition: 0.3s;
+        height: 100%;
+    }
+
+        .card img {
+            height: 250px;
+            object-fit: cover;
+            border-bottom: 1px solid #eee;
+        }
+
+    .section-header {
+        font-size: 1.75rem;
+        font-weight: bold;
+        position: relative;
+        padding-left: 20px;
+        margin-bottom: 30px;
+    }
+
+        .section-header::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 5px;
+            width: 6px;
+            height: 80%;
+            background-color: #e63946;
+        }
+
+    .product-card .card-img-top {
+        height: 230px;
+        object-fit: cover;
+        border-radius: 6px 6px 0 0;
+    }
+
+    .product-card .card-body {
+        padding: 15px;
+    }
+
+    .product-card .card-title {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .product-card .card-text {
+        font-size: 0.875rem;
+        color: #555;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    @@media (max-width: 768px) {
+        .section-header
+
+    {
+        font-size: 1.4rem;
+    }
+
+    }
 </style>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 <link rel="stylesheet" href="/css/site.css" />
 
@@ -132,33 +225,85 @@
         </div>
     </div>
 
+@if (ViewBag.SanPhamYeuThich != null)
+{
+        <div class="product-section">
+            <h2 class="section-header"><i class="fa fa-heart text-danger me-2"></i>Sản phẩm được yêu thích</h2>
+            <div class="row">
+                @foreach (var item in ViewBag.SanPhamYeuThich)
+                {
+                    var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                    int yeuThich = item.SoLuongYeuThich;
 
-    <h2 class="mb-4">Sản phẩm nổi bật</h2>
-    <div class="row">
-<div class="row">
-    @foreach (var sp in Model)
-    {
-        <div class="col-md-4 mb-4">
-           <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
-                <div class="card h-100 shadow-sm">
-                    <img src="@sp.ImageURL ?? "/images/no-image.png"" class="card-img-top"
-                         alt="@sp.TenSP" style="height: 250px; object-fit: cover;" />
-                    <div class="card-body">
-                        <h5 class="card-title text-truncate" title="@sp.TenSP">@sp.TenSP</h5>
-
-                        <p class="text-muted mb-1">
-                            <i class="bi bi-tags"></i> @sp.DanhMuc?.TenDanhMuc ?? "Không rõ"
-                        </p>
-
-                        <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
-
-                        <p class="card-text">@sp.MoTa</p>
+                    <div class="col-md-4 mb-4">
+                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
+                            <div class="card h-100 shadow-sm product-card">
+                                <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" class="card-img-top" />
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate" title="@sp.TenSP">@sp.TenSP</h5>
+                                    <p class="text-muted mb-1">@sp.DanhMuc?.TenDanhMuc</p>
+                                    <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
+                                    <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
+                                </div>
+                            </div>
+                        </a>
                     </div>
-                </div>
-            </a>
+                }
+            </div>
         </div>
-    }
-</div>
+}
+
+@if (ViewBag.SanPhamBanChay != null)
+{
+        <div class="product-section">
+            <h2 class="section-header"><i class="fa fa-fire text-warning me-2"></i>Sản phẩm bán chạy nhất</h2>
+            <div class="row">
+                @foreach (var item in ViewBag.SanPhamBanChay)
+                {
+                    var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                    int daBan = item.SoLuongDaBan;
+
+                    <div class="col-md-4 mb-4">
+                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
+                            <div class="card h-100 shadow-sm product-card">
+                                <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" class="card-img-top" />
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate" title="@sp.TenSP">@sp.TenSP</h5>
+                                    <p class="text-muted mb-1">@sp.DanhMuc?.TenDanhMuc</p>
+                                    <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
+                                    <p><i class="fa fa-shopping-cart text-primary"></i> Đã bán: @daBan</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+}
+
+    <div class="product-section">
+        <h2 class="section-header"><i class="fa fa-star text-success me-2"></i>Sản phẩm mới nhất</h2>
+        <div class="row">
+            @foreach (var sp in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
+                        <div class="card h-100 shadow-sm product-card">
+                            <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" class="card-img-top" />
+                            <div class="card-body">
+                                <h5 class="card-title text-truncate" title="@sp.TenSP">@sp.TenSP</h5>
+                                <p class="text-muted mb-1"><i class="fa fa-tag me-1"></i>@sp.DanhMuc?.TenDanhMuc</p>
+                                <p class="text-danger fw-bold">@sp.DonGia.ToString("N0") đ</p>
+                                <p class="card-text text-truncate" title="@sp.MoTa">@sp.MoTa</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+
 
 @if (TempData["TestSession"] != null)
 {

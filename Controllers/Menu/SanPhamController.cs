@@ -77,6 +77,7 @@ namespace Final_Project.Controllers.Menu
             ViewBag.CurrentPage = page;
             ViewBag.TotalPages = totalPages;
 
+          
             return View(pagedProducts);
         }
 
