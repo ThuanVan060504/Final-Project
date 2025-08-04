@@ -563,7 +563,12 @@
     document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
     el.classList.add('active');
 }
-
+ window.addEventListener("DOMContentLoaded", function () {
+            const hash = window.location.hash;
+            if (hash === "#historySection") {
+                showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
+            }
+        });
 </script>
 }
 
