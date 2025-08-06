@@ -240,26 +240,21 @@
                                 <li><a href="subaddcategory.cshtml">Thêm Danh Muc Decor</a></li>
                                 <li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="">Thương Hiệu</a></li>
                                 <li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="Create">Thêm Thương Hiệu</a></li>
-
-                                <li><a href="importproduct.cshtml">Import Products</a></li>
-                                <li><a href="barcode.cshtml">Print Barcode</a></li>
                             </ul>
                         </li>
 
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/purchase1.svg" alt="img"><span> Đơn Hàng</span> <span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a asp-area="Admin" asp-controller="DonHang" asp-action="" > Danh Sách Đơn Hàng</a></li>
-                                <li><a href="addpurchase.html">Add Purchase</a></li>
-                                <li><a href="importpurchase.html">Import Purchase</a></li>
-                            </ul>
+                        <li>
+                            <a asp-area="Admin" asp-controller="DonHang" asp-action="Index">
+                                <img src="~/Admin/img/icons/purchase1.svg" alt="img">
+                                <span> Đơn Hàng</span>
+                            </a>
                         </li>
+
                         <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/expense1.svg" alt="img"><span> Expense</span> <span class="menu-arrow"></span></a>
+                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/expense1.svg" alt="img"><span> Chi phí</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="expenselist.html">Expense List</a></li>
-                                <li><a href="createexpense.html">Add Expense</a></li>
-                                <li><a href="expensecategory.html">Expense Category</a></li>
+                                <li><a href="expenselist.html">Chi phí đơn hàng</a></li>
+                                <li><a href="createexpense.html">Chi phí nhập hàng</a></li>
                             </ul>
                         </li>
 
@@ -267,7 +262,6 @@
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/transfer1.svg" alt="img"><span> Nhập Kho</span> <span class="menu-arrow"></span></a>
                             <ul>
                                 <li><a asp-area="Admin" asp-controller="NhaCungCap" asp-action=""> Nhà Cung Cấp</a></li>
-
                                 <li><a asp-area="Admin" asp-controller="NhaCungCap" asp-action="Create"> Thêm Nhà Cung Cấp</a></li>
                                   <li><a asp-area="Admin" asp-controller="Nhapkho" asp-action="" > Nhập Kho</a></li>
                             </ul>
@@ -277,27 +271,17 @@
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/users1.svg" alt="img"><span> Khách Hàng</span> <span class="menu-arrow"></span></a>
                             <ul>
                                  <li><a asp-area="Admin" asp-controller="KhachHang" asp-action="" > Danh Sách Khách Hàng</a></li>
-                                <li><a href="addcustomer.html">Add Customer </a></li>
-                                <li><a href="supplierlist.html">Supplier List</a></li>
-                                <li><a href="addsupplier.html">Add Supplier </a></li>
-                                <li><a href="userlist.html">User List</a></li>
-                                <li><a href="adduser.html">Add User</a></li>
-                                <li><a href="storelist.html">Store List</a></li>
-                                <li><a href="addstore.html">Add Store</a></li>
+                                <li><a href="addcustomer.html">Sản phẩm được mua và yêu thích</a></li>
+                                <li><a href="supplierlist.html">Sản phẩm trong giỏ hàng</a></li>
+                                <li><a href="addsupplier.html">Chỉnh sửa thông tin khách hàng </a></li>
                             </ul>
 
-
-
-
-
                         <li class="submenu">
-                            <a href="javascript:void(0);"><i data-feather="bar-chart-2"></i> <span> Charts </span> <span class="menu-arrow"></span></a>
+                            <a href="javascript:void(0);"><i data-feather="bar-chart-2"></i> <span> Biểu đồ </span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="chart-apex.html">Apex Charts</a></li>
-                                <li><a href="chart-js.html">Chart Js</a></li>
-                                <li><a href="chart-morris.html">Morris Charts</a></li>
-                                <li><a href="chart-flot.html">Flot Charts</a></li>
-                                <li><a href="chart-peity.html">Peity Charts</a></li>
+                                <li><a href="chart-js.html">Nhập hàng</a></li>
+                                <li><a href="chart-morris.html">Tuần suất đăng nhập</a></li>
+                                <li><a href="chart-apex.html">Loại sản phẩm được mua</a></li>
                             </ul>
                         </li>
 
@@ -306,33 +290,17 @@
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/product.svg" alt="img"><span> Tin Nhắn</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a asp-area="Admin" asp-controller="TinNhan" asp-action="" >Tin Nhắn</a></li> 
-                                <li><a href="calendar.html">Calendar</a></li>
-                                <li><a href="email.html">Email</a></li>
+                                <li><a asp-area="Admin" asp-controller="TinNhan" asp-action="" >Tin Nhắn trực tiếp</a></li> 
+                                <li><a href="email.html">Tin nhắn qua Email</a></li>
                             </ul>
                         </li>
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/time.svg" alt="img"><span> Báo Cáo</span> <span class="menu-arrow"></span></a>
                             <ul>
-                                <li><a href="purchaseorderreport.html">Purchase order report</a></li>
-                                <li><a href="inventoryreport.html">Inventory Report</a></li>
-                                <li><a href="salesreport.html">Sales Report</a></li>
-                                <li><a href="invoicereport.html">Invoice Report</a></li>
-                                <li><a href="purchasereport.html">Purchase Report</a></li>
-                                <li><a href="supplierreport.html">Supplier Report</a></li>
-                                <li><a href="customerreport.html">Customer Report</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/settings.svg" alt="img"><span> Settings</span> <span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="generalsettings.html">General Settings</a></li>
-                                <li><a href="emailsettings.html">Email Settings</a></li>
-                                <li><a href="paymentsettings.html">Payment Settings</a></li>
-                                <li><a href="currencysettings.html">Currency Settings</a></li>
-                                <li><a href="grouppermissions.html">Group Permissions</a></li>
-                                <li><a href="taxrates.html">Tax Rates</a></li>
+                                <li><a href="purchasereport.html">Nhập kho</a></li>
+                                <li><a href="salesreport.html">Sản phẩm sales</a></li>
+                                <li><a href="supplierreport.html">Sản phẩm</a></li>
+                                <li><a href="customerreport.html">khách hàng</a></li>
                             </ul>
                         </li>
                     </ul>
