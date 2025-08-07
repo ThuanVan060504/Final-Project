@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,12 +17,9 @@ namespace Final_Project.Models.Shop
         [Required]
         public decimal DonGia { get; set; }
 
-        public decimal? GiaGoc { get; set; } 
+        public decimal? GiaGoc { get; set; }
 
         public string? MoTa { get; set; }
-
-        [NotMapped]
-        public string? ChiTiet { get; set; }
 
         [Required]
         public int SoLuong { get; set; }
@@ -32,19 +30,26 @@ namespace Final_Project.Models.Shop
         public int? ChieuCao { get; set; }
         public int? ChieuSau { get; set; }
 
-        // ⚙️ Danh mục sản phẩm
+        // Khóa ngoại đến DanhMuc
         public int? MaDanhMuc { get; set; }
 
         [ForeignKey("MaDanhMuc")]
         public DanhMuc? DanhMuc { get; set; }
 
-        // ⚙️ Thương hiệu sản phẩm
+        // Khóa ngoại đến ThuongHieu
         public int? MaThuongHieu { get; set; }
 
         [ForeignKey("MaThuongHieu")]
         public ThuongHieu? ThuongHieu { get; set; }
 
-        // 🔗 Danh sách đánh giá
+        // Ngày tạo - phải để nullable để tránh lỗi khi giá trị trong DB là NULL
+        public DateTime? NgayTao { get; set; }
+
+        // Danh sách đánh giá (nếu có)
         public ICollection<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+
+        // Không lưu trong DB
+        [NotMapped]
+        public string? ChiTiet { get; set; }
     }
 }
