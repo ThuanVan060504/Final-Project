@@ -1,203 +1,353 @@
-﻿@{
+﻿@using Final_Project.Models.Shop
+
+@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Nhập Kho";
+    var nhaCungCaps = ViewBag.NhaCungCaps as List<NhaCungCap>;
+    var sanPhams = ViewBag.SanPhams as List<SanPham>;
 }
+
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
-
 <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/animate.css">
-
 <link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
-
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
+<form asp-area="Admin" asp-controller="NhapKho" asp-action="Index" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <div class="page-wrapper">
+        <div class="content">
+            <div class="page-header">
+                <div class="page-title">
+                    <h4>Nhập Kho</h4>
+                    <h6>Thêm sản phẩm vào kho từ nhà cung cấp</h6>
+                </div>
+            </div>
 
-<div class="page-wrapper">
-  <div class="content">
-    <div class="page-header">
-      <div class="page-title">
-        <h4>Nhập Kho</h4>
-        <h6>Thêm sản phẩm vào kho từ nhà cung cấp</h6>
-      </div>
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Tìm kiếm sản phẩm -->
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Nhập mã hoặc tên sản phẩm</label>
+                                <div class="input-groupicon">
+                                    <input type="text" id="search-input" class="form-control" placeholder="Tìm kiếm sản phẩm" />
+                                    <div class="addonset">
+                                        <img src="~/Admin/img/icons/search.svg" alt="search" />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách sản phẩm -->
+                        <div class="col-lg-12">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>X</th>
+                                            <th>Mã hàng</th>
+                                            <th>Tên sản phẩm</th>
+                                            <th>Số lượng còn</th>
+                                            <th>Số lượng nhập</th>
+                                            <th>Giá nhập</th>
+                                            <th>Thành tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="product-list">
+                                        @if (sanPhams != null && sanPhams.Any())
+                                        {
+                                            foreach (var sp in sanPhams)
+                                            {
+                                               <tr class="product-row d-none">
+                                                    <td>
+                                                        <input type="checkbox" class="sp-checkbox" value="@sp.MaSP" />
+                                                    </td>
+                                                    <td>@sp.MaSP</td>
+                                                    <td class="productimgname">
+                                                        <a href="javascript:void(0);" class="product-img">
+                                                            <img src="@sp.ImageURL" alt="product" />
+                                                        </a>
+                                                        <a href="javascript:void(0);">@sp.TenSP</a>
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" class="form-control" value="@sp.SoLuong" readonly />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="Soluong_@sp.MaSP" class="form-control sl-input" min="1" value="1" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="number" name="GiaNhap_@sp.MaSP" class="form-control gia-input" min="0" value="0" />
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control thanh-tien" value="0" readonly />
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin nhập kho -->
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Nhà cung cấp</label>
+                                <select name="MaNCC" class="form-control select">
+                                    @foreach (var ncc in nhaCungCaps)
+                                    {
+                                        <option value="@ncc.MaNCC">@ncc.TenNCC</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Ngày nhập</label>
+                                <input name="NgayNhap" type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Người nhập</label>
+                                <select name="MaNguoiNhap" class="form-control select">
+                                    <option value="1">Admin</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Ghi chú</label>
+                                <textarea name="GhiChu" class="form-control" rows="3"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <h5><i class="fas fa-info-circle text-primary"></i> Thông tin thanh toán</h5>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Hình thức</label>
+                                <div>
+                                    <input type="radio" name="HinhThucThanhToan" value="Tiền mặt" checked /> Tiền mặt
+                                    <input type="radio" name="HinhThucThanhToan" value="Thẻ" /> Thẻ
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Tiền hàng</label>
+                                <input name="TongTienHang" id="tien-hang" type="text" class="form-control" value="0" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Chiết khấu</label>
+                                <input name="ChietKhau" id="chiet-khau" type="number" class="form-control" value="0" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Tổng cộng</label>
+                                <input name="TongTien" id="tong-cong" type="text" class="form-control" value="0" readonly />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Thanh toán</label>
+                                <input name="DaThanhToan" id="thanh-toan" type="number" class="form-control" value="0" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label>Còn nợ</label>
+                                <input id="con-no" type="text" class="form-control" value="0" readonly />
+                            </div>
+                        </div>
+
+                        <!-- Hidden inputs -->
+                        <input type="hidden" name="TongTien" id="hd-tong-tien" />
+                        <input type="hidden" name="DaThanhToan" id="hd-thanh-toan" />
+                        <input type="hidden" name="ConNo" id="hd-con-no" />
+
+                        <div class="col-lg-12 mt-3">
+                            <div class="form-group d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                                <a href="#" class="btn btn-danger">Trở lại</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
+</form>
 
-    <div class="card">
-      <div class="card-body">
-        <div class="row">
-          <!-- Tìm kiếm sản phẩm -->
-          <div class="col-lg-12 col-sm-12 col-12">
-            <div class="form-group">
-              <label>Nhập mã hoặc tên sản phẩm</label>
-              <div class="input-groupicon">
-                <input type="text" class="form-control" placeholder="Tìm kiếm sản phẩm">
-                <div class="addonset">
-                  <img src="~/Admin/img/icons/search.svg" alt="search">
-                </div>
-              </div>
-            </div>
-          </div>
+       
 
-          <!-- Bảng sản phẩm -->
-          <div class="col-lg-12">
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>STT</th>
-                    <th>Mã hàng</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Số lượng</th>
-                    <th>Giá nhập</th>
-                    <th>Thành tiền</th>
-                  </tr>
-                </thead>
-                <tbody id="product-list">
-                  <tr>
-                    <td colspan="6" class="text-success text-center bg-light">
-                      Gõ mã hoặc tên sản phẩm vào hộp tìm kiếm để thêm hàng vào đơn hàng
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+@section Scripts {
+<script>
+    $(document).ready(function () {
 
-        <!-- Thông tin thêm -->
-        <div class="row mt-4">
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Nhà cung cấp</label>
-              <div class="input-group">
-                <input type="text" class="form-control" placeholder="Tìm nhà cung cấp">
-                <div class="input-group-append">
-                  <button class="btn btn-primary" type="button">+</button>
-                </div>
-              </div>
-            </div>
-          </div>
+        function updateVisibleRows(keyword) {
+            $('.product-row').each(function () {
+                var row = $(this);
+                var isChecked = row.find('.sp-checkbox').is(':checked');
+                var rowText = row.text().toLowerCase();
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Ngày nhập</label>
-              <div class="input-groupicon">
-                <input type="date" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")">
-                <div class="addonset">
-                  <img src="~/Admin/img/icons/calendars.svg" alt="calendar">
-                </div>
-              </div>
-            </div>
-          </div>
+                if (keyword) {
+                    if (rowText.includes(keyword)) {
+                        row.removeClass('d-none');
+                    } else {
+                        row.addClass('d-none');
+                    }
+                } else {
+                    if (isChecked) {
+                        row.removeClass('d-none');
+                    } else {
+                        row.addClass('d-none');
+                    }
+                }
+            });
+        }
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Người nhập</label>
-              <select class="form-control select">
-                <option>admin</option>
-              </select>
-            </div>
-          </div>
+        $('#search-input').on('keyup', function () {
+            var keyword = $(this).val().toLowerCase().trim();
+            updateVisibleRows(keyword);
+        });
 
-          <div class="col-lg-12">
-            <div class="form-group">
-              <label>Ghi chú</label>
-              <textarea class="form-control" rows="3"></textarea>
-            </div>
-          </div>
-        </div>
+        $('#product-list').on('change', '.sp-checkbox', function () {
+            var keyword = $('#search-input').val().toLowerCase().trim();
+            updateVisibleRows(keyword);
+        });
 
-        <!-- Thông tin thanh toán -->
-        <div class="row mt-4">
-          <div class="col-lg-12">
-            <h5><i class="fas fa-info-circle text-primary"></i> Thông tin thanh toán</h5>
-          </div>
+        function formatCurrency(number) {
+            return number.toLocaleString('vi-VN');
+        }
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Hình thức</label>
-              <div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" checked name="hinhthuc" id="tienmat">
-                  <label class="form-check-label" for="tienmat">Tiền mặt</label>
-                </div>
-                <div class="form-check form-check-inline">
-                  <input class="form-check-input" type="radio" name="hinhthuc" id="the">
-                  <label class="form-check-label" for="the">Thẻ</label>
-                </div>
-              </div>
-            </div>
-          </div>
+        function parseNumber(val) {
+            return parseFloat(val.toString().replace(/,/g, '')) || 0;
+        }
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Tiền hàng</label>
-              <input id="tien-hang" type="text" class="form-control" value="0" readonly>
-            </div>
-          </div>
+        function tinhTienHang() {
+            let tongTienHang = 0;
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Chiết khấu</label>
-              <input id="chiet-khau" type="number" class="form-control" value="0">
-            </div>
-          </div>
+            $('.product-row').each(function () {
+                const row = $(this);
+                const isChecked = row.find('.sp-checkbox').is(':checked');
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Tổng cộng</label>
-              <input id="tong-cong" type="text" class="form-control" value="0" readonly>
-            </div>
-          </div>
+                if (isChecked) {
+                    const sl = parseFloat(row.find('.sl-input').val()) || 0;
+                    const gia = parseFloat(row.find('.gia-input').val()) || 0;
+                    const thanhTien = sl * gia;
+                    tongTienHang += thanhTien;
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Thanh toán</label>
-              <input id="thanh-toan" type="number" class="form-control" value="0">
-            </div>
-          </div>
+                    row.find('.thanh-tien').val(formatCurrency(thanhTien));
+                } else {
+                    row.find('.thanh-tien').val(0);
+                }
+            });
 
-          <div class="col-lg-4 col-sm-6 col-12">
-            <div class="form-group">
-              <label>Còn nợ</label>
-              <input id="con-no" type="text" class="form-control" value="0" readonly>
-            </div>
-          </div>
+            $('#tien-hang').val(formatCurrency(tongTienHang));
+            tinhTongCong();
+        }
 
-          <div class="col-lg-12 mt-3">
-            <div class="form-group d-flex gap-2">
-              <button class="btn btn-secondary me-2">Lưu tạm</button>
-              <button class="btn btn-primary me-2">Lưu</button>
-              <button class="btn btn-info me-2">Lưu và in</button>
-              <button class="btn btn-danger">Trở lại</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        function tinhTongCong() {
+            const tienHang = parseNumber($('#tien-hang').val());
+            const chietKhau = parseNumber($('#chiet-khau').val());
+            const thanhToan = parseNumber($('#thanh-toan').val());
+
+            const tongCong = tienHang - chietKhau;
+            const conNo = tongCong - thanhToan;
+
+            $('#tong-cong').val(formatCurrency(tongCong));
+            $('#con-no').val(formatCurrency(Math.max(conNo, 0)));
+        }
+
+        $('#product-list').on('input', '.sl-input, .gia-input', function () {
+            tinhTienHang();
+        });
+
+        $('#product-list').on('change', '.sp-checkbox', function () {
+            // Xóa dữ liệu tìm kiếm
+            $('#search-input').val('');
+
+            // Cập nhật hiển thị theo checkbox đã chọn
+            updateVisibleRows('');
+            tinhTienHang();
+        });
+
+        $('#chiet-khau, #thanh-toan').on('input', function () {
+            tinhTongCong();
+        });
+
+        tinhTienHang();
+
+        $('form').on('submit', function () {
+            // Xóa các input hidden cũ của sản phẩm tránh dư thừa
+            $('input[name="MaSP"]').remove();
+            $('input[name="SoLuong"]').remove();
+            $('input[name="DonGia"]').remove();
+
+            $('.product-row').each(function () {
+                const row = $(this);
+                if (row.find('.sp-checkbox').is(':checked')) {
+                    const maSP = row.find('.sp-checkbox').val();
+                    const soLuong = row.find('.sl-input').val();
+                    const giaNhap = row.find('.gia-input').val();
+
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'MaSP',
+                        value: maSP
+                    }).appendTo('form');
+
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'SoLuong',
+                        value: soLuong
+                    }).appendTo('form');
+
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'DonGia',
+                        value: giaNhap
+                    }).appendTo('form');
+                }
+            });
+
+            // Gán các giá trị tổng tiền, đã thanh toán, còn nợ vào input hidden
+            $('#hd-tong-tien').val(parseNumber($('#tong-cong').val()));
+            $('#hd-thanh-toan').val(parseNumber($('#thanh-toan').val()));
+            $('#hd-con-no').val(parseNumber($('#con-no').val()));
+        });
+
+    });
+</script>
+}
 
 
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
-
 <script src="~/Admin/js/feather.min.js"></script>
-
 <script src="~/Admin/js/jquery.slimscroll.min.js"></script>
-
 <script src="~/Admin/js/jquery.dataTables.min.js"></script>
 <script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
-
 <script src="~/Admin/js/bootstrap.bundle.min.js"></script>
-
 <script src="~/Admin/plugins/select2/js/select2.min.js"></script>
-
 <script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
-
 <script src="~/Admin/js/script.js"></script>

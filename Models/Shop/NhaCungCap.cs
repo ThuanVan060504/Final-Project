@@ -17,8 +17,9 @@ namespace Final_Project.Models.Shop
 
         [StringLength(15)]
         public string? SoDienThoai { get; set; } // nullable
-
         [StringLength(100)]
         public string? Email { get; set; } // nullable
+
     }
+
 }
