@@ -20,12 +20,9 @@ namespace Final_Project.Models.Shop
         public DbSet<HoaDon> HoaDons { get; set; }
         public DbSet<FlashSale> FlashSales { get; set; }
         public DbSet<DanhGia> DanhGias { get; set; }
-     
         public DbSet<GioHang> GioHangs { get; set; }
-
         public DbSet<ThuongHieu> ThuongHieus { get; set; }
         public DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
-
         public DbSet<Decor> Decors { get; set; }
         public DbSet<DanhMucDecor> DanhMucDecors { get; set; }
         public object DonHang { get; internal set; }
