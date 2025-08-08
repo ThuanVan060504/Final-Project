@@ -1,6 +1,5 @@
-﻿
-@model Final_Project.Models.ViewModels.SanPhamViewModel
-@{
+﻿@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Thêm sản phẩm";
 }
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
@@ -18,81 +17,124 @@
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
+<h2>Thêm sản phẩm</h2>
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Thêm sản phẩm</h4>
+                <h6>Tạo mới một sản phẩm</h6>
+            </div>
+        </div>
 
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="SanPham" asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
 
-<form asp-action="Create" method="post" enctype="multipart/form-data">
-    <div class="form-group">
-        <label asp-for="TenSP">Tên sản phẩm</label>
-        <input asp-for="TenSP" class="form-control" />
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Tên sản phẩm</label>
+                                <input type="text" name="TenSP" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Danh mục</label>
+                                @Html.DropDownList("MaDanhMuc", (SelectList)ViewBag.DanhMucList, "Chọn danh mục", new { @class = "form-control select" })
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Thương hiệu</label>
+                                @Html.DropDownList("MaThuongHieu", (SelectList)ViewBag.ThuongHieuList, "Chọn thương hiệu", new { @class = "form-control select" })
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Giá bán</label>
+                                <input type="number" step="0.01" name="DonGia" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Giá gốc</label>
+                                <input type="number" step="0.01" name="GiaGoc" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Số lượng</label>
+                                <input type="number" name="SoLuong" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Chiều rộng (cm)</label>
+                                <input type="number" step="0.01" name="ChieuRong" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Chiều cao (cm)</label>
+                                <input type="number" step="0.01" name="ChieuCao" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Chiều sâu (cm)</label>
+                                <input type="number" step="0.01" name="ChieuSau" class="form-control" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Mô tả sản phẩm</label>
+                                <textarea name="MoTa" class="form-control"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Hình ảnh sản phẩm (Tải lên)</label>
+                                <div class="image-upload">
+                                    <input type="file" name="Anh" class="form-control" />
+                                    <div class="image-uploads mt-2">
+                                        <img src="~/Admin/img/icons/upload.svg" alt="img" style="height:40px;">
+                                        <h6>Kéo và thả file để tải lên</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <div class="form-group">
+                                <label>Hoặc đường dẫn ảnh</label>
+                                <input type="text" name="ImageURL" class="form-control" placeholder="Nhập URL hình ảnh" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 mt-3">
+                            <button type="submit" class="btn btn-submit me-2">Lưu</button>
+                            <a asp-area="Admin" asp-controller="SanPham" asp-action="Index" class="btn btn-cancel">Hủy</a>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
-
-    <div class="form-group">
-        <label asp-for="MoTa">Mô tả</label>
-        <textarea asp-for="MoTa" class="form-control"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="DonGia">Đơn giá</label>
-        <input asp-for="DonGia" type="number" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="GiaGoc">Giá gốc</label>
-        <input asp-for="GiaGoc" type="number" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="SoLuong">Số lượng</label>
-        <input asp-for="SoLuong" type="number" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ImageUpload">Hình ảnh</label>
-        <input asp-for="ImageUpload" type="file" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label for="MaDanhMuc">Danh mục</label>
-        @Html.DropDownListFor(model => model.MaDanhMuc, (SelectList)ViewBag.DanhMucList, "Chọn danh mục", new { @class = "form-control" })
-    </div>
-
-    <div class="form-group">
-        <label for="MaThuongHieu">Thương hiệu</label>
-        @Html.DropDownListFor(model => model.MaThuongHieu, (SelectList)ViewBag.ThuongHieuList, "Chọn thương hiệu", new { @class = "form-control" })
-    </div>
-
-
-    <div class="form-group">
-        <label asp-for="ChieuRong">Chiều rộng</label>
-        <input asp-for="ChieuRong" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ChieuCao">Chiều cao</label>
-        <input asp-for="ChieuCao" class="form-control" />
-    </div>
-
-    <div class="form-group">
-        <label asp-for="ChieuSau">Chiều sâu</label>
-        <input asp-for="ChieuSau" class="form-control" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
-</form>
-
-<script>
-    document.querySelector('input[type="file"]').addEventListener('change', function (e) {
-        const reader = new FileReader();
-        reader.onload = function () {
-            const imgPreview = document.createElement('img');
-            imgPreview.src = reader.result;
-            imgPreview.style.maxWidth = '200px';
-            document.body.appendChild(imgPreview);
-        }
-        reader.readAsDataURL(e.target.files[0]);
-    });
-</script>
-
+</div>
 
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
 
