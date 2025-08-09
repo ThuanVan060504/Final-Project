@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
-<form asp-area="Admin" asp-controller="NhapKho" asp-action="Index" method="post" enctype="multipart/form-data">
+<form id="form-nhap-kho" asp-area="Admin" asp-controller="NhapKho" asp-action="Index" method="post" enctype="multipart/form-data">
     @Html.AntiForgeryToken()
     <div class="page-wrapper">
         <div class="content">
@@ -200,145 +200,135 @@
        
 
 @section Scripts {
-<script>
-    $(document).ready(function () {
+    <script>
+        $(document).ready(function () {
+            const formId = '#form-nhap-kho';
 
-        function updateVisibleRows(keyword) {
-            $('.product-row').each(function () {
-                var row = $(this);
-                var isChecked = row.find('.sp-checkbox').is(':checked');
-                var rowText = row.text().toLowerCase();
+            // Hàm ẩn/hiện sản phẩm theo từ khóa hoặc checkbox
+            function updateVisibleRows(keyword) {
+                $('.product-row').each(function () {
+                    var row = $(this);
+                    var isChecked = row.find('.sp-checkbox').is(':checked');
+                    var rowText = row.text().toLowerCase();
 
-                if (keyword) {
-                    if (rowText.includes(keyword)) {
-                        row.removeClass('d-none');
+                    if (keyword) {
+                        if (rowText.includes(keyword)) {
+                            row.removeClass('d-none');
+                        } else {
+                            row.addClass('d-none');
+                        }
                     } else {
-                        row.addClass('d-none');
+                        if (isChecked) {
+                            row.removeClass('d-none');
+                        } else {
+                            row.addClass('d-none');
+                        }
                     }
-                } else {
+                });
+            }
+
+            // Tìm kiếm sản phẩm
+            $('#search-input').on('keyup', function () {
+                var keyword = $(this).val().toLowerCase().trim();
+                updateVisibleRows(keyword);
+            });
+
+            $('#product-list').on('change', '.sp-checkbox', function () {
+                var keyword = $('#search-input').val().toLowerCase().trim();
+                updateVisibleRows(keyword);
+            });
+
+            // Format số
+            function formatCurrency(number) {
+                return number.toLocaleString('vi-VN');
+            }
+            function parseNumber(val) {
+                return parseFloat(val.toString().replace(/,/g, '')) || 0;
+            }
+
+            // Tính tiền hàng
+            function tinhTienHang() {
+                let tongTienHang = 0;
+                $('.product-row').each(function () {
+                    const row = $(this);
+                    const isChecked = row.find('.sp-checkbox').is(':checked');
+
                     if (isChecked) {
-                        row.removeClass('d-none');
+                        const sl = parseFloat(row.find('.sl-input').val()) || 0;
+                        const gia = parseFloat(row.find('.gia-input').val()) || 0;
+                        const thanhTien = sl * gia;
+                        tongTienHang += thanhTien;
+                        row.find('.thanh-tien').val(formatCurrency(thanhTien));
                     } else {
-                        row.addClass('d-none');
+                        row.find('.thanh-tien').val(0);
                     }
-                }
-            });
-        }
+                });
+                $('#tien-hang').val(formatCurrency(tongTienHang));
+                tinhTongCong();
+            }
 
-        $('#search-input').on('keyup', function () {
-            var keyword = $(this).val().toLowerCase().trim();
-            updateVisibleRows(keyword);
-        });
+            // Tính tổng cộng
+            function tinhTongCong() {
+                const tienHang = parseNumber($('#tien-hang').val());
+                const chietKhau = parseNumber($('#chiet-khau').val());
+                const thanhToan = parseNumber($('#thanh-toan').val());
 
-        $('#product-list').on('change', '.sp-checkbox', function () {
-            var keyword = $('#search-input').val().toLowerCase().trim();
-            updateVisibleRows(keyword);
-        });
+                const tongCong = tienHang - chietKhau;
+                const conNo = tongCong - thanhToan;
 
-        function formatCurrency(number) {
-            return number.toLocaleString('vi-VN');
-        }
+                $('#tong-cong').val(formatCurrency(tongCong));
+                $('#con-no').val(formatCurrency(Math.max(conNo, 0)));
+            }
 
-        function parseNumber(val) {
-            return parseFloat(val.toString().replace(/,/g, '')) || 0;
-        }
-
-        function tinhTienHang() {
-            let tongTienHang = 0;
-
-            $('.product-row').each(function () {
-                const row = $(this);
-                const isChecked = row.find('.sp-checkbox').is(':checked');
-
-                if (isChecked) {
-                    const sl = parseFloat(row.find('.sl-input').val()) || 0;
-                    const gia = parseFloat(row.find('.gia-input').val()) || 0;
-                    const thanhTien = sl * gia;
-                    tongTienHang += thanhTien;
-
-                    row.find('.thanh-tien').val(formatCurrency(thanhTien));
-                } else {
-                    row.find('.thanh-tien').val(0);
-                }
+            // Tick sản phẩm khi nhập số lượng hoặc giá
+            $('#product-list').on('input', '.sl-input, .gia-input', function () {
+                const row = $(this).closest('.product-row');
+                row.find('.sp-checkbox').prop('checked', true);
+                tinhTienHang();
             });
 
-            $('#tien-hang').val(formatCurrency(tongTienHang));
-            tinhTongCong();
-        }
+            // Cập nhật khi tick/untick checkbox
+            $('#product-list').on('change', '.sp-checkbox', function () {
+                $('#search-input').val(''); // clear search
+                updateVisibleRows('');
+                tinhTienHang();
+            });
 
-        function tinhTongCong() {
-            const tienHang = parseNumber($('#tien-hang').val());
-            const chietKhau = parseNumber($('#chiet-khau').val());
-            const thanhToan = parseNumber($('#thanh-toan').val());
+            // Khi nhập chiết khấu hoặc thanh toán
+            $('#chiet-khau, #thanh-toan').on('input', function () {
+                tinhTongCong();
+            });
 
-            const tongCong = tienHang - chietKhau;
-            const conNo = tongCong - thanhToan;
-
-            $('#tong-cong').val(formatCurrency(tongCong));
-            $('#con-no').val(formatCurrency(Math.max(conNo, 0)));
-        }
-
-        $('#product-list').on('input', '.sl-input, .gia-input', function () {
+            // Khởi tạo
             tinhTienHang();
-        });
 
-        $('#product-list').on('change', '.sp-checkbox', function () {
-            // Xóa dữ liệu tìm kiếm
-            $('#search-input').val('');
+            // Submit form
+            $(formId).on('submit', function () {
+                $('input[name="MaSP"], input[name="SoLuong"], input[name="DonGia"]').remove();
 
-            // Cập nhật hiển thị theo checkbox đã chọn
-            updateVisibleRows('');
-            tinhTienHang();
-        });
+                $('.product-row').each(function () {
+                    const row = $(this);
+                    if (row.find('.sp-checkbox').is(':checked')) {
+                        const maSP = row.find('.sp-checkbox').val();
+                        const soLuong = row.find('.sl-input').val();
+                        const giaNhap = row.find('.gia-input').val();
 
-        $('#chiet-khau, #thanh-toan').on('input', function () {
-            tinhTongCong();
-        });
+                        $('<input>', { type: 'hidden', name: 'MaSP', value: maSP }).appendTo(formId);
+                        $('<input>', { type: 'hidden', name: 'SoLuong', value: soLuong }).appendTo(formId);
+                        $('<input>', { type: 'hidden', name: 'DonGia', value: giaNhap }).appendTo(formId);
+                    }
+                });
 
-        tinhTienHang();
+                $('#hd-tong-tien').val(parseNumber($('#tong-cong').val()));
+                $('#hd-thanh-toan').val(parseNumber($('#thanh-toan').val()));
+                $('#hd-con-no').val(parseNumber($('#con-no').val()));
 
-        $('form').on('submit', function () {
-            // Xóa các input hidden cũ của sản phẩm tránh dư thừa
-            $('input[name="MaSP"]').remove();
-            $('input[name="SoLuong"]').remove();
-            $('input[name="DonGia"]').remove();
-
-            $('.product-row').each(function () {
-                const row = $(this);
-                if (row.find('.sp-checkbox').is(':checked')) {
-                    const maSP = row.find('.sp-checkbox').val();
-                    const soLuong = row.find('.sl-input').val();
-                    const giaNhap = row.find('.gia-input').val();
-
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'MaSP',
-                        value: maSP
-                    }).appendTo('form');
-
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'SoLuong',
-                        value: soLuong
-                    }).appendTo('form');
-
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'DonGia',
-                        value: giaNhap
-                    }).appendTo('form');
-                }
+                console.log($(this).serialize()); // Debug
             });
-
-            // Gán các giá trị tổng tiền, đã thanh toán, còn nợ vào input hidden
-            $('#hd-tong-tien').val(parseNumber($('#tong-cong').val()));
-            $('#hd-thanh-toan').val(parseNumber($('#thanh-toan').val()));
-            $('#hd-con-no').val(parseNumber($('#con-no').val()));
         });
-
-    });
-</script>
+    </script>
 }
+
 
 
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>

@@ -32,7 +32,6 @@ namespace Final_Project.Models.Shop
 
         public int MaTK { get; set; }
 
-        public NhaCungCap? NhaCungCaps { get; set; }
         public List<ChiTietNhapKho>? ChiTietNhapKhos { get; set; }
     }
 }
