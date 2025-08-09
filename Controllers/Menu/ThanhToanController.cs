@@ -120,7 +120,7 @@ namespace Final_Project.Controllers
             if (diaChiMacDinh == null)
             {
                 TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng cập nhật trước khi thanh toán.";
-                return RedirectToAction("DanhSachDiaChi", "User");
+                return RedirectToAction("Index", "GioHang");
             }
             ViewBag.DiaChiMacDinh = diaChiMacDinh;
             ViewBag.DanhSachDiaChi = danhSachDiaChi;
@@ -256,7 +256,7 @@ namespace Final_Project.Controllers
             if (diaChiMacDinh == null)
             {
                 TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng cập nhật trước khi thanh toán.";
-                return RedirectToAction("DanhSachDiaChi", "User");
+                return RedirectToAction("Index", "GioHang");
             }
 
             var gioHang = (from gh in _context.GioHangs
