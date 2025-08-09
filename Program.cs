@@ -3,32 +3,50 @@ using Final_Project.Models.Shop;
 using Final_Project.Service.Momo;
 using Final_Project.Service.VnPay;
 using Final_Project.Services;
-
-
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
-using System.Configuration;
-
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ---------- Cấu hình dịch vụ ----------
+
+// Cấu hình Momo API
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
+
+// Cấu hình VnPay
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+
+// Dịch vụ dọn dẹp flash sale
 builder.Services.AddHostedService<FlashSaleCleanupService>();
+
+// HTTP Client
 builder.Services.AddHttpClient();
 
+// Authentication: Cookie + Google
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "MyCookie"; // Scheme dùng nội bộ
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // Khi Challenge() sẽ qua Google
+})
+.AddCookie("MyCookie", options =>
+{
+    options.LoginPath = "/Auth/Login";
+    options.LogoutPath = "/Auth/Logout";
+    options.ExpireTimeSpan = TimeSpan.FromDays(7);
+    options.SlidingExpiration = true;
+})
 
-// 1. Thêm các service cần thiết
-builder.Services.AddDistributedMemoryCache();
-builder.Services.AddAuthentication("MyCookie")
-    .AddCookie("MyCookie", options =>
-    {
-        options.LoginPath = "/Auth/Login";
-        options.LogoutPath = "/Auth/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromDays(7);
-        options.SlidingExpiration = true;
-    });
+.AddGoogle(options =>
+{
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    options.CallbackPath = "/signin-google";
+});
 
 
+// Session
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -36,15 +54,17 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Đọc appsettings.json
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
+// MVC + DbContext
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// 2. Cấu hình middleware
+// ---------- Middleware pipeline ----------
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -52,22 +72,24 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 
 app.UseRouting();
-app.UseStaticFiles();
+
+// Session phải trước Auth
 app.UseSession();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ Cấu hình routing cho Area
+// Route cho Area Admin
 app.MapControllerRoute(
     name: "Adminboot",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
-// ✅ Route mặc định
+
+// Route mặc định
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
