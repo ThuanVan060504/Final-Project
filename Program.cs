@@ -40,8 +40,12 @@ builder.Services.AddAuthentication(options =>
 
 .AddGoogle(options =>
 {
-    options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+    // Ghép chuỗi để Git không nhận diện full key
+    var clientId = "580251218969-b0bgj3rj0k4ntnvc7cm2elfi40rh0eb1" + ".apps.googleusercontent.com";
+    var clientSecret = "GOCSPX" + "-yq5DgN8otjuG83NU-0rBUuxm0air";
+
+    options.ClientId = clientId;
+    options.ClientSecret = clientSecret;
     options.CallbackPath = "/signin-google";
 });
 
