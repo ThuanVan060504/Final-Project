@@ -23,6 +23,7 @@ namespace Final_Project.Controllers
             _context = context;
             _momoService = momoService;
             _vnPayService = vnPayService;
+            _emailService = emailService;
         }
 
         private void GanThongTinNguoiDung()
@@ -102,7 +103,7 @@ namespace Final_Project.Controllers
         }
 
         [HttpPost]
-        public IActionResult ThanhToan(List<int> chonSP, string paymentMethod)
+        public async Task<IActionResult> ThanhToan(List<int> chonSP, string paymentMethod)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
@@ -115,23 +116,14 @@ namespace Final_Project.Controllers
             }
 
             var danhSachDiaChi = _context.DiaChiNguoiDungs
-    .Where(d => d.MaTK == maTK)
-    .ToList();
+                .Where(d => d.MaTK == maTK)
+                .ToList();
 
             var diaChiMacDinh = danhSachDiaChi.FirstOrDefault(d => d.MacDinh);
 
             if (diaChiMacDinh == null)
             {
                 TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng cập nhật trước khi thanh toán.";
-                return RedirectToAction("Index", "GioHang");
-            }
-            ViewBag.DiaChiMacDinh = diaChiMacDinh;
-            ViewBag.DanhSachDiaChi = danhSachDiaChi;
-
-
-            if (diaChiMacDinh == null)
-            {
-                TempData["Success"] = "Bạn chưa có địa chỉ mặc định.";
                 return RedirectToAction("Index", "GioHang");
             }
 
@@ -160,17 +152,14 @@ namespace Final_Project.Controllers
                     trangThaiThanhToan = "ChuaThanhToan";
                     phuongThuc = "Thanh toán khi nhận hàng";
                     break;
-
                 case "Momo":
                     trangThaiThanhToan = "DaThanhToan";
                     phuongThuc = "Ví MoMo";
                     break;
-
                 case "VNPAY":
                     trangThaiThanhToan = "ChuaThanhToan";
                     phuongThuc = "Ví VNPAY";
                     break;
-
                 default:
                     TempData["Success"] = "Phương thức thanh toán không hợp lệ.";
                     return RedirectToAction("XacNhanThanhToan", new { chonSP = string.Join(",", chonSP) });
@@ -218,6 +207,9 @@ namespace Final_Project.Controllers
             _context.GioHangs.RemoveRange(gioHang);
             _context.SaveChanges();
 
+            // ✅ Gửi email xác nhận đơn hàng
+            await SendOrderConfirmationEmail(donHang.MaDonHang);
+
             if (paymentMethod == "Momo")
             {
                 return RedirectToAction("TaoMomoQRCode", "ThanhToan", new { maDonHang = donHang.MaDonHang });
@@ -228,7 +220,6 @@ namespace Final_Project.Controllers
                 var paymentModel = new PaymentInformationModel
                 {
                     Amount = (decimal)donHang.TongTien,
-
                     Name = $"DonHang#{donHang.MaDonHang}",
                     OrderDescription = "Thanh toán đơn hàng",
                     OrderType = "billpayment"
@@ -239,8 +230,9 @@ namespace Final_Project.Controllers
             }
 
             TempData["Success"] = "Đặt hàng thành công!";
-            return RedirectToAction("Index", "GioHang"); // 🔁 Dòng này đảm bảo tất cả đường dẫn đều có return
+            return RedirectToAction("Index", "GioHang");
         }
+
 
 
 
@@ -553,7 +545,7 @@ namespace Final_Project.Controllers
         {
             try
             {
-                Console.WriteLine($"🚀 Bắt đầu gửi email cho đơn hàng #{maDonHang}");
+                Console.WriteLine("🚀 Bắt đầu gửi email cho đơn hàng #" + maDonHang);
 
                 var donHang = await _context.DonHangs
                     .Include(d => d.ChiTietDonHangs)
@@ -562,24 +554,28 @@ namespace Final_Project.Controllers
                     .FirstOrDefaultAsync(d => d.MaDonHang == maDonHang);
 
                 if (donHang == null)
-                {
-                    Console.WriteLine("❌ Không tìm thấy đơn hàng.");
-                    return;
-                }
+                    throw new Exception("Không tìm thấy đơn hàng.");
 
                 var taiKhoan = await _context.TaiKhoans
                     .FirstOrDefaultAsync(t => t.MaTK == donHang.MaTK);
 
-                if (taiKhoan == null)
-                {
-                    Console.WriteLine("❌ Không tìm thấy tài khoản.");
-                    return;
-                }
+                if (taiKhoan == null || string.IsNullOrEmpty(taiKhoan.Email))
+                    throw new Exception("Không tìm thấy email khách hàng.");
 
-                if (string.IsNullOrEmpty(taiKhoan.Email))
+                // Xác định phương thức thanh toán
+                string phuongThucThanhToan = donHang.PhuongThucThanhToan ?? "Không xác định";
+                // Ví dụ: COD, MOMO, VNPAY => hiển thị đẹp hơn
+                switch (phuongThucThanhToan.ToUpper())
                 {
-                    Console.WriteLine("❌ Tài khoản không có email.");
-                    return;
+                    case "COD":
+                        phuongThucThanhToan = "Thanh toán khi nhận hàng (COD)";
+                        break;
+                    case "MOMO":
+                        phuongThucThanhToan = "Thanh toán qua Ví MoMo";
+                        break;
+                    case "VNPAY":
+                        phuongThucThanhToan = "Thanh toán qua VNPay";
+                        break;
                 }
 
                 var sb = new StringBuilder();
@@ -590,22 +586,24 @@ namespace Final_Project.Controllers
                         : ct.SanPham.ImageURL;
 
                     sb.Append($@"
-<tr>
-    <td style='border:1px solid #ccc;text-align:center;'>
-        <img src='{imageUrl}' width='80'/>
-    </td>
-    <td style='border:1px solid #ccc;padding:5px;'>{ct.SanPham?.TenSP ?? "Không rõ"}</td>
-    <td style='border:1px solid #ccc;text-align:center;'>{ct.SoLuong}</td>
-    <td style='border:1px solid #ccc;text-align:right;'>{ct.DonGia:N0} VND</td>
-    <td style='border:1px solid #ccc;text-align:right;'>{(ct.SoLuong * ct.DonGia):N0} VND</td>
-</tr>");
+                <tr>
+                    <td style='border:1px solid #ddd;text-align:center;padding:8px;'>
+                        <img src='{imageUrl}' width='80' style='border-radius:5px;'/>
+                    </td>
+                    <td style='border:1px solid #ddd;padding:8px;'>{ct.SanPham?.TenSP}</td>
+                    <td style='border:1px solid #ddd;text-align:center;padding:8px;'>{ct.SoLuong}</td>
+                    <td style='border:1px solid #ddd;text-align:right;padding:8px;'>{ct.DonGia:N0} VND</td>
+                    <td style='border:1px solid #ddd;text-align:right;padding:8px;'>{(ct.SoLuong * ct.DonGia):N0} VND</td>
+                </tr>");
                 }
 
                 var body = $@"
-<div style='font-family:Arial;'>
-    <h2>G3TD - Xác nhận thanh toán thành công #{donHang.MaDonHang}</h2>
-    <p>Xin chào {taiKhoan.HoTen ?? ""}, cảm ơn bạn đã mua hàng tại <strong>G3TD</strong>.</p>
-    <table style='border-collapse:collapse;width:100%;'>
+<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #eee;padding:20px;border-radius:10px;'>
+    <h2 style='color:#2E86C1;'>G3TD - Xác nhận thanh toán thành công #{donHang.MaDonHang}</h2>
+    <p>Xin chào <strong>{taiKhoan.HoTen}</strong>,</p>
+    <p>Cảm ơn bạn đã mua hàng tại <strong>G3TD</strong>. Dưới đây là thông tin đơn hàng của bạn:</p>
+    
+    <table style='border-collapse:collapse;width:100%;margin-top:10px;'>
         <thead>
             <tr style='background:#f4f4f4;'>
                 <th>Ảnh</th>
@@ -619,21 +617,19 @@ namespace Final_Project.Controllers
             {sb}
         </tbody>
     </table>
-    <p style='margin-top:15px;'>Trạng thái thanh toán: <strong>{donHang.TrangThaiThanhToan}</strong></p>
-    <p>Trạng thái đơn hàng: <strong>{donHang.TrangThaiDonHang}</strong></p>
-    <p><strong>Tổng cộng: {donHang.TongTien:N0} VND</strong></p>
-    <hr/>
-    <p>Shop G3TD - Nội thất chất lượng<br/>
-    📞 0909 123 456<br/>
-    📧 support@g3td.com</p>
-</div>";
 
-                // Kiểm tra _emailService có null không
-                if (_emailService == null)
-                {
-                    Console.WriteLine("❌ _emailService chưa được khởi tạo.");
-                    return;
-                }
+    <p style='margin-top:15px;'><strong>Phương thức thanh toán:</strong> {phuongThucThanhToan}</p>
+    <p><strong>Trạng thái thanh toán:</strong> {donHang.TrangThaiThanhToan}</p>
+    <p><strong>Trạng thái đơn hàng:</strong> {donHang.TrangThaiDonHang}</p>
+    <p><strong>Tổng cộng:</strong> {donHang.TongTien:N0} VND</p>
+
+    <hr/>
+    <p style='font-size:14px;color:#555;'>
+        Shop G3TD - Nội thất chất lượng<br/>
+        📞 0909 123 456<br/>
+        📧 support@g3td.com
+    </p>
+</div>";
 
                 await _emailService.SendEmailAsync(
                     taiKhoan.Email,
@@ -645,7 +641,7 @@ namespace Final_Project.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Lỗi khi gửi email đơn hàng: " + ex);
+                Console.WriteLine("❌ Lỗi khi gửi email đơn hàng: " + ex.Message);
             }
         }
 
