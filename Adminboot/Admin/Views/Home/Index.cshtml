@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Final_Project.Models.ViewModels.DashboardViewModel
+
+@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "";
 }
@@ -14,65 +16,25 @@
 <div class="page-wrapper">
     <div class="content">
         <div class="row">
-
-            <!-- Widget 1 -->
+            <!-- Tổng doanh thu -->
             <div class="col-lg-3 col-sm-6 col-12">
                 <div class="dash-widget">
                     <div class="dash-widgetimg">
                         <span><img src="~/Admin/img/icons/dash1.svg" alt=""></span>
                     </div>
                     <div class="dash-widgetcontent">
-                        <h5>$<span class="counters" data-count="">0</span></h5>
-                        <h6></h6>
+                        <h5>@Model.TotalSaleAmount.ToString("C")</h5>
+                        <h6>Tổng doanh thu</h6>
                     </div>
                 </div>
             </div>
 
-            <!-- Widget 2 -->
+            <!-- Khách hàng -->
             <div class="col-lg-3 col-sm-6 col-12">
-                <div class="dash-widget dash1">
-                    <div class="dash-widgetimg">
-                        <span><img src="~/Admin/img/icons/dash2.svg" alt=""></span>
-                    </div>
-                    <div class="dash-widgetcontent">
-                        <h5>$<span class="counters" data-count="">0</span></h5>
-                        <h6></h6>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Widget 3 -->
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="dash-widget dash2">
-                    <div class="dash-widgetimg">
-                        <span><img src="~/Admin/img/icons/dash3.svg" alt=""></span>
-                    </div>
-                    <div class="dash-widgetcontent">
-                        <h5>$<span class="counters" data-count="">0</span></h5>
-                        <h6></h6>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Widget 4 -->
-            <div class="col-lg-3 col-sm-6 col-12">
-                <div class="dash-widget dash3">
-                    <div class="dash-widgetimg">
-                        <span><img src="~/Admin/img/icons/dash4.svg" alt=""></span>
-                    </div>
-                    <div class="dash-widgetcontent">
-                        <h5>$<span class="counters" data-count="">0</span></h5>
-                        <h6></h6>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Count boxes -->
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
                 <div class="dash-count">
                     <div class="dash-counts">
-                        <h4>0</h4>
-                        <h5></h5>
+                        <h4>@Model.TotalCustomers</h4>
+                        <h5>Khách hàng</h5>
                     </div>
                     <div class="dash-imgs">
                         <i data-feather="user"></i>
@@ -80,11 +42,12 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                <div class="dash-count das1">
+            <!-- Nhà cung cấp -->
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-count">
                     <div class="dash-counts">
-                        <h4>0</h4>
-                        <h5></h5>
+                        <h4>@Model.TotalSuppliers</h4>
+                        <h5>Nhà cung cấp</h5>
                     </div>
                     <div class="dash-imgs">
                         <i data-feather="user-check"></i>
@@ -92,23 +55,12 @@
                 </div>
             </div>
 
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                <div class="dash-count das2">
+            <!-- Số hóa đơn bán -->
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-count">
                     <div class="dash-counts">
-                        <h4>0</h4>
-                        <h5></h5>
-                    </div>
-                    <div class="dash-imgs">
-                        <i data-feather="file-text"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-sm-6 col-12 d-flex">
-                <div class="dash-count das3">
-                    <div class="dash-counts">
-                        <h4>0</h4>
-                        <h5></h5>
+                        <h4>@Model.TotalSalesInvoice</h4>
+                        <h5>Số hóa đơn bán</h5>
                     </div>
                     <div class="dash-imgs">
                         <i data-feather="file"></i>
@@ -117,75 +69,35 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-7 col-sm-12 col-12 d-flex">
-                <div class="card flex-fill">
-                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                        <h5 class="card-title mb-0"></h5>
-                        <div class="graph-sets">
-                            <ul>
-                                <li><span></span></li>
-                                <li><span></span></li>
-                            </ul>
-                            <div class="dropdown">
-                                <button class="btn btn-white btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <span></span> <img src="~/Admin/img/icons/dropdown.svg" alt="" class="ms-2">
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton"></ul>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div id="sales_charts"></div>
-                    </div>
-                </div>
+        <!-- Sản phẩm mới thêm -->
+        <div class="card mt-4">
+            <div class="card-header pb-0">
+                <h4 class="card-title">Sản phẩm mới thêm</h4>
             </div>
-
-            <div class="col-lg-5 col-sm-12 col-12 d-flex">
-                <div class="card flex-fill">
-                    <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-                        <h4 class="card-title mb-0"></h4>
-                        <div class="dropdown">
-                            <a href="javascript:void(0);" data-bs-toggle="dropdown" aria-expanded="false" class="dropset">
-                                <i class="fa fa-ellipsis-v"></i>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton"></ul>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive dataview">
-                            <table class="table datatable ">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="card mb-0">
             <div class="card-body">
-                <h4 class="card-title"></h4>
                 <div class="table-responsive dataview">
-                    <table class="table datatable ">
+                    <table class="table datatable">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
-                                <th></th>
+                                <th>#</th>
+                                <th>Sản phẩm</th>
+                                <th>Giá</th>
                             </tr>
                         </thead>
-                        <tbody></tbody>
+                        <tbody>
+                            @for (int i = 0; i < Model.RecentProducts.Count; i++)
+                            {
+                                var p = Model.RecentProducts[i];
+                                <tr>
+                                    <td>@(i + 1)</td>
+                                    <td class="productimgname">
+                                        <img src="@p.ImageURL" alt="@p.TenSP" style="width:40px;height:40px;" />
+                                        @p.TenSP
+                                    </td>
+                                    <td>@p.DonGia.ToString("C")</td>
+                                </tr>
+                            }
+                        </tbody>
                     </table>
                 </div>
             </div>
