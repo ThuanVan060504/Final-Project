@@ -32,7 +32,7 @@ namespace Final_Project.Areas.Admin.Controllers
                 con.Open();
 
                 // Customers
-                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM TaiKhoan WHERE VaiTro = 'Khách hàng'", con))
+                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM TaiKhoan WHERE VaiTro = 'Customer'", con))
                     model.TotalCustomers = (int)cmd.ExecuteScalar();
 
                 // Suppliers
