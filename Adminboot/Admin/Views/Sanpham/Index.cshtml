@@ -1,6 +1,7 @@
-﻿@{
+﻿@model IEnumerable<Final_Project.Models.Shop.SanPham>
+@{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Sản Phẩm";
+    ViewData["Title"] = "Quản lý sản phẩm";
 }
 
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
@@ -18,168 +19,125 @@
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
+<style>
+    .content-wrapper {
+        margin-left: 260px;
+        padding: 40px;
+    }
+  
+    .dataTables_filter {
+        text-align: center !important;
+        margin-bottom: 15px;
+    }
 
-<div class="page-wrapper">
-<div class="content">
-<div class="page-header">
-<div class="page-title">
-<h4>DANH SÁCH SẢN PHẨM</h4>
-<h6>Manage your products</h6>
-</div>
-<div class="page-btn">
-<a href="addproduct.html" class="btn btn-added"><img src="~/Admin/img/icons/plus.svg" alt="img" class="me-1">Add New Product</a>
-</div>
-</div>
+        .dataTables_filter label {
+            width: 100%;
+        }
 
-<div class="card">
-<div class="card-body">
-<div class="table-top">
-<div class="search-set">
-<div class="search-path">
-<a class="btn btn-filter" id="filter_search">
-<img src="~/Admin/img/icons/filter.svg" alt="img">
-<span><img src="~/Admin/img/icons/closes.svg" alt="img"></span>
-</a>
-</div>
-<div class="search-input">
-<a class="btn btn-searchset"><img src="~/Admin/img/icons/search-white.svg" alt="img"></a>
-</div>
-</div>
-<div class="wordset">
-<ul>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"><img src="~/Admin/img/icons/pdf.svg" alt="img"></a>
-</li>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"><img src="~/Admin/img/icons/excel.svg" alt="img"></a>
-</li>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img src="~/Admin/img/icons/printer.svg" alt="img"></a>
-</li>
-</ul>
-</div>
-</div>
+        .dataTables_filter input {
+            width: 100% !important;
+            max-width: none !important;
+            display: inline-block;
+            margin-left: 0 !important;
+        }
 
-<div class="card mb-0" id="filter_inputs">
-<div class="card-body pb-0">
-<div class="row">
-<div class="col-lg-12 col-sm-12">
-<div class="row">
-<div class="col-lg col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Product</option>
-<option>Macbook pro</option>
-<option>Orange</option>
-</select>
-</div>
-</div>
-<div class="col-lg col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Category</option>
-<option>Computers</option>
-<option>Fruits</option>
-</select>
-</div>
-</div>
-<div class="col-lg col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Sub Category</option>
-<option>Computer</option>
-</select>
-</div>
-</div>
-<div class="col-lg col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Brand</option>
-<option>N/D</option>
-</select>
-</div>
-</div>
-<div class="col-lg col-sm-6 col-12 ">
-<div class="form-group">
-<select class="select">
-<option>Price</option>
-<option>150.00</option>
-</select>
-</div>
-</div>
-<div class="col-lg-1 col-sm-6 col-12">
-<div class="form-group">
-<a class="btn btn-filters ms-auto"><img src="~/Admin/img/icons/search-whites.svg" alt="img"></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
+</style>
 
-<div class="table-responsive">
-    <table class="table datanew">
-        <thead>
-            <tr>
-                <th>
-                    <label class="checkboxs">
-                        <input type="checkbox" id="select-all">
-                        <span class="checkmarks"></span>
-                    </label>
-                </th>
-                <th>Tên Sản Phẩm</th>
-                <th>Mã</th>
-                <th>Danh Mục</th>
-                <th>Thương Hiệu</th>
-                <th>Gía</th>
-                <th>Số Lượng</th>
-                <th>Người Tạo</th>
-                <th>Chỉnh Sửa</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var sp in Model)
-            {
+<div class="content-wrapper">
+    <div class="container-fluid mt-4">
+    <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="@Url.Action("Create", "SanPham", new { area = "Admin" })" class="btn btn-success">
+            <i class="fas fa-plus"></i> Thêm sản phẩm
+        </a>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle text-center">
+            <thead class="table-dark">
                 <tr>
-                    <td>
-                        <label class="checkboxs">
-                            <input type="checkbox" name="selectedIds" value="@sp.MaSP" />
-                            <span class="checkmarks"></span>
-                        </label>
-                    </td>
-                    <td class="productimgname">
-                        <a href="javascript:void(0);" class="product-img">
-                            <img src="@sp.ImageURL" alt="product" />
-                        </a>
-                        <a href="javascript:void(0);">@sp.TenSP</a>
-                    </td>
-                    <td>@sp.MaSP</td> <!-- Bạn có thể thay bằng SKU nếu có -->
-                    <td>@sp.DanhMuc?.TenDanhMuc</td>
-                    <td>@sp.ThuongHieu?.TenThuongHieu</td>
-                    <td>@sp.DonGia.ToString("N0") đ</td>
-                
-                    <td>@sp.SoLuong</td> <!-- Giả sử có thuộc tính Số lượng -->
-                    <td>Admin</td> <!-- Tạm thời cố định nếu chưa có thông tin người tạo -->
-                    <td>
-                        <a class="me-3" asp-action="Details" asp-route-id="@sp.MaSP">
-                            <img src="~/Admin/img/icons/eye.svg" alt="Xem">
-                        </a>
-                        <a class="me-3" asp-action="Edit" asp-route-id="@sp.MaSP">
-                            <img src="~/Admin/img/icons/edit.svg" alt="Sửa">
-                        </a>
-                        <a class="confirm-text" asp-action="Delete" asp-route-id="@sp.MaSP">
-                            <img src="~/Admin/img/icons/delete.svg" alt="Xóa">
-                        </a>
-                    </td>
+                    <th>Mã</th>
+                    <th>Tên SP</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Danh mục</th>
+                    <th>Thương hiệu</th>
+                    <th>Ảnh</th>
+                    <th>Hành động</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.MaSP</td>
+                        <td>@item.TenSP</td>
+                        <td>@item.DonGia.ToString("N0") đ</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DanhMuc?.TenDanhMuc</td>
+                        <td>@item.ThuongHieu?.TenThuongHieu</td>
+                        <td>
+                            <img src="@item.ImageURL" width="60" class="img-thumbnail" />
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1 justify-content-center">
+                                <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="@item.MaSP">
+                                    <i class="fas fa-edit"></i> Sửa
+                                </button>
+
+                                <form asp-area="Admin" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="m-0">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm btn-delete">
+                                        <i class="fas fa-trash"></i> Xóa
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editMaSP" name="MaSP" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <input type="text" id="editTenSP" name="TenSP" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Đơn giá</label>
+                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" id="editSoLuong" name="SoLuong" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 
-
-
+<!-- Script -->
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
 
 <script src="~/Admin/js/feather.min.js"></script>
@@ -197,4 +155,76 @@
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 
 <script src="~/Admin/js/script.js"></script>
+<script>
+    $(document).ready(function () {
+        // Khởi tạo DataTable với phân trang 10 sản phẩm
+            $('table').DataTable({
+        pageLength: 10,
+        lengthChange: false,
+        language: {
+            paginate: {
+                previous: "Trước",
+                next: "Sau"
+            },
+            search: "Tìm kiếm:",
+            info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
+            infoEmpty: "Không có sản phẩm nào",
+            zeroRecords: "Không tìm thấy sản phẩm"
+        },
+        initComplete: function () {
+            // Di chuyển ô tìm kiếm lên trên bảng và full width
+            $('.dataTables_filter').addClass('w-100');
+        }
+    });
 
+
+        // Xóa với SweetAlert
+        $(document).on('click', '.btn-delete', function (e) {
+            e.preventDefault();
+            var form = $(this).closest('form');
+            Swal.fire({
+                title: 'Xác nhận xóa?',
+                text: "Dữ liệu sẽ bị xóa vĩnh viễn!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Xóa',
+                cancelButtonText: 'Hủy'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+
+        // Sửa sản phẩm
+        $(document).on('click', '.btn-edit', function () {
+            var id = $(this).data('id');
+            $.get('/Admin/SanPham/GetById/' + id, function (data) {
+                $('#editMaSP').val(data.maSP);
+                $('#editTenSP').val(data.tenSP);
+                $('#editDonGia').val(data.donGia);
+                $('#editSoLuong').val(data.soLuong);
+                $('#editModal').modal('show');
+            });
+        });
+
+        // Lưu chỉnh sửa
+        $('#editForm').submit(function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/Admin/SanPham/Edit',
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function () {
+                    Swal.fire('Thành công!', 'Cập nhật sản phẩm thành công.', 'success').then(() => {
+                        location.reload();
+                    });
+                },
+                error: function () {
+                    Swal.fire('Lỗi!', 'Cập nhật thất bại.', 'error');
+                }
+            });
+        });
+    });
+
+</script>

@@ -109,5 +109,63 @@ namespace Final_Project.Areas.Admin.Controllers
             TempData["Success"] = "✅ Thêm sản phẩm thành công!";
             return RedirectToAction("Index");
         }
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete(int id)
+        {
+            var sp = _context.SanPhams.Find(id);
+            if (sp != null)
+                try
+                {
+                    _context.SanPhams.Remove(sp);
+                    _context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Không thể xóa sản phẩm: " + ex.Message;
+                }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult GetById(int id)
+        {
+            var sp = _context.SanPhams
+                .Where(x => x.MaSP == id)
+                .Select(x => new {
+                    maSP = x.MaSP,
+                    tenSP = x.TenSP,
+                    donGia = x.DonGia,
+                    soLuong = x.SoLuong
+                })
+                .FirstOrDefault();
+
+            if (sp == null) return NotFound();
+            return Json(sp);
+        }
+
+
+        [HttpPost]
+        public IActionResult Edit(SanPham model)
+        {
+            if (ModelState.IsValid)
+            {
+                var sp = _context.SanPhams.Find(model.MaSP);
+                if (sp != null)
+                {
+                    sp.TenSP = model.TenSP;
+                    sp.DonGia = model.DonGia;
+                    sp.SoLuong = model.SoLuong;
+                    _context.SaveChanges();
+                }
+                return Ok();
+            }
+            return BadRequest();
+        }
+
     }
 }
