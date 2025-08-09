@@ -11,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Cấu hình dịch vụ ----------
 
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 // Cấu hình Momo API
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();

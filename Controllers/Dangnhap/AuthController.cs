@@ -2,6 +2,7 @@
 using Final_Project.Models.Helpers;
 using Final_Project.Models.Shop;
 using Final_Project.Models.User;
+using Final_Project.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -14,9 +15,12 @@ namespace Final_Project.Controllers
     {
         private readonly AppDbContext _context;
 
-        public AuthController(AppDbContext context)
+        private readonly IEmailService _emailService;
+
+        public AuthController(AppDbContext context, IEmailService emailService)
         {
             _context = context;
+            _emailService = emailService;
         }
 
         // GET: /Auth/Login
@@ -96,66 +100,121 @@ namespace Final_Project.Controllers
         [HttpGet("Auth/GoogleResponse")]
         public async Task<IActionResult> GoogleResponse()
         {
-            // Lấy external principal từ Google handler
             var authResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
 
             if (!authResult.Succeeded || authResult.Principal == null)
-            {
-                // Nếu thất bại -> trở về trang login
                 return RedirectToAction("Login");
-            }
 
-            // Lấy thông tin từ claims do Google trả về
             var email = authResult.Principal.FindFirst(ClaimTypes.Email)?.Value;
-            var name = authResult.Principal.FindFirst(ClaimTypes.Name)?.Value
-                       ?? authResult.Principal.FindFirst("name")?.Value;
+            var name = authResult.Principal.FindFirst(ClaimTypes.Name)?.Value ?? email;
 
             if (string.IsNullOrEmpty(email))
             {
-                // Nếu Google không trả email thì không tiếp tục
                 TempData["Error"] = "Không lấy được email từ Google.";
                 return RedirectToAction("Login");
             }
 
-            // Kiểm tra user đã tồn tại chưa, nếu chưa -> tạo user mới (Customer)
+            bool isNewUser = false;
             var user = _context.TaiKhoans.FirstOrDefault(u => u.Email == email);
             if (user == null)
             {
                 user = new TaiKhoan
                 {
-                    HoTen = name ?? email,
+                    HoTen = name,
                     Email = email,
-                    MatKhau = Guid.NewGuid().ToString(), // password random
+                    MatKhau = Guid.NewGuid().ToString(),
                     VaiTro = "Customer",
                     NgayTao = DateTime.Now
                 };
                 _context.TaiKhoans.Add(user);
                 _context.SaveChanges();
+                isNewUser = true;
             }
 
-            // Tạo local cookie (dùng cùng "MyCookie")
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.HoTen ?? ""),
-                new Claim(ClaimTypes.Email, user.Email ?? ""),
-                new Claim(ClaimTypes.Role, user.VaiTro ?? "Customer")
-            };
-            var identity = new ClaimsIdentity(claims, "MyCookie");
-            var principal = new ClaimsPrincipal(identity);
+    {
+        new Claim(ClaimTypes.Name, user.HoTen ?? ""),
+        new Claim(ClaimTypes.Email, user.Email ?? ""),
+        new Claim(ClaimTypes.Role, user.VaiTro ?? "Customer")
+    };
+            await HttpContext.SignInAsync("MyCookie", new ClaimsPrincipal(new ClaimsIdentity(claims, "MyCookie")));
 
-            await HttpContext.SignInAsync("MyCookie", principal);
-
-            // Lưu session tương tự login thường
             HttpContext.Session.SetInt32("MaTK", user.MaTK);
             HttpContext.Session.SetString("UserEmail", user.Email ?? "");
             HttpContext.Session.SetString("UserRole", user.VaiTro ?? "Customer");
 
-            // Tính giỏ hàng an toàn (có thể không có bản ghi)
-            int tongSoLuong = _context.GioHangs
-                .Where(g => g.MaTK == user.MaTK)
-                .Sum(g => (int?)g.SoLuong ?? 0);
-            HttpContext.Session.SetInt32("SoLuongGioHang", tongSoLuong);
+            // Gửi email khác nhau cho user mới và user cũ
+            // Gửi email khác nhau cho user mới và user cũ
+            if (isNewUser)
+            {
+                string htmlContent = $@"
+                        <table style='width:100%; max-width:600px; margin:auto; font-family:Arial, sans-serif; border:1px solid #ddd; border-radius:8px; overflow:hidden;'>
+                          <tr style='background-color:#f4f4f4;'>
+                            <td style='padding:20px; text-align:center;'>
+                              <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrud2n7QkcJe76V36LbSU6lLsTCAHStSYNAw&s' alt='Shop Nội Thất G3TD' style='height:80px;'>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style='padding:20px;'>
+                              <h2 style='color:#333;'>Chào mừng {user.HoTen}!</h2>
+                              <p style='font-size:16px; color:#555;'>
+                                Cảm ơn bạn đã đăng ký tài khoản tại <strong>Shop Nội Thất G3TD</strong> thông qua Google.
+                              </p>
+                              <p style='font-size:16px; color:#555;'>
+                                Chúng tôi sẽ luôn đồng hành cùng bạn để mang đến những sản phẩm nội thất chất lượng nhất.
+                              </p>
+                              <div style='margin-top:20px; text-align:center;'>
+                                <a href='https://g3tdshop.com' style='background-color:#ff6600; color:#fff; padding:12px 20px; text-decoration:none; border-radius:5px; font-size:16px;'>
+                                  Khám phá ngay
+                                </a>
+                              </div>
+                            </td>
+                          </tr>
+                          <tr style='background-color:#f4f4f4;'>
+                            <td style='padding:15px; text-align:center; font-size:14px; color:#888;'>
+                              <img src='https://hienlaptop.com/wp-content/uploads/2024/10/460630409_519358010845041_4976973150130837642_n.jpg' alt='Chủ shop' style='width:50px; height:50px; border-radius:50%; margin-bottom:8px;'><br>
+                              Chủ shop: G3TD  - <a href='mailto:shop.g3td@gmail.com'>shop.g3td@gmail.com</a>
+                            </td>
+                          </tr>
+                        </table>";
 
+                                    await _emailService.SendEmailAsync(
+                                        user.Email,
+                                        "🎉 Chào mừng bạn đến với Shop Nội Thất G3TD!",
+                                        htmlContent
+                                    );
+                                }
+                                else
+                                {
+                                    string htmlContentLogin = $@"
+                        <table style='width:100%; max-width:600px; margin:auto; font-family:Arial, sans-serif; border:1px solid #ddd; border-radius:8px;'>
+                          <tr style='background-color:#f4f4f4;'>
+                            <td style='padding:20px; text-align:center;'>
+                              <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrud2n7QkcJe76V36LbSU6lLsTCAHStSYNAw&s' alt='Shop Nội Thất G3TD' style='height:80px;'>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style='padding:20px;'>
+                              <h2>Xin chào {user.HoTen},</h2>
+                              <p>Bạn vừa đăng nhập vào tài khoản của mình tại <strong>Shop Nội Thất G3TD</strong>.</p>
+                              <p>Nếu không phải bạn, vui lòng liên hệ ngay với chúng tôi để được hỗ trợ.</p>
+                              <p style='color:#555; font-size:14px;'>Email hỗ trợ: <a href='mailto:shop.g3td@gmail.com'>shop.g3td@gmail.com</a></p>
+                            </td>
+                          </tr>
+                          <tr style='background-color:#f4f4f4;'>
+                            <td style='padding:15px; text-align:center; font-size:14px; color:#888;'>
+                              <img src='https://hienlaptop.com/wp-content/uploads/2024/10/460630409_519358010845041_4976973150130837642_n.jpg' alt='Chủ shop' style='width:50px; height:50px; border-radius:50%;'><br>
+                              Chủ shop: G3TD
+                            </td>
+                          </tr>
+                        </table>";
+
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "🔔 Thông báo đăng nhập từ Shop Nội Thất G3TD",
+                    htmlContentLogin
+                );
+            }
 
 
             return RedirectToAction("Index", "Home");
