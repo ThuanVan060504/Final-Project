@@ -72,25 +72,27 @@ public class UserController : Controller
     [HttpPost]
     public IActionResult ThemDiaChi(ThemDiaChiViewModel model)
     {
-        var taiKhoan = HttpContext.Session.GetObjectFromJson<TaiKhoan>("TaiKhoan");
-        if (taiKhoan == null)
-            return RedirectToAction("DangNhap", "Auth");
+        int? maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null) return RedirectToAction("DangNhap", "Auth");
+
+        if (!ModelState.IsValid)
+        {
+            TempData["Error"] = "Dữ liệu không hợp lệ.";
+            return RedirectToAction("Profile");
+        }
 
         if (model.MacDinh)
         {
-            var diaChiCu = _context.DiaChiNguoiDungs
-                .Where(d => d.MaTK == taiKhoan.MaTK && d.MacDinh)
-                .ToList();
+            var diaChiCu = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK && d.MacDinh).ToList();
             foreach (var d in diaChiCu)
             {
                 d.MacDinh = false;
             }
-            _context.SaveChanges();
         }
 
         var diaChiMoi = new DiaChiNguoiDung
         {
-            MaTK = taiKhoan.MaTK,
+            MaTK = maTK.Value,
             TenNguoiNhan = model.TenNguoiNhan,
             SoDienThoai = model.SoDienThoai,
             DiaChiChiTiet = model.DiaChiChiTiet,
@@ -103,8 +105,10 @@ public class UserController : Controller
         _context.DiaChiNguoiDungs.Add(diaChiMoi);
         _context.SaveChanges();
 
+        TempData["Success"] = "Thêm địa chỉ thành công!";
         return RedirectToAction("Profile");
     }
+
 
     [HttpPost]
     public async Task<IActionResult> UploadAvatar(int MaTK, IFormFile avatarFile)

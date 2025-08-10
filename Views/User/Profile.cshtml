@@ -375,12 +375,12 @@
                                 <div class="text-muted">Thanh toán: @don.TrangThaiThanhToan</div>
                                 <div class="fw-bold">Tổng tiền: <span class="text-danger">@don.TongTien.ToString("N0") ₫</span></div>
                                 @if (don.TrangThaiDonHang == "ChoXacNhan" || don.TrangThaiDonHang == "DangXuLy")
-{
-    <form asp-controller="DonHang" asp-action="HuyDon" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
-        <input type="hidden" name="maDonHang" value="@don.MaDonHang" />
-        <button type="submit" class="btn btn-outline-danger mt-2">❌ Hủy đơn hàng</button>
-    </form>
-}
+                {
+                    <form asp-controller="DonHang" asp-action="HuyDon" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                        <input type="hidden" name="maDonHang" value="@don.MaDonHang" />
+                        <button type="submit" class="btn btn-outline-danger mt-2">❌ Hủy đơn hàng</button>
+                    </form>
+                }
 
                             </div>
                         </div>
