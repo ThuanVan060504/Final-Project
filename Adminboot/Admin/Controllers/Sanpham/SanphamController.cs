@@ -117,16 +117,26 @@ namespace Final_Project.Areas.Admin.Controllers
         public IActionResult Delete(int id)
         {
             var sp = _context.SanPhams.Find(id);
-            if (sp != null)
-                try
-                {
-                    _context.SanPhams.Remove(sp);
-                    _context.SaveChanges();
-                }
-                catch (Exception ex)
-                {
-                    TempData["Error"] = "Không thể xóa sản phẩm: " + ex.Message;
-                }
+            if (sp == null)
+            {
+                TempData["Error"] = "Không tìm thấy sản phẩm.";
+                return RedirectToAction("Index");
+            }
+
+            try
+            {
+                _context.SanPhams.Remove(sp);
+                _context.SaveChanges();
+                TempData["Success"] = "✅ Xóa sản phẩm thành công!";
+            }
+            catch (DbUpdateException ex)
+            {
+                TempData["Error"] = "Không thể xóa sản phẩm do ràng buộc dữ liệu: " + ex.InnerException?.Message;
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khi xóa sản phẩm: " + ex.Message;
+            }
 
             return RedirectToAction("Index");
         }
