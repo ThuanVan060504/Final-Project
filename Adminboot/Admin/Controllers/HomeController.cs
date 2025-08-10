@@ -40,11 +40,11 @@ namespace Final_Project.Areas.Admin.Controllers
                     model.TotalSuppliers = (int)cmd.ExecuteScalar();
 
                 // Total Sale Amount
-                using (var cmd = new SqlCommand("SELECT ISNULL(SUM(TongTien),0) FROM HoaDon", con))
+                using (var cmd = new SqlCommand("SELECT ISNULL(SUM(TongTien),0) FROM DonHang", con))
                     model.TotalSaleAmount = Convert.ToDecimal(cmd.ExecuteScalar());
 
                 // Sales Invoice Count
-                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM HoaDon", con))
+                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM DonHang", con))
                     model.TotalSalesInvoice = (int)cmd.ExecuteScalar();
 
                 // Recently Added Products

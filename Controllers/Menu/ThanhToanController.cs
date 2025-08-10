@@ -234,9 +234,6 @@ namespace Final_Project.Controllers
         }
 
 
-
-
-
         [HttpPost]
         public IActionResult XacNhanThanhToan(List<int> chonSP)
         {
@@ -359,9 +356,8 @@ namespace Final_Project.Controllers
             return Redirect(response.PayUrl);
         }
 
-
         [HttpGet]
-        public IActionResult TaoVnpayQRCode(List<int> chonSP, decimal tongTien)
+        public async Task<IActionResult> TaoVnpayQRCode(List<int> chonSP, decimal tongTien)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
@@ -410,6 +406,9 @@ namespace Final_Project.Controllers
             _context.DonHangs.Add(donHang);
             _context.SaveChanges();
 
+            // ✅ Gửi email xác nhận
+            await SendOrderConfirmationEmail(donHang.MaDonHang);
+
             // 5. Thêm chi tiết đơn hàng và cập nhật kho
             foreach (var item in gioHang)
             {
@@ -448,9 +447,10 @@ namespace Final_Project.Controllers
 
             var url = _vnPayService.CreatePaymentUrl(paymentModel, HttpContext);
 
-            TempData["Success"] = "✅ Đang chuyển hướng đến VNPAY...";
+            TempData["Success"] = "✅ Thanh toán thành công ";
             return Redirect(url);
         }
+
 
         public async Task<IActionResult> KetQuaThanhToan(int maDonHang, string resultCode, string amount)
         {
@@ -481,13 +481,6 @@ namespace Final_Project.Controllers
 
             return RedirectToAction("Index", "GioHang");
         }
-
-
-
-
-
-
-
 
 
         [HttpGet]
@@ -598,38 +591,38 @@ namespace Final_Project.Controllers
                 }
 
                 var body = $@"
-<div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #eee;padding:20px;border-radius:10px;'>
-    <h2 style='color:#2E86C1;'>G3TD - Xác nhận thanh toán thành công #{donHang.MaDonHang}</h2>
-    <p>Xin chào <strong>{taiKhoan.HoTen}</strong>,</p>
-    <p>Cảm ơn bạn đã mua hàng tại <strong>G3TD</strong>. Dưới đây là thông tin đơn hàng của bạn:</p>
+                <div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #eee;padding:20px;border-radius:10px;'>
+                    <h2 style='color:#2E86C1;'>G3TD - Xác nhận thanh toán thành công #{donHang.MaDonHang}</h2>
+                    <p>Xin chào <strong>{taiKhoan.HoTen}</strong>,</p>
+                    <p>Cảm ơn bạn đã mua hàng tại <strong>G3TD</strong>. Dưới đây là thông tin đơn hàng của bạn:</p>
     
-    <table style='border-collapse:collapse;width:100%;margin-top:10px;'>
-        <thead>
-            <tr style='background:#f4f4f4;'>
-                <th>Ảnh</th>
-                <th>Sản phẩm</th>
-                <th>Số lượng</th>
-                <th>Đơn giá</th>
-                <th>Thành tiền</th>
-            </tr>
-        </thead>
-        <tbody>
-            {sb}
-        </tbody>
-    </table>
+                    <table style='border-collapse:collapse;width:100%;margin-top:10px;'>
+                        <thead>
+                            <tr style='background:#f4f4f4;'>
+                                <th>Ảnh</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Đơn giá</th>
+                                <th>Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {sb}
+                        </tbody>
+                    </table>
 
-    <p style='margin-top:15px;'><strong>Phương thức thanh toán:</strong> {phuongThucThanhToan}</p>
-    <p><strong>Trạng thái thanh toán:</strong> {donHang.TrangThaiThanhToan}</p>
-    <p><strong>Trạng thái đơn hàng:</strong> {donHang.TrangThaiDonHang}</p>
-    <p><strong>Tổng cộng:</strong> {donHang.TongTien:N0} VND</p>
+                    <p style='margin-top:15px;'><strong>Phương thức thanh toán:</strong> {phuongThucThanhToan}</p>
+                    <p><strong>Trạng thái thanh toán:</strong> {donHang.TrangThaiThanhToan}</p>
+                    <p><strong>Trạng thái đơn hàng:</strong> {donHang.TrangThaiDonHang}</p>
+                    <p><strong>Tổng cộng:</strong> {donHang.TongTien:N0} VND</p>
 
-    <hr/>
-    <p style='font-size:14px;color:#555;'>
-        Shop G3TD - Nội thất chất lượng<br/>
-        📞 0909 123 456<br/>
-        📧 support@g3td.com
-    </p>
-</div>";
+                    <hr/>
+                    <p style='font-size:14px;color:#555;'>
+                        Shop G3TD - Nội thất chất lượng<br/>
+                        📞 0909 123 456<br/>
+                        📧 support@g3td.com
+                    </p>
+                </div>";
 
                 await _emailService.SendEmailAsync(
                     taiKhoan.Email,

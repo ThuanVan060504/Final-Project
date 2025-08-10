@@ -18,13 +18,12 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
-
 <style>
     .content-wrapper {
         margin-left: 260px;
         padding: 40px;
     }
-  
+
     .dataTables_filter {
         text-align: center !important;
         margin-bottom: 15px;
@@ -40,67 +39,80 @@
             display: inline-block;
             margin-left: 0 !important;
         }
-
 </style>
 
 <div class="content-wrapper">
     <div class="container-fluid mt-4">
-    <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
 
-    <div class="d-flex justify-content-end mb-3">
-        <a href="@Url.Action("Create", "SanPham", new { area = "Admin" })" class="btn btn-success">
-            <i class="fas fa-plus"></i> Thêm sản phẩm
-        </a>
-    </div>
+        <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
 
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle text-center">
-            <thead class="table-dark">
-                <tr>
-                    <th>Mã</th>
-                    <th>Tên SP</th>
-                    <th>Giá</th>
-                    <th>Số lượng</th>
-                    <th>Danh mục</th>
-                    <th>Thương hiệu</th>
-                    <th>Ảnh</th>
-                    <th>Hành động</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
+        <!-- Thông báo -->
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="d-flex justify-content-end mb-3">
+            <a href="@Url.Action("Create", "SanPham", new { area = "Admin" })" class="btn btn-success">
+                <i class="fas fa-plus"></i> Thêm sản phẩm
+            </a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle text-center">
+                <thead class="table-dark">
                     <tr>
-                        <td>@item.MaSP</td>
-                        <td>@item.TenSP</td>
-                        <td>@item.DonGia.ToString("N0") đ</td>
-                        <td>@item.SoLuong</td>
-                        <td>@item.DanhMuc?.TenDanhMuc</td>
-                        <td>@item.ThuongHieu?.TenThuongHieu</td>
-                        <td>
-                            <img src="@item.ImageURL" width="60" class="img-thumbnail" />
-                        </td>
-                        <td>
-                            <div class="d-flex gap-1 justify-content-center">
-                                <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="@item.MaSP">
-                                    <i class="fas fa-edit"></i> Sửa
-                                </button>
-
-                                <form asp-area="Admin" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="m-0">
-                                    @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-danger btn-sm btn-delete">
-                                        <i class="fas fa-trash"></i> Xóa
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+                        <th>Mã</th>
+                        <th>Tên SP</th>
+                        <th>Giá</th>
+                        <th>Số lượng</th>
+                        <th>Danh mục</th>
+                        <th>Thương hiệu</th>
+                        <th>Ảnh</th>
+                        <th>Hành động</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@item.MaSP</td>
+                            <td>@item.TenSP</td>
+                            <td>@item.DonGia.ToString("N0") đ</td>
+                            <td>@item.SoLuong</td>
+                            <td>@item.DanhMuc?.TenDanhMuc</td>
+                            <td>@item.ThuongHieu?.TenThuongHieu</td>
+                            <td>
+                                <img src="@item.ImageURL" width="60" class="img-thumbnail" />
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1 justify-content-center">
+                                    <!-- Nút sửa -->
+                                    <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="@item.MaSP">
+                                        <i class="fas fa-edit"></i> Sửa
+                                    </button>
+
+                                    <!-- Form xóa -->
+                                    <form asp-area="Admin" asp-controller="SanPham" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="m-0">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm btn-delete">
+                                            <i class="fas fa-trash"></i> Xóa
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-</div>
+
 <!-- Modal Edit -->
 <div class="modal fade" id="editModal" tabindex="-1">
     <div class="modal-dialog">
@@ -155,30 +167,26 @@
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 
 <script src="~/Admin/js/script.js"></script>
+
 <script>
     $(document).ready(function () {
-        // Khởi tạo DataTable với phân trang 10 sản phẩm
-            $('table').DataTable({
-        pageLength: 10,
-        lengthChange: false,
-        language: {
-            paginate: {
-                previous: "Trước",
-                next: "Sau"
+        // DataTables
+        $('table').DataTable({
+            pageLength: 10,
+            lengthChange: false,
+            language: {
+                paginate: { previous: "Trước", next: "Sau" },
+                search: "Tìm kiếm:",
+                info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
+                infoEmpty: "Không có sản phẩm nào",
+                zeroRecords: "Không tìm thấy sản phẩm"
             },
-            search: "Tìm kiếm:",
-            info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
-            infoEmpty: "Không có sản phẩm nào",
-            zeroRecords: "Không tìm thấy sản phẩm"
-        },
-        initComplete: function () {
-            // Di chuyển ô tìm kiếm lên trên bảng và full width
-            $('.dataTables_filter').addClass('w-100');
-        }
-    });
+            initComplete: function () {
+                $('.dataTables_filter').addClass('w-100');
+            }
+        });
 
-
-        // Xóa với SweetAlert
+        // Xóa sản phẩm với SweetAlert
         $(document).on('click', '.btn-delete', function (e) {
             e.preventDefault();
             var form = $(this).closest('form');
@@ -196,7 +204,7 @@
             });
         });
 
-        // Sửa sản phẩm
+        // Lấy dữ liệu khi bấm sửa
         $(document).on('click', '.btn-edit', function () {
             var id = $(this).data('id');
             $.get('/Admin/SanPham/GetById/' + id, function (data) {
@@ -226,5 +234,4 @@
             });
         });
     });
-
 </script>
