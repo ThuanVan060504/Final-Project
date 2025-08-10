@@ -1,0 +1,129 @@
+﻿@model IEnumerable<Final_Project.Models.Shop.Decor>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Danh sách Decor";
+    var danhMucList = ViewBag.DanhMucList as List<Final_Project.Models.Shop.DanhMucDecor>;
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<h2 class="text-center mb-4">🛋️ Danh sách Decor 3D</h2>
+
+<!-- Form tạo Decor mới -->
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+        <h5>Thêm Decor mới</h5>
+    </div>
+    <div class="card-body">
+        <form asp-action="Create" method="post">
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tên Decor</label>
+                <input type="text" name="TenDecor" class="form-control" required />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Mô tả</label>
+                <textarea name="MoTa" class="form-control"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Danh mục</label>
+                <select name="MaDanhMuc" class="form-select">
+                    @foreach (var dm in danhMucList)
+                    {
+                        <option value="@dm.MaDanhMuc">@dm.TenDanhMuc</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Link 3D (Sketchfab)</label>
+                <input type="text" name="Link3D" class="form-control" required />
+            </div>
+
+            <button type="submit" class="btn btn-success">Thêm Decor</button>
+        </form>
+    </div>
+</div>
+
+<!-- Danh sách Decor -->
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-6 mb-5">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5>@item.TenDecor</h5>
+                    <small>@item.DanhMuc?.TenDanhMuc</small>
+                </div>
+                <div class="card-body">
+                    <p>@item.MoTa</p>
+
+                    @if (!string.IsNullOrEmpty(item.Link3D))
+                    {
+                        string embedLink = item.Link3D;
+                        if (!embedLink.Contains("/embed/"))
+                        {
+                            var modelId = embedLink.Split('/').Last();
+                            embedLink = $"https://sketchfab.com/models/{modelId}/embed";
+                        }
+                        if (!embedLink.Contains("?autostart=1"))
+                        {
+                            embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
+                        }
+
+                        <div class="ratio ratio-16x9">
+                            <iframe title="3D Decor Viewer"
+                                    frameborder="0"
+                                    allowfullscreen
+                                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                                    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                                    src="@embedLink">
+                            </iframe>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Script -->
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+
+<script src="~/Admin/js/feather.min.js"></script>
+
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+
+<script src="~/Admin/js/script.js"></script>
