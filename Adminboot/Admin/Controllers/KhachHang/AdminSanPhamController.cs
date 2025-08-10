@@ -48,7 +48,14 @@ namespace Final_Project.Adminboot.Admin.Controllers.KhachHang
                     TenSP = g.Key.TenSP,
                     ImageURL = g.Key.ImageURL,
                     DonGia = g.Key.DonGia,
-                    SoLanYeuThich = g.Count()
+                    SoLanYeuThich = g.Count(),
+                      // Đếm số đánh giá từ bảng DanhGias
+            SoDanhGia = _context.DanhGias
+                .Count(d => d.SanPhamId == g.Key.MaSP),
+
+                    // Đếm số bình luận (có nội dung) từ DanhGias
+                    SoBinhLuan = _context.DanhGias
+                .Count(d => d.SanPhamId == g.Key.MaSP && !string.IsNullOrEmpty(d.BinhLuan))
                 })
                 .OrderByDescending(x => x.SoLanYeuThich)
                 .ToList();
