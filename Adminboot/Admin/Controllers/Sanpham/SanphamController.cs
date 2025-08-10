@@ -40,6 +40,7 @@ namespace Final_Project.Areas.Admin.Controllers
 
         // POST: Thêm sản phẩm
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
             string TenSP,
             string MoTa,
@@ -127,6 +128,7 @@ namespace Final_Project.Areas.Admin.Controllers
 
         // POST: Xử lý sửa sản phẩm
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int MaSP, string TenSP, string MoTa, decimal DonGia, decimal GiaGoc, int SoLuong, double ChieuRong, double ChieuCao, double ChieuSau, int MaDanhMuc, int MaThuongHieu, IFormFile Anh, string ImageURL)
         {
             var sanPham = await _context.SanPhams.FindAsync(MaSP);
@@ -137,7 +139,7 @@ namespace Final_Project.Areas.Admin.Controllers
                 ModelState.AddModelError("TenSP", "Tên sản phẩm là bắt buộc.");
                 ViewBag.DanhMucList = new SelectList(_context.DanhMucs, "MaDanhMuc", "TenDanhMuc", MaDanhMuc);
                 ViewBag.ThuongHieuList = new SelectList(_context.ThuongHieus, "MaThuongHieu", "TenThuongHieu", MaThuongHieu);
-                return View("~/Adminboot/Admin/Views/Sanpham/Edit.cshtml", sanPham);
+                return View("~/Adminboot/Admin/Views/SanPham/Edit.cshtml", sanPham);
             }
 
             sanPham.TenSP = TenSP;
@@ -145,9 +147,9 @@ namespace Final_Project.Areas.Admin.Controllers
             sanPham.DonGia = DonGia;
             sanPham.GiaGoc = GiaGoc;
             sanPham.SoLuong = SoLuong;
-            sanPham.ChieuRong = (int?)ChieuRong;
-            sanPham.ChieuCao = (int?)ChieuCao;
-            sanPham.ChieuSau = (int?)ChieuSau;
+            sanPham.ChieuRong = (int?)Convert.ToInt32(ChieuRong);
+            sanPham.ChieuCao = (int?)Convert.ToInt32(ChieuCao);
+            sanPham.ChieuSau = (int?)Convert.ToInt32(ChieuSau);
             sanPham.MaDanhMuc = MaDanhMuc;
             sanPham.MaThuongHieu = MaThuongHieu;
 
@@ -173,7 +175,25 @@ namespace Final_Project.Areas.Admin.Controllers
             }
             // else giữ nguyên ImageURL cũ
 
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                var innerMsg = ex.InnerException?.Message ?? ex.Message;
+                TempData["Error"] = "Lỗi khi cập nhật sản phẩm: " + innerMsg;
+                ViewBag.DanhMucList = new SelectList(_context.DanhMucs, "MaDanhMuc", "TenDanhMuc", MaDanhMuc);
+                ViewBag.ThuongHieuList = new SelectList(_context.ThuongHieus, "MaThuongHieu", "TenThuongHieu", MaThuongHieu);
+                return View("~/Adminboot/Admin/Views/SanPham/Edit.cshtml", sanPham);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Lỗi khác: " + ex.Message;
+                ViewBag.DanhMucList = new SelectList(_context.DanhMucs, "MaDanhMuc", "TenDanhMuc", MaDanhMuc);
+                ViewBag.ThuongHieuList = new SelectList(_context.ThuongHieus, "MaThuongHieu", "TenThuongHieu", MaThuongHieu);
+                return View("~/Adminboot/Admin/Views/SanPham/Edit.cshtml", sanPham);
+            }
 
             TempData["Success"] = "✅ Cập nhật sản phẩm thành công!";
             return RedirectToAction("Index");
@@ -187,26 +207,19 @@ namespace Final_Project.Areas.Admin.Controllers
             var sp = await _context.SanPhams.FindAsync(id);
             if (sp == null)
             {
-                TempData["Error"] = "Không tìm thấy sản phẩm.";
-                return RedirectToAction("Index");
+                return Json(new { success = false, message = "Không tìm thấy sản phẩm." });
             }
 
             try
             {
                 _context.SanPhams.Remove(sp);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "✅ Xóa sản phẩm thành công!";
-            }
-            catch (DbUpdateException ex)
-            {
-                TempData["Error"] = "Không thể xóa sản phẩm do ràng buộc dữ liệu: " + ex.InnerException?.Message;
+                return Json(new { success = true, message = "Xóa sản phẩm thành công!" });
             }
             catch (Exception ex)
             {
-                TempData["Error"] = "Lỗi khi xóa sản phẩm: " + ex.Message;
+                return Json(new { success = false, message = "Lỗi khi xóa sản phẩm: " + ex.Message });
             }
-
-            return RedirectToAction("Index");
         }
     }
 }

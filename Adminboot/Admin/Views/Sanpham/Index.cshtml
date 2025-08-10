@@ -18,7 +18,6 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
-
 <div class="page-wrapper">
     <div class="content">
         <div class="page-header">
@@ -44,7 +43,6 @@
 
         <div class="card">
             <div class="card-body">
-                <!-- Bảng dữ liệu -->
                 <div class="table-responsive">
                     <table class="table datanew">
                         <thead>
@@ -69,25 +67,20 @@
                                     <td>@item.SoLuong</td>
                                     <td>@item.DanhMuc?.TenDanhMuc</td>
                                     <td>@item.ThuongHieu?.TenThuongHieu</td>
-                                    <td class="productimgname">
-                                        <a href="javascript:void(0);" class="product-img">
-                                            <img src="@item.ImageURL" alt="product" width="35" height="35" style="object-fit: cover; border-radius: 4px;" />
-                                        </a>
+                                    <td>
+                                        <img src="@item.ImageURL" alt="product" width="35" height="35" style="object-fit: cover; border-radius: 4px;" />
                                     </td>
-                                    <td class="action-table-data">
-                                        <div class="actions">
-                                            <!-- Nút sửa -->
-                                            <a class="btn btn-primary-light me-2 btn-edit" href="javascript:void(0);" data-id="@item.MaSP">
-                                                <i class="fa fa-edit me-1"></i> Sửa
-                                            </a>
-                                            <!-- Nút xóa -->
-                                            <form asp-area="Admin" asp-controller="SanPham" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="d-inline">
-                                                @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-danger-light btn-delete">
-                                                    <i class="fa fa-trash me-1"></i> Xóa
-                                                </button>
-                                            </form>
-                                        </div>
+                                    <td>
+                                        <a href="@Url.Action("Edit", "SanPham", new { area = "Admin", id = item.MaSP })" class="btn btn-primary-light me-2">
+                                            <i class="fa fa-edit me-1"></i> Sửa
+                                        </a>
+
+                                        <form asp-area="Admin" asp-controller="SanPham" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="d-inline delete-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger-light btn-delete" data-id="@item.MaSP" data-name="@item.TenSP">
+                                                <i class="fa fa-trash me-1"></i> Xóa
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             }
@@ -99,46 +92,6 @@
     </div>
 </div>
 
-<!-- Modal Edit -->
-<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="editForm">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="editMaSP" name="MaSP" />
-
-                    <div class="mb-3">
-                        <label class="form-label">Tên sản phẩm</label>
-                        <input type="text" id="editTenSP" name="TenSP" class="form-control" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Đơn giá</label>
-                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required step="0.01" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Số lượng</label>
-                        <input type="number" id="editSoLuong" name="SoLuong" class="form-control" required />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">
-                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
-                        Lưu
-                    </button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Script -->
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
 <script src="~/Admin/js/feather.min.js"></script>
 <script src="~/Admin/js/jquery.slimscroll.min.js"></script>
@@ -150,80 +103,42 @@
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 <script src="~/Admin/js/script.js"></script>
 
-@section Scripts {
-    <script>
-        $(document).ready(function () {
-            // Khởi tạo DataTable (hủy nếu đã khởi tạo)
-            if ($.fn.DataTable.isDataTable('.datanew')) {
-                $('.datanew').DataTable().destroy();
-            }
 
-            $('.datanew').DataTable({
-                pageLength: 10,
-                lengthChange: false,
-                language: {
-                    paginate: { previous: "Trước", next: "Sau" },
-                    search: "Tìm kiếm:",
-                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
-                    infoEmpty: "Không có sản phẩm nào",
-                    zeroRecords: "Không tìm thấy sản phẩm"
-                },
-                initComplete: function () {
-                    $('.dataTables_filter').addClass('w-100');
-                }
-            });
+<script>
+          $(document).on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        var button = $(this);
+        var id = button.data('id');
+        var name = button.data('name') || 'sản phẩm này';
 
-            // Xóa sản phẩm có xác nhận SweetAlert
-            $(document).on('click', '.btn-delete', function (e) {
-                e.preventDefault();
-                var form = $(this).closest('form');
-                Swal.fire({
-                    title: 'Xác nhận xóa?',
-                    text: "Dữ liệu sẽ bị xóa vĩnh viễn!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Xóa',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-
-            // Lấy dữ liệu khi bấm sửa
-            $(document).on('click', '.btn-edit', function () {
-                var id = $(this).data('id');
-                $.get('/Admin/SanPham/GetById/' + id, function (data) {
-                    $('#editMaSP').val(data.maSP);
-                    $('#editTenSP').val(data.tenSP);
-                    $('#editDonGia').val(data.donGia);
-                    $('#editSoLuong').val(data.soLuong);
-                    $('#editModal').modal('show');
-                });
-            });
-
-            // Xử lý submit form sửa với loading spinner
-            $('#editForm').submit(function (e) {
-                e.preventDefault();
-                $('#loadingSpinner').removeClass('d-none');
+        Swal.fire({
+            title: `Xóa ${name}?`,
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
                 $.ajax({
-                    url: '/Admin/SanPham/Edit',
+                    url: '/Admin/SanPham/Delete/' + id,
                     type: 'POST',
-                    data: $(this).serialize(),
-                    success: function () {
-                        Swal.fire('Thành công!', 'Cập nhật sản phẩm thành công.', 'success').then(() => {
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        Swal.fire('Đã xóa!', '', 'success').then(() => {
                             location.reload();
                         });
                     },
                     error: function () {
-                        Swal.fire('Lỗi!', 'Cập nhật thất bại.', 'error');
-                    },
-                    complete: function () {
-                        $('#loadingSpinner').addClass('d-none');
+                        Swal.fire('Lỗi khi xóa sản phẩm', '', 'error');
                     }
                 });
-            });
+            }
         });
-    </script>
-}
+    });
+</script>
+
