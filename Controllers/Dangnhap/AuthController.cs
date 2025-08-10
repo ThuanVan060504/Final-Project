@@ -267,28 +267,108 @@ namespace Final_Project.Controllers
             return RedirectToAction("Login", "Auth");
         }
 
-        // Quên mật khẩu
+        // GET quên mật khẩu - bước 1: Nhập email
         [HttpGet("/Quenmatkhau")]
         public IActionResult ForgotPassword()
         {
+            ViewBag.Step = "Email"; // dùng ViewBag để phân biệt bước
             return View();
         }
 
+        // POST quên mật khẩu - gửi OTP đến email
         [HttpPost("/Quenmatkhau")]
-        public IActionResult ForgotPassword(ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
             if (!ModelState.IsValid)
+            {
+                ViewBag.Step = "Email";
                 return View(model);
+            }
 
             var user = _context.TaiKhoans.FirstOrDefault(u => u.Email == model.Email);
             if (user == null)
             {
-                ModelState.AddModelError("Email", "Không tìm thấy email này.");
+                ModelState.AddModelError("Email", "Tài khoản không tồn tại.");
+                ViewBag.Step = "Email";
                 return View(model);
             }
 
-            TempData["Message"] = "Liên kết khôi phục mật khẩu đã được gửi (giả lập).";
-            return RedirectToAction("ForgotPassword");
+            // Tạo mã OTP 6 chữ số
+            var otp = new Random().Next(100000, 999999).ToString();
+            HttpContext.Session.SetString("ForgotPasswordEmail", user.Email);
+            HttpContext.Session.SetString("ForgotPasswordOtp", otp);
+            HttpContext.Session.SetString("OtpExpiry", DateTime.Now.AddMinutes(5).ToString());
+
+            // Gửi mail OTP
+            string content = $"Mã OTP của bạn là: <b>{otp}</b>. Mã có hiệu lực trong 5 phút.";
+            await _emailService.SendEmailAsync(user.Email, "Mã OTP lấy lại mật khẩu", content);
+
+            TempData["Message"] = $"Mã OTP đã được gửi tới email {user.Email}. Vui lòng kiểm tra hộp thư.";
+            ViewBag.Step = "VerifyOtp";
+
+            // Giữ model để giữ lại email khi chuyển sang form nhập OTP + mật khẩu mới
+            return View(model);
         }
+
+        // POST xác nhận OTP và đổi mật khẩu
+        [HttpPost("/Xacnhanotp")]
+        public IActionResult VerifyOtp(ForgotPasswordViewModel model, string Otp, string NewPassword, string ConfirmPassword)
+        {
+            ViewBag.Step = "VerifyOtp";
+
+            var sessionOtp = HttpContext.Session.GetString("ForgotPasswordOtp");
+            var sessionEmail = HttpContext.Session.GetString("ForgotPasswordEmail");
+            var expiryStr = HttpContext.Session.GetString("OtpExpiry");
+
+            if (string.IsNullOrEmpty(sessionOtp) || string.IsNullOrEmpty(sessionEmail) || string.IsNullOrEmpty(expiryStr))
+            {
+                ModelState.AddModelError("", "Phiên làm việc đã hết hạn. Vui lòng thử lại.");
+                return View("ForgotPassword", model);
+            }
+
+            if (!DateTime.TryParse(expiryStr, out var expiry))
+            {
+                ModelState.AddModelError("", "Phiên làm việc không hợp lệ. Vui lòng thử lại.");
+                return View("ForgotPassword", model);
+            }
+
+            if (DateTime.Now > expiry)
+            {
+                ModelState.AddModelError("", "Mã OTP đã hết hạn. Vui lòng gửi lại yêu cầu.");
+                return View("ForgotPassword", model);
+            }
+
+            if (Otp != sessionOtp)
+            {
+                ModelState.AddModelError("Otp", "Mã OTP không đúng.");
+                return View("ForgotPassword", model);
+            }
+
+            if (NewPassword != ConfirmPassword)
+            {
+                ModelState.AddModelError("", "Mật khẩu mới và xác nhận mật khẩu không khớp.");
+                return View("ForgotPassword", model);
+            }
+
+            var user = _context.TaiKhoans.FirstOrDefault(u => u.Email == sessionEmail);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Tài khoản không tồn tại.");
+                return View("ForgotPassword", model);
+            }
+
+            // Cập nhật mật khẩu mới
+            user.MatKhau = NewPassword;
+            _context.SaveChanges();
+
+            // Xóa session OTP
+            HttpContext.Session.Remove("ForgotPasswordEmail");
+            HttpContext.Session.Remove("ForgotPasswordOtp");
+            HttpContext.Session.Remove("OtpExpiry");
+
+            TempData["Success"] = "Mật khẩu đã được cập nhật thành công. Bạn có thể đăng nhập lại.";
+            return RedirectToAction("Login", "Auth");
+        }
+
     }
 }
