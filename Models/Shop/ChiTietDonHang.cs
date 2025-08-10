@@ -11,7 +11,7 @@ namespace Final_Project.Models.Shop
 
         public int MaDonHang { get; set; }
 
-        public int MaSP { get; set; }
+        public int? MaSP { get; set; }
 
         public int SoLuong { get; set; }
 
