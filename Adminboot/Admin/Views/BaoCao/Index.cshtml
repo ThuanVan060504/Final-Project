@@ -185,8 +185,8 @@
     ];
 
     // Biểu đồ sản phẩm bán chạy nhất
-    fetch('@Url.Action("SanPhamDaBan", "ThongKe", new { area = "Admin" })')
-        .then(res => res.json())
+    fetch('@Url.Action("SanPhamDaBan", "BaoCao", new { area = "Admin" })')
+            .then(res => res.json())
         .then(data => {
             const barColors = data.map((_, idx) => colors[idx % colors.length]);
 
@@ -279,8 +279,8 @@
         });
 
     // Biểu đồ sản phẩm yêu thích với bảng màu sắc + tên to + tỉ lệ %
-    fetch('@Url.Action("SanPhamYeuThich", "ThongKe", new { area = "Admin" })')
-        .then(res => res.json())
+    fetch('@Url.Action("SanPhamYeuThich", "BaoCao", new { area = "Admin" })')
+            .then(res => res.json())
         .then(data => {
             new Chart(document.getElementById('chartYeuThich'), {
                 type: 'pie',

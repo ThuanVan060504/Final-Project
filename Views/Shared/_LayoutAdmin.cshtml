@@ -283,14 +283,11 @@
                                 <li><a href="email.html">Tin nhắn qua Email</a></li>
                             </ul>
                         </li>
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/time.svg" alt="img"><span> Báo Cáo</span> <span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="purchasereport.html">Nhập kho</a></li>
-                                <li><a href="salesreport.html">Sản phẩm sales</a></li>
-                                <li><a asp-area="Admin" asp-controller="BaoCao" asp-action="Index">BaoCao</a></li>
-                                <li><a href="customerreport.html">khách hàng</a></li>
-                            </ul>
+                        <li>
+                            <a asp-area="Admin" asp-controller="BaoCao" asp-action="Index">
+                                <img src="~/Admin/img/icons/time.svg" alt="img" />
+                                <span> Báo Cáo</span>
+                            </a>
                         </li>
                     </ul>
                 </div>

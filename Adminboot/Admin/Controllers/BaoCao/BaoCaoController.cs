@@ -59,7 +59,7 @@ namespace Final_Project.Areas.Admin.Controllers
         // Trang thống kê
         public IActionResult Index()
         {
-            return View("~/Adminboot/Admin/Views/BaoCao/SanPham/Index.cshtml");
+            return View("~/Adminboot/Admin/Views/BaoCao/Index.cshtml");
         }
     }
 }
