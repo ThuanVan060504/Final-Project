@@ -236,8 +236,8 @@
                                 <li><a asp-area="Admin" asp-controller="Sanpham" asp-action="Create">Add Product</a></li>
                                 <li><a asp-area="Admin" asp-controller="DanhmucSp" asp-action="">Danh mục</a></li>
                                 <li><a asp-area="Admin" asp-controller="DanhmucSp" asp-action="Create">Thêm Danh mục</a></li>
-                                <li><a href="subcategorylist.cshtml">Decor</a></li>
-                                <li><a href="subaddcategory.cshtml">Thêm Danh Muc Decor</a></li>
+                                <li><a asp-area="Admin" asp-controller="Decor" asp-action="">Decor</a></li>
+                                <li><a asp-area="Admin" asp-controller="DanhMucDecor" asp-action="">Thêm Danh Mục Decor</a></li>
                                 <li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="">Thương Hiệu</a></li>
                                 <li><a asp-area="Admin" asp-controller="ThuongHieuSp" asp-action="Create">Thêm Thương Hiệu</a></li>
                             </ul>
@@ -250,13 +250,6 @@
                             </a>
                         </li>
 
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/expense1.svg" alt="img"><span> Chi phí</span> <span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a href="expenselist.html">Chi phí đơn hàng</a></li>
-                                <li><a href="createexpense.html">Chi phí nhập hàng</a></li>
-                            </ul>
-                        </li>
 
                         <li class="submenu">
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/transfer1.svg" alt="img"><span> Nhập Kho</span> <span class="menu-arrow"></span></a>
@@ -272,9 +265,8 @@
                             <a href="javascript:void(0);"><img src="~/Admin/img/icons/users1.svg" alt="img"><span> Khách Hàng</span> <span class="menu-arrow"></span></a>
                             <ul>
                                  <li><a asp-area="Admin" asp-controller="KhachHang" asp-action="" > Danh Sách Khách Hàng</a></li>
-                                <li><a href="addcustomer.html">Sản phẩm được mua và yêu thích</a></li>
-                                <li><a href="supplierlist.html">Sản phẩm trong giỏ hàng</a></li>
-                                <li><a href="addsupplier.html">Chỉnh sửa thông tin khách hàng </a></li>
+                                <li><a asp-area="Admin" asp-controller="AdminSanPham" asp-action="SanPhamMuaNhieu">Sản phẩm mua nhiều</a></li>
+                                <li><a asp-area="Admin" asp-controller="AdminSanPham" asp-action="SanPhamYeuThich">Sản phẩm yêu thích</a></li>
                             </ul>
 
                         <li>
