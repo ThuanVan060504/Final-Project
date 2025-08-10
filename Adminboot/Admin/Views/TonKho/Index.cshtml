@@ -1,0 +1,142 @@
+﻿@using System.Globalization
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Tồn Kho";
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <!-- Tiêu đề trang -->
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Danh Sách Tồn Kho</h4>
+                <h6>Quản lý số lượng và giá trị tồn kho</h6>
+            </div>
+        </div>
+
+        <!-- Bộ lọc tìm kiếm -->
+        <div class="row mb-3">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <input type="text" class="form-control" placeholder="Nhập tên hoặc mã sản phẩm">
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <select class="form-control">
+                    <option>Chọn danh mục</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <select class="form-control">
+                    <option>Chọn nhà sản xuất</option>
+                </select>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <select class="form-control">
+                    <option>Chỉ lấy hàng tồn</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Thông tin tổng quan -->
+        <div class="row mb-3">
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg1"><i class="fa fa-clock"></i></span>
+                    <div class="dash-widget-info">
+                        <h3>@DateTime.Now.ToString("dd/MM/yyyy")</h3>
+                        <span>Ngày lập</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg2"><i class="fa fa-tag"></i></span>
+                    <div class="dash-widget-info">
+                        <h3>@ViewBag.TongSoLuongTon</h3>
+                        <span>SL tồn kho</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg3"><i class="fa fa-sync"></i></span>
+                    <div class="dash-widget-info">
+                        <h3>@String.Format(new CultureInfo("vi-VN"), "{0:N0}", ViewBag.TongVonTonKho)</h3>
+                        <span>Tổng vốn tồn kho</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6 col-12">
+                <div class="dash-widget">
+                    <span class="dash-widget-bg4"><i class="fa fa-shopping-cart"></i></span>
+                    <div class="dash-widget-info">
+                        <h3>@String.Format(new CultureInfo("vi-VN"), "{0:N0}", ViewBag.TongGiaTriTon)</h3>
+                        <span>Tổng giá trị tồn kho</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng tồn kho -->
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Mã hàng</th>
+                                <th>Tên sản phẩm</th>
+                                <th>SL</th>
+                                <th>Vốn tồn kho</th>
+                                <th>Giá trị tồn</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var sp in Model)
+                            {
+                                <tr>
+                                    <td>@sp.MaSP</td>
+                                    <td>@sp.TenSP</td>
+                                    <td>@sp.SoLuong</td>
+                                    <td>@String.Format(new CultureInfo("vi-VN"), "{0:N0}", sp.VonTonKho)</td>
+                                    <td>@String.Format(new CultureInfo("vi-VN"), "{0:N0}", sp.GiaTriTon)</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+
+<script src="~/Admin/js/feather.min.js"></script>
+
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+
+<script src="~/Admin/js/script.js"></script>

@@ -18,35 +18,20 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
-<style>
-    .content-wrapper {
-        margin-left: 260px;
-        padding: 40px;
-    }
+<div class="page-wrapper">
+    <div class="content">   
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Danh Sách Sản Phẩm</h4>
+                <h6>Quản lý sản phẩm trong kho</h6>
+            </div>
+            <div class="page-btn">
+                <a href="@Url.Action("Create", "SanPham", new { area = "Admin" })" class="btn btn-added">
+                    <i class="fa fa-plus me-1"></i> Thêm sản phẩm
+                </a>
+            </div>
+        </div>
 
-    .dataTables_filter {
-        text-align: center !important;
-        margin-bottom: 15px;
-    }
-
-        .dataTables_filter label {
-            width: 100%;
-        }
-
-        .dataTables_filter input {
-            width: 100% !important;
-            max-width: none !important;
-            display: inline-block;
-            margin-left: 0 !important;
-        }
-</style>
-
-<div class="content-wrapper">
-    <div class="container-fluid mt-4">
-
-        <h2 class="mb-4 text-center">Danh sách sản phẩm</h2>
-
-        <!-- Thông báo -->
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success">@TempData["Success"]</div>
@@ -56,59 +41,95 @@
             <div class="alert alert-danger">@TempData["Error"]</div>
         }
 
-        <div class="d-flex justify-content-end mb-3">
-            <a href="@Url.Action("Create", "SanPham", new { area = "Admin" })" class="btn btn-success">
-                <i class="fas fa-plus"></i> Thêm sản phẩm
-            </a>
+        <div class="card">
+            <div class="card-body">
+                <!-- Bảng dữ liệu -->
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Mã</th>
+                                <th>Tên SP</th>
+                                <th>Giá</th>
+                                <th>Số lượng</th>
+                                <th>Danh mục</th>
+                                <th>Thương hiệu</th>
+                                <th>Ảnh</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.MaSP</td>
+                                    <td>@item.TenSP</td>
+                                    <td>@item.DonGia.ToString("N0") ₫</td>
+                                    <td>@item.SoLuong</td>
+                                    <td>@item.DanhMuc?.TenDanhMuc</td>
+                                    <td>@item.ThuongHieu?.TenThuongHieu</td>
+                                    <td class="productimgname">
+                                        <a href="javascript:void(0);" class="product-img">
+                                            <img src="@item.ImageURL" alt="product" width="40" height="40" />
+                                        </a>
+                                    </td>
+                                    <td class="action-table-data">
+                                        <div class="actions">
+                                            <!-- Nút sửa -->
+                                            <a class="btn btn-primary-light me-2 btn-edit" href="javascript:void(0);" data-id="@item.MaSP">
+                                                <i class="fa fa-edit me-1"></i> Sửa
+                                            </a>
+                                            <!-- Nút xóa -->
+                                            <form asp-area="Admin" asp-controller="SanPham" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="d-inline">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-danger-light btn-delete">
+                                                    <i class="fa fa-trash me-1"></i> Xóa
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
+    </div>
+</div>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped align-middle text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Mã</th>
-                        <th>Tên SP</th>
-                        <th>Giá</th>
-                        <th>Số lượng</th>
-                        <th>Danh mục</th>
-                        <th>Thương hiệu</th>
-                        <th>Ảnh</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model)
-                    {
-                        <tr>
-                            <td>@item.MaSP</td>
-                            <td>@item.TenSP</td>
-                            <td>@item.DonGia.ToString("N0") đ</td>
-                            <td>@item.SoLuong</td>
-                            <td>@item.DanhMuc?.TenDanhMuc</td>
-                            <td>@item.ThuongHieu?.TenThuongHieu</td>
-                            <td>
-                                <img src="@item.ImageURL" width="60" class="img-thumbnail" />
-                            </td>
-                            <td>
-                                <div class="d-flex gap-1 justify-content-center">
-                                    <!-- Nút sửa -->
-                                    <button type="button" class="btn btn-warning btn-sm btn-edit" data-id="@item.MaSP">
-                                        <i class="fas fa-edit"></i> Sửa
-                                    </button>
+<!-- Modal Edit -->
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="editForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editMaSP" name="MaSP" />
 
-                                    <!-- Form xóa -->
-                                    <form asp-area="Admin" asp-controller="SanPham" asp-action="Delete" asp-route-id="@item.MaSP" method="post" class="m-0">
-                                        @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-danger btn-sm btn-delete">
-                                            <i class="fas fa-trash"></i> Xóa
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+                    <div class="mb-3">
+                        <label class="form-label">Tên sản phẩm</label>
+                        <input type="text" id="editTenSP" name="TenSP" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Đơn giá</label>
+                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Số lượng</label>
+                        <input type="number" id="editSoLuong" name="SoLuong" class="form-control" required />
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -167,11 +188,16 @@
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 
 <script src="~/Admin/js/script.js"></script>
-
+@section Scripts {
 <script>
     $(document).ready(function () {
-        // DataTables
-        $('table').DataTable({
+        // Nếu DataTable đã được khởi tạo, hủy nó trước khi khởi tạo lại
+        if ($.fn.DataTable.isDataTable('.datanew')) {
+            $('.datanew').DataTable().destroy();
+        }
+        
+        // Khởi tạo DataTable mới
+        $('.datanew').DataTable({
             pageLength: 10,
             lengthChange: false,
             language: {
@@ -235,3 +261,4 @@
         });
     });
 </script>
+}
