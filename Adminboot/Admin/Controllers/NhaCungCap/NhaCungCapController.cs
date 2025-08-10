@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Final_Project.Models.Shop;
+using System.Linq;
 
-namespace Final_Project.Adminboot.Admin.Controllers
+namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class NhaCungCapController : Controller
@@ -29,37 +30,23 @@ namespace Final_Project.Adminboot.Admin.Controllers
         // Create POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(string TenNCC, string SoDienThoai, string DiaChi, string Email)
+        public IActionResult Create(NhaCungCap ncc)
         {
-            if (!string.IsNullOrWhiteSpace(TenNCC))
+            if (ModelState.IsValid)
             {
-                var ncc = new NhaCungCap
-                {
-                    TenNCC = TenNCC,
-                    SoDienThoai = SoDienThoai,
-                    DiaChi = DiaChi,
-                    Email = Email
-                };
                 _context.NhaCungCaps.Add(ncc);
                 _context.SaveChanges();
-
                 TempData["Success"] = "Thêm nhà cung cấp thành công!";
                 return RedirectToAction("Index");
             }
-
-            // Trả lại dữ liệu nếu nhập lỗi
-            ViewBag.TenNCC = TenNCC;
-            ViewBag.SoDienThoai = SoDienThoai;
-            ViewBag.DiaChi = DiaChi;
-            ViewBag.Email = Email;
-            return View("~/Adminboot/Admin/Views/NhaCungCap/Create.cshtml");
+            return View("~/Adminboot/Admin/Views/NhaCungCap/Create.cshtml", ncc);
         }
 
-
         // Edit GET
+        [HttpGet]
         public IActionResult Edit(int id)
         {
-            var ncc = _context.NhaCungCaps.Find(id);
+            var ncc = _context.NhaCungCaps.FirstOrDefault(x => x.MaNCC == id);
             if (ncc == null) return NotFound();
             return View("~/Adminboot/Admin/Views/NhaCungCap/Edit.cshtml", ncc);
         }
@@ -67,37 +54,36 @@ namespace Final_Project.Adminboot.Admin.Controllers
         // Edit POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(NhaCungCap ncc)
+        public IActionResult Edit(int MaNCC, string TenNCC, string SoDienThoai, string DiaChi, string Email)
         {
-            if (ModelState.IsValid)
-            {
-                _context.NhaCungCaps.Update(ncc);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View("~/Adminboot/Admin/Views/NhaCungCap/Edit.cshtml", ncc);
-        }
+            var nccInDb = _context.NhaCungCaps.FirstOrDefault(x => x.MaNCC == MaNCC);
+            if (nccInDb == null) return NotFound();
 
-        // Delete GET (Confirm)
-        public IActionResult Delete(int id)
-        {
-            var ncc = _context.NhaCungCaps.Find(id);
-            if (ncc == null) return NotFound();
-            return View("~/Adminboot/Admin/Views/NhaCungCap/Delete.cshtml", ncc);
+            nccInDb.TenNCC = TenNCC;
+            nccInDb.SoDienThoai = SoDienThoai;
+            nccInDb.DiaChi = DiaChi;
+            nccInDb.Email = Email;
+
+            _context.SaveChanges();
+
+            TempData["Success"] = "Cập nhật nhà cung cấp thành công!";
+
+            return RedirectToAction("Index", "NhaCungCap", new { area = "Admin" });
         }
 
         // Delete POST
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             var ncc = _context.NhaCungCaps.Find(id);
-            if (ncc != null)
+            if (ncc == null)
             {
-                _context.NhaCungCaps.Remove(ncc);
-                _context.SaveChanges();
+                return Json(new { success = false, message = "Nhà cung cấp không tồn tại" });
             }
-            return RedirectToAction("Index");
+            _context.NhaCungCaps.Remove(ncc);
+            _context.SaveChanges();
+            return Json(new { success = true });
         }
     }
 }

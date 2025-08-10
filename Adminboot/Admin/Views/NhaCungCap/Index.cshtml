@@ -14,6 +14,9 @@
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
 <div class="page-wrapper">
+    <form id="form-token" method="post" style="display:none;">
+        @Html.AntiForgeryToken()
+    </form>
     <div class="content">
         <div class="page-header">
             <div class="page-title">
@@ -70,10 +73,10 @@
                                 <td>@item.SoDienThoai</td>
                                 <td>@item.Email</td>
                                 <td>
-                                    <a class="me-3" href="/Admin/NhaCungCap/Edit/@item.MaNCC">
+                                    <a href="@Url.Action("Edit", "NhaCungCap", new { area = "Admin", id = item.MaNCC })">
                                         <img src="~/Admin/img/icons/edit.svg" alt="edit" />
                                     </a>
-                                    <a class="me-3 confirm-text" href="/Admin/NhaCungCap/Delete/@item.MaNCC">
+                                    <a href="javascript:void(0)" class="btn-delete-ncc" data-id="@item.MaNCC">
                                         <img src="~/Admin/img/icons/delete.svg" alt="delete" />
                                     </a>
                                 </td>
@@ -96,3 +99,32 @@
 <script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 <script src="~/Admin/js/script.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.btn-delete-ncc').click(function() {
+            var id = $(this).data('id');
+            if (confirm('Bạn chắc chắn muốn xóa nhà cung cấp này chứ?')) {
+                $.ajax({
+                    url: '@Url.Action("DeleteConfirmed", "NhaCungCap", new { area = "Admin" })',
+                    type: 'POST',
+                    data: {
+                        id: id,
+                        __RequestVerificationToken: $('#form-token input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function(response) {
+                        if(response.success) {
+                            alert('Xóa thành công!');
+                            location.reload();
+                        } else {
+                            alert('Xóa thất bại: ' + response.message);
+                        }
+                    },
+                    error: function() {
+                        alert('Có lỗi xảy ra khi xóa.');
+                    }
+                });
+            }
+        });
+    });
+</script>
