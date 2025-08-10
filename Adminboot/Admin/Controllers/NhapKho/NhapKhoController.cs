@@ -23,32 +23,89 @@ public class NhapKhoController : Controller
     }
 
     [HttpPost]
-    public IActionResult Index(List<int> MaSP, List<int?> SoLuong, List<decimal?> DonGia,
-                           decimal TongTien, decimal DaThanhToan, decimal ConNo,
-                           DateTime NgayNhap)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Index(List<int> MaSP, List<int?> SoLuong, List<decimal?> DonGia,
+                            decimal TongTien, decimal DaThanhToan, decimal ConNo,
+                            DateTime NgayNhap, int MaNCC, int MaNguoiNhap, string GhiChu, string HinhThucThanhToan)
     {
-        // Debug log dữ liệu nhận từ form
-        Console.WriteLine("===== DỮ LIỆU FORM GỬI LÊN =====");
-        Console.WriteLine("Ngày nhập: " + NgayNhap.ToString("dd/MM/yyyy"));
-        Console.WriteLine("Tổng tiền: " + TongTien);
-        Console.WriteLine("Đã thanh toán: " + DaThanhToan);
-        Console.WriteLine("Còn nợ: " + ConNo);
-
-        if (MaSP != null && MaSP.Count > 0)
+        if (MaSP == null || MaSP.Count == 0)
         {
+            ModelState.AddModelError("", "Bạn chưa chọn sản phẩm để nhập kho.");
+            // Load lại dữ liệu ViewBag
+            ViewBag.NhaCungCaps = await _context.NhaCungCaps.ToListAsync();
+            ViewBag.SanPhams = await _context.SanPhams.ToListAsync();
+            return View("~/Adminboot/Admin/Views/NhapKhoSP/Index.cshtml");
+        }
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            // Tạo phiếu nhập kho mới
+            var phieuNhap = new NhapKho
+            {
+                MaNCC = MaNCC,
+                NgayNhap = NgayNhap,
+                MaTK = MaNguoiNhap,
+                GhiChu = GhiChu,
+                TongTien = TongTien,
+                DaThanhToan = DaThanhToan,
+                ConNo = ConNo,
+                HinhThucThanhToan = HinhThucThanhToan
+            };
+
+            _context.NhapKhos.Add(phieuNhap);
+            await _context.SaveChangesAsync();
+
+            // Lấy Id phiếu nhập vừa tạo
+            int maNhapKho = phieuNhap.MaNhapKho;
+
+            // Duyệt từng sản phẩm nhập
             for (int i = 0; i < MaSP.Count; i++)
             {
-                Console.WriteLine($"SP {MaSP[i]} | SL: {SoLuong[i]} | Giá: {DonGia[i]}");
+                int maSP = MaSP[i];
+                int soLuong = SoLuong[i] ?? 0;
+                decimal donGia = DonGia[i] ?? 0;
+
+                if (soLuong <= 0 || donGia <= 0)
+                    continue; // bỏ qua nếu số lượng hoặc giá nhập không hợp lệ
+
+                var chiTiet = new ChiTietNhapKho
+                {
+                    MaNhapKho = maNhapKho,
+                    MaSP = maSP,
+                    SoLuong = soLuong,
+                    DonGia = donGia,
+                    ThanhTien = soLuong * donGia
+                };
+
+                _context.ChiTietNhapKhos.Add(chiTiet);
+
+                // Cập nhật tồn kho sản phẩm (nếu có)
+                var sp = await _context.SanPhams.FindAsync(maSP);
+                if (sp != null)
+                {
+                    sp.SoLuong += soLuong;
+                    _context.SanPhams.Update(sp);
+                }
             }
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            TempData["SuccessMessage"] = "Nhập kho thành công!";
+            return RedirectToAction("Index");
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine("Không có sản phẩm nào được chọn!");
+            await transaction.RollbackAsync();
+            ModelState.AddModelError("", "Lỗi khi lưu dữ liệu: " + ex.Message);
+
+            // Load lại dữ liệu ViewBag
+            ViewBag.NhaCungCaps = await _context.NhaCungCaps.ToListAsync();
+            ViewBag.SanPhams = await _context.SanPhams.ToListAsync();
+            return View("~/Adminboot/Admin/Views/NhapKhoSP/Index.cshtml");
         }
-
-        // TODO: Thêm code lưu vào DB ở đây
-
-        return RedirectToAction("Index");
     }
 
 }
