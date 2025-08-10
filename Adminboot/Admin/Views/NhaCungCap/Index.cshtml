@@ -102,8 +102,8 @@
 
 <script>
     $(document).ready(function() {
-        $('.btn-delete-ncc').click(function() {
-            var id = $(this).data('id');
+    $(document).on('click', '.btn-delete', function () {
+                var id = $(this).data('id');
             if (confirm('Bạn chắc chắn muốn xóa nhà cung cấp này chứ?')) {
                 $.ajax({
                     url: '@Url.Action("DeleteConfirmed", "NhaCungCap", new { area = "Admin" })',

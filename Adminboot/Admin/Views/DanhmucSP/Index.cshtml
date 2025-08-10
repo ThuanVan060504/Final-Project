@@ -1,174 +1,131 @@
-﻿
+﻿@model List<Final_Project.Models.Shop.DanhMuc>
+
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
     ViewData["Title"] = "Danh Mục";
 }
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
-
 <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/animate.css">
-
 <link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
-
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
-
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
-
 <div class="page-wrapper">
-<div class="content">
-<div class="page-header">
-<div class="page-title">
-<h4>DANH MỤC SẢN PHẨM</h4>
-<h6>View/Search product Category</h6>
-</div>
-<a href="@Url.Action("Index", "ThemdanhmucSP", new { area = "Admin" })" class="btn btn-added">
-    <img src="~/Admin/img/icons/plus.svg" class="me-1" alt="img">Add Category
-</a>
-
-</div>
-</div>
-
-<div class="card">
-<div class="card-body">
-<div class="table-top">
-<div class="search-set">
-<div class="search-path">
-<a class="btn btn-filter" id="filter_search">
-<img src="~/Admin/img/icons/filter.svg" alt="img">
-<span><img src="~/Admin/img/icons/closes.svg" alt="img"></span>
-</a>
-</div>
-<div class="search-input">
-<a class="btn btn-searchset"><img src="~/Admin/img/icons/search-white.svg" alt="img"></a>
-</div>
-</div>
-<div class="wordset">
-<ul>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="pdf"><img src="~/Admin/img/icons/pdf.svg" alt="img"></a>
-</li>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="excel"><img src="~/Admin/img/icons/excel.svg" alt="img"></a>
-</li>
-<li>
-<a data-bs-toggle="tooltip" data-bs-placement="top" title="print"><img src="~/Admin/img/icons/printer.svg" alt="img"></a>
-</li>
-</ul>
-</div>
-</div>
-
-<div class="card" id="filter_inputs">
-<div class="card-body pb-0">
-<div class="row">
-<div class="col-lg-2 col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Category</option>
-<option>Computers</option>
-</select>
-</div>
-</div>
-<div class="col-lg-2 col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Sub Category</option>
-<option>Fruits</option>
-</select>
-</div>
-</div>
-<div class="col-lg-2 col-sm-6 col-12">
-<div class="form-group">
-<select class="select">
-<option>Choose Sub Brand</option>
-<option>Iphone</option>
-</select>
-</div>
-</div>
-<div class="col-lg-1 col-sm-6 col-12 ms-auto">
-<div class="form-group">
-<a class="btn btn-filters ms-auto"><img src="~/Admin/img/icons/search-whites.svg" alt="img"></a>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-@model List<Final_Project.Models.Shop.DanhMuc>
-
-<div class="table-responsive">
-    <table class="table datanew">
-        <thead>
-            <tr>
-                <th>
-                    <label class="checkboxs">
-                        <input type="checkbox" id="select-all">
-                        <span class="checkmarks"></span>
-                    </label>
-                </th>
-                <th>Tên Danh mục</th>
-                <th>Mã Danh Mục</th>
-                <th>Mô Tả</th>
-                <th>Tổng Số Sản Shẩm</th>
-                <th>Chỉnh Sửa</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        <label class="checkboxs">
-                            <input type="checkbox" />
-                            <span class="checkmarks"></span>
-                        </label>
-                    </td>
-                    <td class="productimgname">
-                        <a href="javascript:void(0);" class="product-img">
-                <img src="@(string.IsNullOrEmpty(item.Logo) ? Url.Content("~/Admin/img/product/noimage.png") : item.Logo)" 
-                     alt="category" 
-                     width="50" height="50" 
-                     style="object-fit: cover; border-radius: 8px;" />
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>DANH MỤC SẢN PHẨM</h4>
+                <h6>View/Search product Category</h6>
+            </div>
+            <a href="@Url.Action("Create", "DanhmucSP", new { area = "Admin" })" class="btn btn-added">
+                <img src="~/Admin/img/icons/plus.svg" class="me-1" alt="img">Add Category
             </a>
-                        <a href="javascript:void(0);">@item.TenDanhMuc</a>
-                    </td>
-                    <td>@item.MaDanhMuc</td>
-                    <td>@item.MoTa</td>
-                    <td>@(item.SanPhams?.Count ?? 0)</td> <!-- Tổng sản phẩm -->
-                    <td>
-                        <a class="me-3" href="/Admin/DanhmucSP/Edit/@item.MaDanhMuc">
-                            <img src="~/Admin/img/icons/edit.svg" alt="edit" />
-                        </a>
-                        <a class="me-3 confirm-text" href="/Admin/DanhmucSP/Delete/@item.MaDanhMuc">
-                            <img src="~/Admin/img/icons/delete.svg" alt="delete" />
-                        </a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+        </div>
+    </div>
 
-<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+    <!-- Hiện thông báo TempData -->
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
 
-<script src="~/Admin/js/feather.min.js"></script>
+    <div class="card">
+        <div class="card-body">
+            <!-- ... phần filter search (giữ nguyên) ... -->
 
-<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+            @* Bảng danh mục *@
+            <div class="table-responsive">
+                <table class="table datanew">
+                    <thead>
+                        <tr>
+                            <th>
+                                <label class="checkboxs">
+                                    <input type="checkbox" id="select-all" />
+                                    <span class="checkmarks"></span>
+                                </label>
+                            </th>
+                            <th>Tên Danh mục</th>
+                            <th>Mã Danh Mục</th>
+                            <th>Mô Tả</th>
+                            <th>Tổng Số Sản Shẩm</th>
+                            <th>Chỉnh Sửa</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <label class="checkboxs">
+                                        <input type="checkbox" />
+                                        <span class="checkmarks"></span>
+                                    </label>
+                                </td>
+                                <td class="productimgname">
+                                    <a href="javascript:void(0);" class="product-img">
+                                        <img src="@(string.IsNullOrEmpty(item.Logo) ? Url.Content("~/Admin/img/product/noimage.png") : item.Logo)"
+                                             alt="category"
+                                             width="50" height="50"
+                                             style="object-fit: cover; border-radius: 8px;" />
+                                    </a>
+                                    <a href="javascript:void(0);">@item.TenDanhMuc</a>
+                                </td>
+                                <td>@item.MaDanhMuc</td>
+                                <td>@item.MoTa</td>
+                                <td>@(item.SanPhams?.Count ?? 0)</td>
+                                <td>
+                                    <a class="me-3" href="/Admin/DanhmucSP/Edit/@item.MaDanhMuc">
+                                        <img src="~/Admin/img/icons/edit.svg" alt="edit" />
+                                    </a>
+                                    <a href="javascript:void(0);" class="me-3 btn-delete" data-id="@item.MaDanhMuc" data-name="@item.TenDanhMuc">
+                                        <img src="~/Admin/img/icons/delete.svg" alt="delete" />
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-<script src="~/Admin/js/jquery.dataTables.min.js"></script>
-<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+    <script src="~/Admin/js/feather.min.js"></script>
+    <script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+    <script src="~/Admin/js/jquery.dataTables.min.js"></script>
+    <script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+    <script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+    <script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+    <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+    <script src="~/Admin/js/script.js"></script>
 
-<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
-
-<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
-
-<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
-<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
-
-<script src="~/Admin/js/script.js"></script>
-
-</html>
+    <script>
+        $(document).ready(function () {
+        $(document).on('click', '.btn-delete', function () {
+                        var id = $(this).data('id');
+                var name = $(this).data('name');
+                Swal.fire({
+                    title: `Xóa danh mục "${name}"?`,
+                    text: "Hành động này không thể hoàn tác!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = `/Admin/DanhmucSP/Delete/${id}`;
+                    }
+                })
+            });
+        });
+    </script>

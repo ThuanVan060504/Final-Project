@@ -34,12 +34,11 @@ namespace Final_Project.Areas.Admin.Controllers
         // POST: Xử lý thêm thương hiệu
         [HttpPost]
         public async Task<IActionResult> Create(int MaThuongHieu, string TenThuongHieu, IFormFile Anh, string LinkLogo)
-
         {
             if (string.IsNullOrEmpty(TenThuongHieu))
             {
                 ModelState.AddModelError("TenThuongHieu", "Tên thương hiệu là bắt buộc.");
-                return View("/Adminboot/Admin/Views/ThuongHieuSp/Create.cshtml");
+                return View("~/Adminboot/Admin/Views/ThuongHieuSp/Create.cshtml");
             }
 
             string imagePath = null;
@@ -72,7 +71,24 @@ namespace Final_Project.Areas.Admin.Controllers
             await _context.SaveChangesAsync();
 
             TempData["Success"] = "✅ Thêm thương hiệu thành công!";
-            // ✅ FIX: Redirect thay vì View
+            return RedirectToAction("Index");
+        }
+
+        // GET: Xóa thương hiệu
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var thuongHieu = await _context.ThuongHieus.FindAsync(id);
+            if (thuongHieu == null)
+            {
+                TempData["Error"] = "❌ Không tìm thấy thương hiệu cần xóa!";
+                return RedirectToAction("Index");
+            }
+
+            _context.ThuongHieus.Remove(thuongHieu);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Xóa thương hiệu thành công!";
             return RedirectToAction("Index");
         }
     }

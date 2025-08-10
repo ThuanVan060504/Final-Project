@@ -83,5 +83,47 @@ namespace Final_Project.Areas.Admin.Controllers
             TempData["Success"] = "✅ Thêm danh mục thành công!";
             return RedirectToAction("Index");
         }
+
+        // GET: Xác nhận xóa danh mục
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var danhMuc = await _context.DanhMucs.FindAsync(id);
+            if (danhMuc == null)
+                return NotFound();
+
+            _context.DanhMucs.Remove(danhMuc);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Xóa danh mục thành công!";
+            return RedirectToAction("Index");
+        }
+
+
+        // POST: Xóa danh mục
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var danhMuc = await _context.DanhMucs.FindAsync(id);
+            if (danhMuc == null)
+            {
+                TempData["Error"] = "❌ Danh mục không tồn tại!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            var hasSP = await _context.SanPhams.AnyAsync(sp => sp.MaDanhMuc == id);
+            if (hasSP)
+            {
+                TempData["Error"] = "❌ Danh mục đang có sản phẩm, không thể xóa!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            _context.DanhMucs.Remove(danhMuc);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Xóa danh mục thành công!";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }
