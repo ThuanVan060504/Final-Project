@@ -12,7 +12,7 @@ namespace Final_Project.Models.Shop
         public int MaSP { get; set; }
 
         [Required]
-        public string TenSP { get; set; }
+        public string TenSP { get; set; } = null!; // Thêm = null! để tránh cảnh báo null
 
         [Required]
         public decimal DonGia { get; set; }
@@ -42,7 +42,7 @@ namespace Final_Project.Models.Shop
         [ForeignKey("MaThuongHieu")]
         public ThuongHieu? ThuongHieu { get; set; }
 
-        // Ngày tạo - phải để nullable để tránh lỗi khi giá trị trong DB là NULL
+        // Ngày tạo - nullable để tránh lỗi Null
         public DateTime? NgayTao { get; set; }
 
         // Danh sách đánh giá (nếu có)

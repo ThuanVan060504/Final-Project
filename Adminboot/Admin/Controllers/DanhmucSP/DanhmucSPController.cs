@@ -84,6 +84,62 @@ namespace Final_Project.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Form chỉnh sửa danh mục
+        public async Task<IActionResult> Edit(int id)
+        {
+            var danhMuc = await _context.DanhMucs.FindAsync(id);
+            if (danhMuc == null)
+                return NotFound();
+
+            return View("~/Adminboot/Admin/Views/DanhmucSP/Edit.cshtml", danhMuc);
+        }
+
+        // POST: Xử lý chỉnh sửa danh mục
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, string TenDanhMuc, string MoTa, IFormFile Anh, string LinkLogo)
+        {
+            var danhMuc = await _context.DanhMucs.FindAsync(id);
+            if (danhMuc == null)
+                return NotFound();
+
+            if (string.IsNullOrEmpty(TenDanhMuc))
+            {
+                ModelState.AddModelError("TenDanhMuc", "Tên danh mục là bắt buộc.");
+                return View("~/Adminboot/Admin/Views/DanhmucSP/Edit.cshtml", danhMuc);
+            }
+
+            danhMuc.TenDanhMuc = TenDanhMuc;
+            danhMuc.MoTa = MoTa;
+
+            if (Anh != null && Anh.Length > 0)
+            {
+                var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads");
+                if (!Directory.Exists(uploadsDir))
+                    Directory.CreateDirectory(uploadsDir);
+
+                var fileName = Path.GetFileName(Anh.FileName);
+                var filePath = Path.Combine(uploadsDir, fileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await Anh.CopyToAsync(stream);
+                }
+
+                danhMuc.Logo = "/uploads/" + fileName;
+            }
+            else if (!string.IsNullOrEmpty(LinkLogo))
+            {
+                danhMuc.Logo = LinkLogo;
+            }
+            // else giữ nguyên logo cũ
+
+            _context.DanhMucs.Update(danhMuc);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Cập nhật danh mục thành công!";
+            return RedirectToAction("Index");
+        }
+
         // GET: Xác nhận xóa danh mục
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
@@ -98,7 +154,6 @@ namespace Final_Project.Areas.Admin.Controllers
             TempData["Success"] = "✅ Xóa danh mục thành công!";
             return RedirectToAction("Index");
         }
-
 
         // POST: Xóa danh mục
         [HttpPost, ActionName("Delete")]

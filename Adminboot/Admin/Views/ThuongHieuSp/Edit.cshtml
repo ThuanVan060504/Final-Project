@@ -1,0 +1,114 @@
+﻿@model Final_Project.Models.Shop.ThuongHieu
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Sửa Thương Hiệu";
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Brand Edit</h4>
+                <h6>Update your Brand</h6>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+
+                        <!-- Mã thương hiệu (hidden) -->
+                        <input type="hidden" name="MaThuongHieu" value="@Model.MaThuongHieu" />
+
+                        <!-- Tên thương hiệu -->
+                        <div class="col-lg-3 col-sm-6 col-12">
+                            <div class="form-group">
+                                <label>Tên thương hiệu</label>
+                                <input type="text" name="TenThuongHieu" value="@Model.TenThuongHieu" class="form-control" required />
+                                @if (ViewData.ModelState["TenThuongHieu"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["TenThuongHieu"].Errors[0].ErrorMessage</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Ảnh hiện tại -->
+                        <div class="col-lg-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <label>Ảnh logo hiện tại</label><br />
+                                <img src="@(string.IsNullOrEmpty(Model.Logo) ? "/images/noimage.png" : Model.Logo)" alt="Logo" style="max-width: 120px;" />
+                            </div>
+                        </div>
+
+                        <!-- Upload hình ảnh mới -->
+                        <div class="col-lg-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <label>Thay đổi hình ảnh logo (tuỳ chọn)</label>
+                                <div class="image-upload">
+                                    <input type="file" name="Anh" class="form-control" accept="image/*" />
+                                    <div class="image-uploads mt-2 d-flex align-items-center gap-2">
+                                        <img src="~/Admin/img/icons/upload.svg" alt="upload icon" style="width: 40px;" />
+                                        <span>Kéo thả hoặc chọn ảnh để tải lên</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nhập link logo mới -->
+                        <div class="col-lg-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                <label>Hoặc nhập link ảnh logo mới</label>
+                                <input type="text" name="LinkLogo" value="@Model.Logo" class="form-control" />
+                                @if (ViewData.ModelState["LinkLogo"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["LinkLogo"].Errors[0].ErrorMessage</span>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Nút submit -->
+                        <div class="col-lg-12 mt-3">
+                            <button type="submit" class="btn btn-primary me-2">Cập nhật</button>
+                            <a href="/Admin/ThuongHieuSP/Index" class="btn btn-secondary">Huỷ</a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>

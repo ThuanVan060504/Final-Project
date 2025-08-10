@@ -18,8 +18,9 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 
 <link rel="stylesheet" href="~/Admin/css/style.css">
+
 <div class="page-wrapper">
-    <div class="content">   
+    <div class="content">
         <div class="page-header">
             <div class="page-title">
                 <h4>Danh Sách Sản Phẩm</h4>
@@ -70,7 +71,7 @@
                                     <td>@item.ThuongHieu?.TenThuongHieu</td>
                                     <td class="productimgname">
                                         <a href="javascript:void(0);" class="product-img">
-                                            <img src="@item.ImageURL" alt="product" width="40" height="40" />
+                                            <img src="@item.ImageURL" alt="product" width="35" height="35" style="object-fit: cover; border-radius: 4px;" />
                                         </a>
                                     </td>
                                     <td class="action-table-data">
@@ -99,13 +100,13 @@
 </div>
 
 <!-- Modal Edit -->
-<div class="modal fade" id="editModal" tabindex="-1">
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <form id="editForm">
                 <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa sản phẩm</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <input type="hidden" id="editMaSP" name="MaSP" />
@@ -117,7 +118,7 @@
 
                     <div class="mb-3">
                         <label class="form-label">Đơn giá</label>
-                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required />
+                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required step="0.01" />
                     </div>
 
                     <div class="mb-3">
@@ -126,43 +127,10 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Lưu</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Edit -->
-<div class="modal fade" id="editModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form id="editForm">
-                <div class="modal-header">
-                    <h5 class="modal-title">Chỉnh sửa sản phẩm</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="editMaSP" name="MaSP" />
-
-                    <div class="mb-3">
-                        <label class="form-label">Tên sản phẩm</label>
-                        <input type="text" id="editTenSP" name="TenSP" class="form-control" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Đơn giá</label>
-                        <input type="number" id="editDonGia" name="DonGia" class="form-control" required />
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Số lượng</label>
-                        <input type="number" id="editSoLuong" name="SoLuong" class="form-control" required />
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Lưu</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Lưu
+                    </button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 </div>
             </form>
@@ -172,93 +140,90 @@
 
 <!-- Script -->
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
-
 <script src="~/Admin/js/feather.min.js"></script>
-
 <script src="~/Admin/js/jquery.slimscroll.min.js"></script>
-
 <script src="~/Admin/js/jquery.dataTables.min.js"></script>
 <script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
-
 <script src="~/Admin/js/bootstrap.bundle.min.js"></script>
-
 <script src="~/Admin/plugins/select2/js/select2.min.js"></script>
-
 <script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
-
 <script src="~/Admin/js/script.js"></script>
+
 @section Scripts {
-<script>
-    $(document).ready(function () {
-        // Nếu DataTable đã được khởi tạo, hủy nó trước khi khởi tạo lại
-        if ($.fn.DataTable.isDataTable('.datanew')) {
-            $('.datanew').DataTable().destroy();
-        }
-        
-        // Khởi tạo DataTable mới
-        $('.datanew').DataTable({
-            pageLength: 10,
-            lengthChange: false,
-            language: {
-                paginate: { previous: "Trước", next: "Sau" },
-                search: "Tìm kiếm:",
-                info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
-                infoEmpty: "Không có sản phẩm nào",
-                zeroRecords: "Không tìm thấy sản phẩm"
-            },
-            initComplete: function () {
-                $('.dataTables_filter').addClass('w-100');
+    <script>
+        $(document).ready(function () {
+            // Khởi tạo DataTable (hủy nếu đã khởi tạo)
+            if ($.fn.DataTable.isDataTable('.datanew')) {
+                $('.datanew').DataTable().destroy();
             }
-        });
 
-        // Xóa sản phẩm với SweetAlert
-        $(document).on('click', '.btn-delete', function (e) {
-            e.preventDefault();
-            var form = $(this).closest('form');
-            Swal.fire({
-                title: 'Xác nhận xóa?',
-                text: "Dữ liệu sẽ bị xóa vĩnh viễn!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Xóa',
-                cancelButtonText: 'Hủy'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-
-        // Lấy dữ liệu khi bấm sửa
-        $(document).on('click', '.btn-edit', function () {
-            var id = $(this).data('id');
-            $.get('/Admin/SanPham/GetById/' + id, function (data) {
-                $('#editMaSP').val(data.maSP);
-                $('#editTenSP').val(data.tenSP);
-                $('#editDonGia').val(data.donGia);
-                $('#editSoLuong').val(data.soLuong);
-                $('#editModal').modal('show');
-            });
-        });
-
-        // Lưu chỉnh sửa
-        $('#editForm').submit(function (e) {
-            e.preventDefault();
-            $.ajax({
-                url: '/Admin/SanPham/Edit',
-                type: 'POST',
-                data: $(this).serialize(),
-                success: function () {
-                    Swal.fire('Thành công!', 'Cập nhật sản phẩm thành công.', 'success').then(() => {
-                        location.reload();
-                    });
+            $('.datanew').DataTable({
+                pageLength: 10,
+                lengthChange: false,
+                language: {
+                    paginate: { previous: "Trước", next: "Sau" },
+                    search: "Tìm kiếm:",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ sản phẩm",
+                    infoEmpty: "Không có sản phẩm nào",
+                    zeroRecords: "Không tìm thấy sản phẩm"
                 },
-                error: function () {
-                    Swal.fire('Lỗi!', 'Cập nhật thất bại.', 'error');
+                initComplete: function () {
+                    $('.dataTables_filter').addClass('w-100');
                 }
             });
+
+            // Xóa sản phẩm có xác nhận SweetAlert
+            $(document).on('click', '.btn-delete', function (e) {
+                e.preventDefault();
+                var form = $(this).closest('form');
+                Swal.fire({
+                    title: 'Xác nhận xóa?',
+                    text: "Dữ liệu sẽ bị xóa vĩnh viễn!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
+                });
+            });
+
+            // Lấy dữ liệu khi bấm sửa
+            $(document).on('click', '.btn-edit', function () {
+                var id = $(this).data('id');
+                $.get('/Admin/SanPham/GetById/' + id, function (data) {
+                    $('#editMaSP').val(data.maSP);
+                    $('#editTenSP').val(data.tenSP);
+                    $('#editDonGia').val(data.donGia);
+                    $('#editSoLuong').val(data.soLuong);
+                    $('#editModal').modal('show');
+                });
+            });
+
+            // Xử lý submit form sửa với loading spinner
+            $('#editForm').submit(function (e) {
+                e.preventDefault();
+                $('#loadingSpinner').removeClass('d-none');
+                $.ajax({
+                    url: '/Admin/SanPham/Edit',
+                    type: 'POST',
+                    data: $(this).serialize(),
+                    success: function () {
+                        Swal.fire('Thành công!', 'Cập nhật sản phẩm thành công.', 'success').then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function () {
+                        Swal.fire('Lỗi!', 'Cập nhật thất bại.', 'error');
+                    },
+                    complete: function () {
+                        $('#loadingSpinner').addClass('d-none');
+                    }
+                });
+            });
         });
-    });
-</script>
+    </script>
 }

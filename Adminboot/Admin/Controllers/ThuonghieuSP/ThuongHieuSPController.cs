@@ -74,15 +74,83 @@ namespace Final_Project.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Xóa thương hiệu
+        // GET: Hiển thị form Edit
         [HttpGet]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Edit(int id)
         {
             var thuongHieu = await _context.ThuongHieus.FindAsync(id);
             if (thuongHieu == null)
             {
+                TempData["Error"] = "❌ Không tìm thấy thương hiệu cần sửa!";
+                return RedirectToAction("Index");
+            }
+
+            return View("~/Adminboot/Admin/Views/ThuongHieuSp/Edit.cshtml", thuongHieu);
+        }
+
+        // POST: Xử lý sửa thương hiệu
+        [HttpPost]
+        public async Task<IActionResult> Edit(int MaThuongHieu, string TenThuongHieu, IFormFile Anh, string LinkLogo)
+        {
+            var thuongHieu = await _context.ThuongHieus.FindAsync(MaThuongHieu);
+            if (thuongHieu == null)
+            {
+                TempData["Error"] = "❌ Không tìm thấy thương hiệu cần sửa!";
+                return RedirectToAction("Index");
+            }
+
+            if (string.IsNullOrEmpty(TenThuongHieu))
+            {
+                ModelState.AddModelError("TenThuongHieu", "Tên thương hiệu là bắt buộc.");
+                return View("~/Adminboot/Admin/Views/ThuongHieuSp/Edit.cshtml", thuongHieu);
+            }
+
+            string imagePath = thuongHieu.Logo; // giữ ảnh cũ nếu không đổi
+
+            if (Anh != null && Anh.Length > 0)
+            {
+                var fileName = Path.GetFileName(Anh.FileName);
+                var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", fileName);
+
+                using (var stream = new FileStream(uploadPath, FileMode.Create))
+                {
+                    await Anh.CopyToAsync(stream);
+                }
+
+                imagePath = "/uploads/" + fileName;
+            }
+            else if (!string.IsNullOrEmpty(LinkLogo))
+            {
+                imagePath = LinkLogo;
+            }
+
+            // Cập nhật dữ liệu
+            thuongHieu.TenThuongHieu = TenThuongHieu;
+            thuongHieu.Logo = imagePath;
+
+            _context.ThuongHieus.Update(thuongHieu);
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "✅ Cập nhật thương hiệu thành công!";
+            return RedirectToAction("Index");
+        }
+        // GET: Xóa thương hiệu
+        [HttpGet]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var thuongHieu = await _context.ThuongHieus
+                                           .Include(th => th.SanPhams)
+                                           .FirstOrDefaultAsync(th => th.MaThuongHieu == id);
+            if (thuongHieu == null)
+            {   
                 TempData["Error"] = "❌ Không tìm thấy thương hiệu cần xóa!";
                 return RedirectToAction("Index");
+            }
+
+            // Set MaThuongHieu = null cho tất cả sản phẩm thuộc thương hiệu này
+            foreach (var sp in thuongHieu.SanPhams)
+            {
+                sp.MaThuongHieu = null;
             }
 
             _context.ThuongHieus.Remove(thuongHieu);

@@ -1,10 +1,12 @@
-﻿@model Final_Project.Models.Shop.NhaCungCap
+﻿@model Final_Project.Models.Shop.DanhMuc
 
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
-    ViewData["Title"] = "Chỉnh sửa Nhà Cung Cấp";
+    ViewData["Title"] = "Sửa Danh Mục";
 }
+
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+
 <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
 <link rel="stylesheet" href="~/Admin/css/animate.css">
 <link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
@@ -17,8 +19,8 @@
     <div class="content">
         <div class="page-header">
             <div class="page-title">
-                <h4>Chỉnh sửa Nhà Cung Cấp</h4>
-                <h6>Update supplier information</h6>
+                <h4>Category Edit</h4>
+                <h6>Update your Category</h6>
             </div>
         </div>
 
@@ -27,47 +29,45 @@
             <div class="alert alert-success">@TempData["Success"]</div>
         }
 
-        <form asp-area="Admin" asp-controller="NhaCungCap" asp-action="Edit" method="post">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="MaNCC" value="@Model.MaNCC" />
-
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
             <div class="card">
                 <div class="card-body">
                     <div class="row">
 
-                        <div class="col-lg-6 col-sm-6 col-12">
+                        <!-- Mã danh mục (hidden) -->
+                        <input type="hidden" name="MaDanhMuc" value="@Model.MaDanhMuc" />
+
+                        <!-- Tên danh mục -->
+                        <div class="col-lg-6 col-sm-12 col-12">
                             <div class="form-group">
-                                <label>Tên Nhà Cung Cấp</label>
-                                <input type="text" name="TenNCC" value="@Model.TenNCC" required />
+                                <label>Tên danh mục</label>
+                                <input type="text" name="TenDanhMuc" value="@Model.TenDanhMuc" class="form-control" required />
+                                @if (ViewData.ModelState["TenDanhMuc"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["TenDanhMuc"].Errors[0].ErrorMessage</span>
+                                }
                             </div>
                         </div>
-                        <div class="col-lg-6 col-sm-6 col-12">
+
+                        <!-- Mô tả danh mục -->
+                        <div class="col-lg-6 col-sm-12 col-12">
                             <div class="form-group">
-                                <label>Số Điện Thoại</label>
-                                <input type="text" name="SoDienThoai" value="@Model.SoDienThoai" />
+                                <label>Mô tả</label>
+                                <input type="text" name="MoTa" value="@Model.MoTa" class="form-control" />
                             </div>
                         </div>
-                        <div class="col-lg-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label>Địa Chỉ</label>
-                                <input type="text" name="DiaChi" value="@Model.DiaChi" />
-                            </div>
-                        </div>
-                        <div class="col-lg-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                <label>Email</label>
-                                <input type="email" name="Email" value="@Model.Email" />
-                            </div>
-                        </div>
+
+                        <!-- Nút submit -->
                         <div class="col-lg-12 mt-3">
-                            <button type="submit" class="btn btn-submit me-2">Cập nhật</button>
-                            <a href="@Url.Action("Index", "NhaCungCap", new { area = "Admin" })" class="btn btn-cancel">Hủy</a>
+                            <button type="submit" class="btn btn-primary me-2">Cập nhật</button>
+                            <a href="/Admin/DanhMuc/Index" class="btn btn-secondary">Huỷ</a>
                         </div>
 
                     </div>
                 </div>
             </div>
         </form>
+
     </div>
 </div>
 

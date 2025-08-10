@@ -1,5 +1,4 @@
-﻿
-using Final_Project.Models.Shop;
+﻿using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +29,7 @@ namespace Final_Project.Models.Shop
 
         public DbSet<NhapKho> NhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!
@@ -39,8 +39,10 @@ namespace Final_Project.Models.Shop
 
             // ✅ Các cấu hình decimal cho các bảng có tiền tệ
             modelBuilder.Entity<SanPham>()
-                .Property(p => p.DonGia)
-                .HasPrecision(18, 2);
+                .HasOne(sp => sp.ThuongHieu)
+                .WithMany(th => th.SanPhams)
+                .HasForeignKey(sp => sp.MaThuongHieu)
+                .OnDelete(DeleteBehavior.SetNull);
 
             modelBuilder.Entity<ChiTietDonHang>()
                 .Property(c => c.DonGia)
@@ -66,8 +68,14 @@ namespace Final_Project.Models.Shop
                 .HasOne(d => d.SanPham)
                 .WithMany(sp => sp.DanhGias)
                 .HasForeignKey(d => d.SanPhamId);
+
             modelBuilder.Entity<SanPhamYeuThich>().ToTable("SanPhamYeuThich");
-           
+
+            modelBuilder.Entity<SanPham>()
+                .HasOne(sp => sp.ThuongHieu)
+                .WithMany(th => th.SanPhams)
+                .HasForeignKey(sp => sp.MaThuongHieu)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

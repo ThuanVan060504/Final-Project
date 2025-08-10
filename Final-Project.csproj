@@ -23,6 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="Adminboot\Admin\Views\Sanpham\edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Adminboot\Admin\Views\Sanpham\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="9.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.7" />
