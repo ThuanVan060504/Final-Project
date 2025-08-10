@@ -29,16 +29,32 @@ namespace Final_Project.Adminboot.Admin.Controllers
         // Create POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(NhaCungCap ncc)
+        public IActionResult Create(string TenNCC, string SoDienThoai, string DiaChi, string Email)
         {
-            if (ModelState.IsValid)
+            if (!string.IsNullOrWhiteSpace(TenNCC))
             {
+                var ncc = new NhaCungCap
+                {
+                    TenNCC = TenNCC,
+                    SoDienThoai = SoDienThoai,
+                    DiaChi = DiaChi,
+                    Email = Email
+                };
                 _context.NhaCungCaps.Add(ncc);
                 _context.SaveChanges();
+
+                TempData["Success"] = "Thêm nhà cung cấp thành công!";
                 return RedirectToAction("Index");
             }
-            return View("~/Adminboot/Admin/Views/NhaCungCap/Create.cshtml", ncc);
+
+            // Trả lại dữ liệu nếu nhập lỗi
+            ViewBag.TenNCC = TenNCC;
+            ViewBag.SoDienThoai = SoDienThoai;
+            ViewBag.DiaChi = DiaChi;
+            ViewBag.Email = Email;
+            return View("~/Adminboot/Admin/Views/NhaCungCap/Create.cshtml");
         }
+
 
         // Edit GET
         public IActionResult Edit(int id)
