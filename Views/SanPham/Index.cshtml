@@ -3,69 +3,10 @@
 @model List<SanPham>
 @{
     ViewData["Title"] = "Sản phẩm";
+
 }
 
-<style>
-    .card-hover {
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-        .card-hover:hover {
-            transform: scale(1.02);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-        }
-
-        .card-hover img {
-            height: 200px;
-            object-fit: cover;
-        }
-
-    .pagination {
-        justify-content: center; /* căn giữa hàng nút */
-    }
-
-        .pagination .page-item .page-link {
-            color: #007bff;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-        }
-
-        .pagination .page-item .page-link:hover {
-            background-color: #e9ecef;
-        }
-
-    .card-hover {
-        position: relative;
-    }
-    /* Thông báo yêu thích */
-    .thong-bao-thanh-cong {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background-color: #fce4ec;
-        color: #c2185b;
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: bold;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        opacity: 0;
-        transition: opacity 0.5s ease;
-        z-index: 1000;
-        display: none;
-    }
-
-        .thong-bao-thanh-cong.hien {
-            display: block;
-            opacity: 1;
-        }
-
-</style>
-
+<link rel="stylesheet" href="~/css/sanpham.css">
 <div class="container mt-5">
     <h2 class="fw-bold mb-4 text-center">🛒 Tất cả sản phẩm</h2>
     @if (ViewBag.Keyword != null)
@@ -133,11 +74,11 @@
             }
             else
             {
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-                    @foreach (var sp in Model)
-                    {
-                        <div class="col">
-                            <div class="card card-hover h-100 position-relative">
+               <div class="row g-4">
+                @foreach (var sp in Model)
+                {
+                    <div class="col-md-4 col-sm-6 col-12">
+                        <div class="card card-hover h-100 position-relative p-2 shadow-sm">
                                 <!-- ❤️ Nút yêu thích -->
                                 <form asp-controller="YeuThich" asp-action="Them" method="post"
                                       class="yeu-thich-form" onsubmit="themYeuThich(event)">
@@ -227,33 +168,36 @@
         </div>
     </div>
 </div>
+
 <script>
     function themYeuThich(e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const form = e.target;
-        const formData = new FormData(form);
+    const form = e.target;
+    const button = form.querySelector('.nut-yeu-thich');
 
-        fetch(form.action, {
-            method: "POST",
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                // Hiện thông báo
-                const tb = document.getElementById("thongBaoYeuThich");
-                tb.classList.add("hien");
+    // Thêm class clicked để chạy animation
+    button.classList.add('clicked');
+    setTimeout(() => button.classList.remove('clicked'), 400);
 
-                // Ẩn sau 3 giây
-                setTimeout(() => {
-                    tb.classList.remove("hien");
-                }, 3000);
-            } else {
-                alert("Đã xảy ra lỗi khi thêm vào yêu thích.");
-            }
-        })
-        .catch(error => {
-            console.error("Lỗi:", error);
-        });
-    }
+    const formData = new FormData(form);
+
+    fetch(form.action, {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            const tb = document.getElementById("thongBaoYeuThich");
+            tb.classList.add("hien");
+            setTimeout(() => {
+                tb.classList.remove("hien");
+            }, 3000);
+        } else {
+            alert("Đã xảy ra lỗi khi thêm vào yêu thích.");
+        }
+    })
+    .catch(error => console.error("Lỗi:", error));
+}
+
 </script>
