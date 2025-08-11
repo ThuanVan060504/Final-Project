@@ -125,7 +125,29 @@
         vertical-align: middle;
         border: 1.5px solid #ccc;
     }
+    /* Căn chỉnh đồng bộ cho cả 2 bảng */
+    #soldProductTable th, #soldProductTable td,
+    #favoriteTable th, #favoriteTable td {
+        text-align: center;
+        vertical-align: middle;
+        font-weight: 600;
+    }
+
+        #soldProductTable th:nth-child(1),
+        #favoriteTable th:nth-child(1) {
+            width: 60px;
+        }
+
+        #soldProductTable th:nth-child(3),
+        #favoriteTable th:nth-child(3) {
+            width: 160px;
+        }
+
 </style>
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
 
 <h2 class="mb-4">📊 Thống kê sản phẩm</h2>
 
@@ -137,9 +159,9 @@
         <table id="soldProductTable" aria-label="Danh sách sản phẩm bán chạy">
             <thead>
                 <tr>
-                    <th style="width: 50px;">#</th>
+                    <th style="width: 50px;">STT</th>
                     <th>Tên sản phẩm</th>
-                    <th style="width: 120px;">Số lượng đã bán</th>
+                    <th style="width: 100px;">Số lượng đã bán</th>
                 </tr>
             </thead>
             <tbody>
@@ -155,15 +177,19 @@
         <table id="favoriteTable" aria-label="Danh sách sản phẩm yêu thích">
             <thead>
                 <tr>
-                    <th>Màu</th>
-                    <th>Tên sản phẩm</th>
-                    <th>Số lượt yêu thích</th>
+                                    <th style="width: 50px;">STT</th>
+                                    <th>Tên sản phẩm</th>
+                    <th>Số lượt đã yêu thích</th>
                 </tr>
             </thead>
             <tbody>
                 <!-- Dữ liệu sẽ đổ qua JS -->
             </tbody>
         </table>
+    </div>
+</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -317,30 +343,25 @@
             const tbody = document.querySelector('#favoriteTable tbody');
             tbody.innerHTML = '';
 
-            data.forEach((item, idx) => {
-                const tr = document.createElement('tr');
+         data.forEach((item, idx) => {
+        const tr = document.createElement('tr');
 
-                const tdColor = document.createElement('td');
-                const dot = document.createElement('span');
-                dot.className = 'color-dot';
-                dot.style.backgroundColor = colors[idx % colors.length];
-                tdColor.appendChild(dot);
+        const tdIndex = document.createElement('td');
+        tdIndex.textContent = idx + 1;
 
-                const tdName = document.createElement('td');
-                tdName.textContent = item.label;
-                tdName.style.fontSize = '1.2rem';
-                tdName.style.fontWeight = '600';
+        const tdName = document.createElement('td');
+        tdName.textContent = item.label;
 
-                const tdCount = document.createElement('td');
-                tdCount.textContent = item.value;
-                tdCount.style.fontWeight = '600';
+        const tdCount = document.createElement('td');
+        tdCount.textContent = item.value;
 
-                tr.appendChild(tdColor);
-                tr.appendChild(tdName);
-                tr.appendChild(tdCount);
+        tr.appendChild(tdIndex);
+        tr.appendChild(tdName);
+        tr.appendChild(tdCount);
 
-                tbody.appendChild(tr);
-            });
+        tbody.appendChild(tr);
+    });
+
 
             $('#favoriteTable').DataTable({
                 paging: true,
