@@ -63,9 +63,9 @@
 }
 
 .header .header__topone {
-padding: 3px 0;
-background-color: #f3f4f5 !important;
-border-bottom: none;
+    padding: 3px 0;
+    background-color: #ff9143 !important;
+    border-bottom: none;
 }
 
 .header .header__topone .container {

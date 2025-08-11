@@ -15469,7 +15469,7 @@ textarea.form-control {
 
 /*4. MODULES */
 .navigation {
-  background-color: #c00101;
+    background-color: #ff9143;
 }
 
 .navigation > .ps-container, .navigation > .container {
@@ -15624,9 +15624,9 @@ textarea.form-control {
 }
 
 .header .header__top {
-  padding: 25px 0;
-  background-color: #f70202;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 25px 0;
+    background-color: #ff9e4f;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .header .header__top .ps-container, .header .header__top .container {
@@ -15917,16 +15917,16 @@ textarea.form-control {
 }
 
 .header--mobile {
-  position: relative;
-  top: 0;
-  width: 100%;
-  left: 0;
-  z-index: 9999;
-  text-align: center;
-  border-bottom: 0 none;
-  background-color: #ff0202;
-  -webkit-transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
-  transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    position: relative;
+    top: 0;
+    width: 100%;
+    left: 0;
+    z-index: 9999;
+    text-align: center;
+    border-bottom: 0 none;
+    background-color: #ff9143;
+    -webkit-transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    transition: all 0.4s cubic-bezier(0.455, 0.03, 0.515, 0.955);
 }
 
 .header--mobile::after {
