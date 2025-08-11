@@ -1,4 +1,5 @@
-﻿@model Final_Project.Models.ViewModels.DashboardViewModel
+﻿@using System.Globalization 
+@model Final_Project.Models.ViewModels.DashboardViewModel
 
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -25,7 +26,10 @@
                             <i class="fas fa-dollar-sign text-primary fa-2x"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 fw-bold">@Model.TotalSaleAmount.ToString("C")</h5>
+                            <h5 class="mb-0 fw-bold counters"
+                                data-count="@Model.TotalSaleAmount.ToString(CultureInfo.InvariantCulture)">
+                                @Model.TotalSaleAmount.ToString("C", CultureInfo.GetCultureInfo("vi-VN"))
+                            </h5>
                             <small class="text-muted">Tổng doanh thu</small>
                         </div>
                     </div>
@@ -40,7 +44,7 @@
                             <i class="fas fa-user text-success fa-2x"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 fw-bold">@Model.TotalCustomers</h5>
+                            <h5 class="mb-0 fw-bold counters" data-count="@Model.TotalCustomers">@Model.TotalCustomers</h5>
                             <small class="text-muted">Khách hàng</small>
                         </div>
                     </div>
@@ -55,7 +59,7 @@
                             <i class="fas fa-truck text-warning fa-2x"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 fw-bold">@Model.TotalSuppliers</h5>
+                            <h5 class="mb-0 fw-bold counters" data-count="@Model.TotalSuppliers">@Model.TotalSuppliers</h5>
                             <small class="text-muted">Nhà cung cấp</small>
                         </div>
                     </div>
@@ -70,7 +74,7 @@
                             <i class="fas fa-file-invoice text-danger fa-2x"></i>
                         </div>
                         <div>
-                            <h5 class="mb-0 fw-bold">@Model.TotalSalesInvoice</h5>
+                            <h5 class="mb-0 fw-bold counters" data-count="@Model.TotalSalesInvoice">@Model.TotalSalesInvoice</h5>
                             <small class="text-muted">Số hóa đơn bán</small>
                         </div>
                     </div>
@@ -82,7 +86,7 @@
                 <div class="card shadow-sm border-0 text-white bg-info">
                     <div class="card-body text-center">
                         <i class="fas fa-chart-line fa-2x mb-2"></i>
-                        <h5 class="fw-bold">@Model.TotalVisits</h5>
+                        <h5 class="fw-bold counters" data-count="@Model.TotalVisits">@Model.TotalVisits</h5>
                         <small>Tổng truy cập</small>
                     </div>
                 </div>
@@ -93,7 +97,7 @@
                 <div class="card shadow-sm border-0 text-white bg-secondary">
                     <div class="card-body text-center">
                         <i class="fas fa-user-check fa-2x mb-2"></i>
-                        <h5 class="fw-bold">@Model.TotalUserVisits</h5>
+                        <h5 class="fw-bold counters" data-count="@Model.TotalUserVisits">@Model.TotalUserVisits</h5>
                         <small>Khách hàng quay lại</small>
                     </div>
                 </div>
@@ -104,7 +108,7 @@
                 <div class="card shadow-sm border-0 text-white bg-dark">
                     <div class="card-body text-center">
                         <i class="fas fa-user-secret fa-2x mb-2"></i>
-                        <h5 class="fw-bold">@Model.TotalGuestVisits</h5>
+                        <h5 class="fw-bold counters" data-count="@Model.TotalGuestVisits">@Model.TotalGuestVisits</h5>
                         <small>Khách hàng ẩn danh</small>
                     </div>
                 </div>
@@ -160,3 +164,67 @@
 <script src="~/Admin/plugins/apexchart/apexcharts.min.js"></script>
 <script src="~/Admin/plugins/apexchart/chart-data.js"></script>
 <script src="~/Admin/js/script.js"></script>
+
+<script>
+    $(function () {
+      function parseNumberFromString(str) {
+        if (str == null) return NaN;
+        str = String(str).trim();
+        if (!str) return NaN;
+
+        // remove spaces and obvious currency symbols, keep digits . , -
+        str = str.replace(/\s/g, '').replace(/[^\d\-,.]/g, '');
+
+        // If both dot and comma present -> assume vn format: '.' thousands, ',' decimal
+        if (str.indexOf('.') !== -1 && str.indexOf(',') !== -1) {
+          str = str.replace(/\./g, '').replace(/,/g, '.');
+        } else if (str.indexOf(',') !== -1 && str.indexOf('.') === -1) {
+          // only comma -> treat as decimal separator
+          str = str.replace(/,/g, '.');
+        } else {
+          // only dots or none: if many dots, probably thousands separators -> remove them
+          var dotCount = (str.match(/\./g) || []).length;
+          if (dotCount > 1) str = str.replace(/\./g, '');
+        }
+
+        return parseFloat(str);
+      }
+
+      function formatCurrency(num) {
+        num = Number(num) || 0;
+        return num.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+      }
+
+      $('.counters').each(function () {
+        var $this = $(this);
+        var raw = $this.attr('data-count') || $this.text();
+        var countTo = parseNumberFromString(raw);
+
+        if (isNaN(countTo)) {
+          console.warn('Counter value invalid:', raw, $this);
+          countTo = 0; // fallback
+        }
+
+        var isCurrency = /[₫$€¥£]/.test($this.text()) || !!$this.data('is-currency');
+
+        $({ val: 0 }).animate({ val: countTo }, {
+          duration: 1500,
+          easing: 'swing',
+          step: function (now) {
+            if (isCurrency) {
+              $this.text(formatCurrency(now));
+            } else {
+              $this.text(Math.floor(now).toLocaleString());
+            }
+          },
+          complete: function () {
+            if (isCurrency) {
+              $this.text(formatCurrency(countTo));
+            } else {
+              $this.text(countTo.toLocaleString());
+            }
+          }
+        });
+      });
+    });
+</script>
