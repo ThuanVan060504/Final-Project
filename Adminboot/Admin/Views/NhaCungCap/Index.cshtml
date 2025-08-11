@@ -1,4 +1,4 @@
-﻿
+﻿@model List<Final_Project.Models.Shop.NhaCungCap>
 
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
 <div class="page-wrapper">
+    <!-- form token ẩn để lấy token cho Ajax -->
     <form id="form-token" method="post" style="display:none;">
         @Html.AntiForgeryToken()
     </form>
@@ -102,8 +103,8 @@
 
 <script>
     $(document).ready(function() {
-    $(document).on('click', '.btn-delete', function () {
-                var id = $(this).data('id');
+        $(document).on('click', '.btn-delete-ncc', function () {
+            var id = $(this).data('id');
             if (confirm('Bạn chắc chắn muốn xóa nhà cung cấp này chứ?')) {
                 $.ajax({
                     url: '@Url.Action("DeleteConfirmed", "NhaCungCap", new { area = "Admin" })',
@@ -114,14 +115,15 @@
                     },
                     success: function(response) {
                         if(response.success) {
-                            alert('Xóa thành công!');
-                            location.reload();
+                            Swal.fire('Xóa thành công!', '', 'success').then(() => {
+                                location.reload();
+                            });
                         } else {
-                            alert('Xóa thất bại: ' + response.message);
+                            Swal.fire('Xóa thất bại: ' + response.message, '', 'error');
                         }
                     },
                     error: function() {
-                        alert('Có lỗi xảy ra khi xóa.');
+                        Swal.fire('Có lỗi xảy ra khi xóa.', '', 'error');
                     }
                 });
             }
