@@ -24,7 +24,6 @@ namespace Final_Project.Models.Shop
         public DbSet<SanPhamYeuThich> SanPhamYeuThichs { get; set; }
         public DbSet<Decor> Decors { get; set; }
         public DbSet<DanhMucDecor> DanhMucDecors { get; set; }
-        public DbSet<LichSuTruyCap> LichSuTruyCaps { get; set; }
 
         public DbSet<NhaCungCap> NhaCungCaps { get; set; }
 
