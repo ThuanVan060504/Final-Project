@@ -152,7 +152,7 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after {
 }
 
 .container .ps-section__content {
-    min-height: 650px;
+    min-height: 340px ;
 }
 
 input[type=number]::-webkit-inner-spin-button {
