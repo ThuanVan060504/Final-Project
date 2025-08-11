@@ -51,6 +51,36 @@ namespace Final_Project.Adminboot.Admin.Controllers.Decor
             TempData["Success"] = "Thêm Decor thành công!";
             return RedirectToAction(nameof(Index));
         }
+
+        // GET: Edit
+        public async Task<IActionResult> Edit(int id)
+        {
+            var decor = await _context.Decors.FindAsync(id);
+            if (decor == null) return NotFound();
+
+            ViewBag.DanhMucList = await _context.DanhMucDecors.ToListAsync();
+            return View("~/Adminboot/Admin/Views/AdminDecor/Edit.cshtml", decor);
+        }
+
+        // POST: Edit
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Final_Project.Models.Shop.Decor decor)
+        {
+            if (id != decor.MaDecor) return NotFound();
+
+            if (ModelState.IsValid)
+            {
+                _context.Update(decor);
+                await _context.SaveChangesAsync();
+                TempData["Success"] = "Cập nhật Decor thành công!";
+                return RedirectToAction(nameof(Index));
+            }
+
+            ViewBag.DanhMucList = await _context.DanhMucDecors.ToListAsync();
+            return View(decor);
+        }
+
     }
 }
 

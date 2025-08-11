@@ -1,0 +1,46 @@
+﻿@model Final_Project.Models.Shop.Decor
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Chỉnh sửa Decor";
+    var danhMucList = ViewBag.DanhMucList as List<Final_Project.Models.Shop.DanhMucDecor>;
+}
+
+<h2 class="text-center mb-4">✏️ Chỉnh sửa Decor</h2>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form asp-action="Edit" method="post">
+            <input type="hidden" asp-for="MaDecor" />
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tên Decor</label>
+                <input type="text" asp-for="TenDecor" class="form-control" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Mô tả</label>
+                <textarea asp-for="MoTa" class="form-control"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Danh mục</label>
+                <select asp-for="MaDanhMuc" class="form-select">
+                    @foreach (var dm in danhMucList)
+                    {
+                        <option value="@dm.MaDanhMuc" selected="@(dm.MaDanhMuc == Model.MaDanhMuc)">
+                            @dm.TenDanhMuc
+                        </option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Link 3D (Sketchfab)</label>
+                <input type="text" asp-for="Link3D" class="form-control" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>

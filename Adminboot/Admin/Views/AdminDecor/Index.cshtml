@@ -66,44 +66,51 @@
 
 <!-- Danh sách Decor -->
 <div class="row">
-    @foreach (var item in Model)
-    {
-        <div class="col-md-6 mb-5">
-            <div class="card shadow">
-                <div class="card-header bg-dark text-white">
-                    <h5>@item.TenDecor</h5>
-                    <small>@item.DanhMuc?.TenDanhMuc</small>
-                </div>
-                <div class="card-body">
-                    <p>@item.MoTa</p>
-
-                    @if (!string.IsNullOrEmpty(item.Link3D))
+                    @foreach (var item in Model)
                     {
-                        string embedLink = item.Link3D;
-                        if (!embedLink.Contains("/embed/"))
-                        {
-                            var modelId = embedLink.Split('/').Last();
-                            embedLink = $"https://sketchfab.com/models/{modelId}/embed";
-                        }
-                        if (!embedLink.Contains("?autostart=1"))
-                        {
-                            embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
-                        }
+                        <div class="col-md-6 mb-5">
+                            <div class="card shadow">
+                                <div class="card-header bg-dark text-white">
+                                    <h5>@item.TenDecor</h5>
+                                    <small>@item.DanhMuc?.TenDanhMuc</small>
+                                </div>
+                                <div class="card-body">
+                                    <p>@item.MoTa</p>
 
-                        <div class="ratio ratio-16x9">
-                            <iframe title="3D Decor Viewer"
-                                    frameborder="0"
-                                    allowfullscreen
-                                    allow="autoplay; fullscreen; xr-spatial-tracking"
-                                    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
-                                    src="@embedLink">
-                            </iframe>
+                                    @if (!string.IsNullOrEmpty(item.Link3D))
+                                    {
+                                        string embedLink = item.Link3D;
+                                        if (!embedLink.Contains("/embed/"))
+                                        {
+                                            var modelId = embedLink.Split('/').Last();
+                                            embedLink = $"https://sketchfab.com/models/{modelId}/embed";
+                                        }
+                                        if (!embedLink.Contains("?autostart=1"))
+                                        {
+                                            embedLink += (embedLink.Contains("?") ? "&" : "?") + "autostart=1";
+                                        }
+
+                                        <div class="ratio ratio-16x9">
+                                            <iframe title="3D Decor Viewer"
+                                                    frameborder="0"
+                                                    allowfullscreen
+                                                    allow="autoplay; fullscreen; xr-spatial-tracking"
+                                                    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share
+                                                    src="@embedLink">
+                                            </iframe>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="card-footer text-end">
+                                    <a asp-area="Admin" asp-controller="Decor" asp-action="Edit" asp-route-id="@item.MaDecor" class="btn btn-warning btn-sm">
+                                        <i class="fas fa-edit"></i> Chỉnh sửa
+                                    </a>
+
+                                </div>
+                            </div>
                         </div>
                     }
-                </div>
-            </div>
-        </div>
-    }
 </div>
             </div>
         </div>
