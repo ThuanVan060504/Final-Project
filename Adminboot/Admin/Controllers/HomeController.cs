@@ -16,8 +16,32 @@ namespace Final_Project.Areas.Admin.Controllers
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
 
+        // 📌 Hàm ghi nhận lượt truy cập
+        private void GhiNhanLuotTruyCap()
+        {
+            using (var con = new SqlConnection(_connectionString))
+            {
+                con.Open();
+                var userId = HttpContext.Session.GetInt32("MaTK"); // Lấy id từ session nếu có
+                var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
+                var ua = Request.Headers["User-Agent"].ToString();
+
+                using (var cmd = new SqlCommand(
+                    "INSERT INTO LuotTruyCap (MaTK, IPAddress, UserAgent) VALUES (@MaTK, @IP, @UA)", con))
+                {
+                    cmd.Parameters.AddWithValue("@MaTK", (object?)userId ?? DBNull.Value);
+                    cmd.Parameters.AddWithValue("@IP", ip ?? "");
+                    cmd.Parameters.AddWithValue("@UA", ua ?? "");
+                    cmd.ExecuteNonQuery();
+                }
+            }
+        }
+
         public IActionResult Index()
         {
+            // Ghi nhận lượt truy cập trước khi load dữ liệu dashboard
+            GhiNhanLuotTruyCap();
+
             var model = new DashboardViewModel
             {
                 TotalCustomers = 0,
@@ -47,11 +71,23 @@ namespace Final_Project.Areas.Admin.Controllers
                 using (var cmd = new SqlCommand("SELECT COUNT(*) FROM DonHang", con))
                     model.TotalSalesInvoice = (int)cmd.ExecuteScalar();
 
+                // Tổng lượt truy cập
+                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM LuotTruyCap", con))
+                    model.TotalVisits = (int)cmd.ExecuteScalar();
+
+                // Lượt truy cập user login
+                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM LuotTruyCap WHERE MaTK IS NOT NULL", con))
+                    model.TotalUserVisits = (int)cmd.ExecuteScalar();
+
+                // Lượt truy cập guest
+                using (var cmd = new SqlCommand("SELECT COUNT(*) FROM LuotTruyCap WHERE MaTK IS NULL", con))
+                    model.TotalGuestVisits = (int)cmd.ExecuteScalar();
+
                 // Recently Added Products
                 using (var cmd = new SqlCommand(@"
-            SELECT TOP 5 MaSP, TenSP, DonGia, ImageURL
-            FROM SanPham
-            ORDER BY NgayTao DESC", con))
+                    SELECT TOP 5 MaSP, TenSP, DonGia, ImageURL
+                    FROM SanPham
+                    ORDER BY NgayTao DESC", con))
                 {
                     using (var reader = cmd.ExecuteReader())
                     {

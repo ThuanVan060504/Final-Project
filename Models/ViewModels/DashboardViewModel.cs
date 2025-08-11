@@ -9,6 +9,10 @@ namespace Final_Project.Models.ViewModels
         public int TotalSuppliers { get; set; }
         public decimal TotalSaleAmount { get; set; }
         public int TotalSalesInvoice { get; set; }
+        public int TotalVisits { get; set; }         // Tổng lượt truy cập
+        public int TotalUserVisits { get; set; }     // Truy cập của user đã login
+        public int TotalGuestVisits { get; set; }    // Truy cập của guest
+
         public List<ProductViewModel> RecentProducts { get; set; } = new();
     }
 
