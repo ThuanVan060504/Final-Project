@@ -23,11 +23,16 @@ namespace Final_Project.Adminboot.Admin.Controllers
         // Danh sách người đã chat
         public IActionResult Index(int? userId)
         {
-            var users = _context.TinNhans
-                .Where(t => t.NguoiNhanId == AdminId || t.NguoiGuiId == AdminId)
-                .Select(t => t.NguoiGuiId == AdminId ? t.NguoiNhan : t.NguoiGui)
-                .Distinct()
+            var userIds = _context.TinNhans
+     .Where(t => t.NguoiNhanId == AdminId || t.NguoiGuiId == AdminId)
+     .Select(t => t.NguoiGuiId == AdminId ? t.NguoiNhanId : t.NguoiGuiId)
+     .Distinct()
+     .ToList();
+
+            var users = _context.TaiKhoans
+                .Where(u => userIds.Contains(u.MaTK))
                 .ToList();
+
 
             List<TinNhan> messages = new List<TinNhan>();
             string userName = null;
@@ -82,11 +87,11 @@ namespace Final_Project.Adminboot.Admin.Controllers
         public IActionResult SendMessage(int userId, string noiDung)
         {
             if (string.IsNullOrWhiteSpace(noiDung))
-                return RedirectToAction("ChatWithUser", new { userId });
+                return RedirectToAction("Index", new { userId });
 
             var message = new TinNhan
             {
-                NguoiGuiId = AdminId,  // 3
+                NguoiGuiId = AdminId,
                 NguoiNhanId = userId,
                 NoiDung = noiDung,
                 ThoiGianGui = DateTime.Now
@@ -95,7 +100,7 @@ namespace Final_Project.Adminboot.Admin.Controllers
             _context.TinNhans.Add(message);
             _context.SaveChanges();
 
-            return RedirectToAction("ChatWithUser", new { userId });
+            return RedirectToAction("Index", new { userId });
         }
 
     }

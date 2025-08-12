@@ -1,21 +1,30 @@
 ﻿// Controller
+using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
-using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data.SqlClient;
 
 namespace Final_Project.Controllers
 {
     public class UserChatController : Controller
     {
+        private readonly AppDbContext _context;
         private readonly string _connectionString;
-
-        public UserChatController(IConfiguration configuration)
+        public UserChatController(IConfiguration configuration, AppDbContext context)
         {
+            _context = context;
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-
         public IActionResult Index()
         {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
             var userId = HttpContext.Session.GetInt32("MaTK");
             if (userId == null)
                 return RedirectToAction("Login", "Auth");
