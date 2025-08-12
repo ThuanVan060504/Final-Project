@@ -847,42 +847,58 @@
                         <i class="bi bi-lightning-charge"></i> FLASH SALE
                     </a>
 			</li>
+
+
+			<li class='current-menu-item'>
+				<li class="current-menu-item">
+					<a class="nav-link" asp-controller="LienHe" asp-action="Index">Liên Hệ</a>
+				</li>
+                    
+			
 		</ul>
-		<ul class="navigation__extra">
-			<li>
-				<a class="nav-link" asp-controller="LienHe" asp-action="Index">Liên Hệ </a>
-			</li>
+		
 
 
 
-							@{
-					var hoTen = User.Identity.Name ?? "Ẩn danh";
-				}
+<ul class="menu">
 
-				@if (!User.Identity.IsAuthenticated)
-				{
-					<li>
-						<a asp-controller="Auth" asp-action="Login">Đăng nhập</a>
-					</li>
-					<li>
-						<a asp-controller="Auth" asp-action="Register">Đăng ký</a>
-					</li>
-				}
-				else
-				{
-					<li>
-						<a asp-controller="User" asp-action="Profile" class="d-flex align-items-center text-success fw-semibold">
-							<img src="@((ViewBag.Avatar != null) ? ViewBag.Avatar : Url.Content("~/uploads/avatars/Avatar.jpg"))"
-								 alt="Avatar"
-								 class="rounded-circle me-2"
-								 style="width: 32px; height: 32px; object-fit: cover;" />
-							@ViewBag.HoTen
-						</a>
-					</li>
-					<li>
-						<a asp-controller="Auth" asp-action="Logout" class="text-danger fw-semibold">Đăng xuất</a>
-					</li>
-				}
+    
+
+    @if (!User.Identity.IsAuthenticated)
+    {
+        <li class="current-menu-item">
+            <a asp-controller="Auth" asp-action="Login" class="nav-link">Đăng nhập</a>
+        </li>
+        <li class="current-menu-item">
+            <a asp-controller="Auth" asp-action="Register" class="nav-link">Đăng ký</a>
+        </li>
+    }
+    else
+    {
+        <li class="menu-item-has-children">
+            <a asp-controller="User" asp-action="Profile" class="nav-link d-flex align-items-center">
+                <img src="@((ViewBag.Avatar != null) ? ViewBag.Avatar : Url.Content("~/uploads/avatars/Avatar.jpg"))" 
+                     alt="Avatar" 
+                     class="rounded-circle me-2" 
+                     style="width: 32px; height: 32px; object-fit: cover;" />
+                @ViewBag.HoTen
+            </a>
+            <span class="sub-toggle"></span>
+            <ul class="sub-menu">
+                <li>
+                    <a asp-controller="User" asp-action="Profile">Thông tin cá nhân</a>
+                </li>
+                <li>
+                    <a asp-controller="User" asp-action="Orders">Đơn hàng của tôi</a>
+                </li>
+                <li>
+                    <a asp-controller="Auth" asp-action="Logout" class="text-danger">Đăng xuất</a>
+                </li>
+            </ul>
+        </li>
+    }
+</ul>
+
 
 		</ul>
 	</div>
