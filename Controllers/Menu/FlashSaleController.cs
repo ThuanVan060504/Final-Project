@@ -55,6 +55,7 @@ public class FlashSaleController : Controller
 
         var activeFlashSales = flashSales
             .Where(fs => now >= fs.ThoiGianBatDau && now < fs.ThoiGianKetThuc)
+            .Take(10)
             .ToList();
 
         return View(activeFlashSales);

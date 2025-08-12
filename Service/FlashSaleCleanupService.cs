@@ -50,9 +50,9 @@ namespace Final_Project.Services
                     if (!db.FlashSales.Any(f => f.ThoiGianKetThuc > now))
                     {
                         var products = db.SanPhams
-                            .Where(p => p.GiaGoc == null) // Chỉ lấy sản phẩm chưa từng sale
+                            .Where(p => p.GiaGoc == null) 
                             .OrderBy(r => Guid.NewGuid())
-                            .Take(8)
+                            .Take(10) 
                             .ToList();
 
                         foreach (var p in products)
