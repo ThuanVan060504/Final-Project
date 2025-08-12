@@ -323,8 +323,8 @@
                                 <div class="ps-block--user-header">
                                     <div class="ps-block__left"><i class="icon-user"></i></div>
                                     <div class="ps-block__right">
-                                    <a href='#'>Akun</a>
-                                    <a href='#'>Logout</a>                                    
+                                    <a >0979758744</a>
+                                    <a >0975452144</a>                                    
 									</div>
                                 </div>
                             </li>
@@ -490,7 +490,7 @@
 
 		</div>
 		<div class="header__center">
-			<form class="ps-form--quick-search" action="#" method="POST">
+			<form class="ps-form--quick-search" asp-controller="SanPham" asp-action="Search" method="POST">
 				<div class="form-group--icon">
 					<i class="icon-chevron-down"></i>
 					<select class="form-control" name='filter'>
@@ -528,7 +528,7 @@
 						<option class='level-1' value='subkategori|18'>- Office Electronics</option>
 					</select>
 				</div>
-				<input class="form-control" name='kata' type="text" placeholder="Tìm kiếm ở đây..." autocomplete='off' required>
+				<input class="form-control" name='kata' type="text" placeholder   asp-controller="SanPham" asp-action="Search ="Tìm kiếm ở đây..." autocomplete='off' required>
 				<button type='submit' class="icon-magnifier" name='cari'></button>
 			</form>
 		</div>
@@ -936,12 +936,15 @@
 	</div>
 </div>
 <div class="ps-search--mobile">
-	<form class="ps-form--search-mobile" action="#" method="POST">
-		<div class="form-group--nest">
-			<input class="form-control" name='kata' type="text" placeholder="Tìm Kiếm Tại Đây..." required>
-			<button type='submit' name='Tìm Kiếm'><i class="icon-magnifier"></i></button>
-		</div>
-	</form>
+	<form class="ps-form--search-mobile" asp-controller="SanPham" asp-action="Search" method="post">
+  <div class="form-group--nest">
+    <input class="form-control" name="kata" type="text" placeholder="Tìm Kiếm Tại Đây..." required />
+    <button type="submit" name="timkiem" aria-label="Tìm kiếm">
+      <i class="icon-magnifier"></i>
+    </button>
+  </div>
+</form>
+
 </div>
 </header>
 <div class="ps-panel--sidebar" id="cart-mobile">
@@ -1119,12 +1122,11 @@
 </div>
 <div class="ps-panel--sidebar" id="search-sidebar">
 	<div class="ps-panel__header">
-		<form class="ps-form--search-mobile" action="#" method="POST">
-			<div class="form-group--nest">
-				<input class="form-control" name='kata' type="text" placeholder="Aku Mau Belanja...">
-				<button type='submit' name='Tìm Kiếm'><i class="icon-magnifier"></i></button>
-			</div>
-		</form>
+		<form class="d-flex w-50 search-bar" method="get" asp-controller="SanPham" asp-action="Search">
+    <input name="keyword" class="form-control form-control-lg" placeholder="Thỏa mãn nhu cầu trang trí nhà..." />
+    <button type="submit" class="btn btn-danger ms-2 px-3">🔍</button>
+</form>
+
 	</div>
 	<div class="navigation__content"></div>
 </div>
