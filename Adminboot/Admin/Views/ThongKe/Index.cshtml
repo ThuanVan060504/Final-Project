@@ -39,7 +39,7 @@
             <div class="col-md-6 d-flex align-items-end">
                 <button class="btn btn-success mr-2" id="btnApDung">Áp dụng</button>
                 <button class="btn btn-danger mr-2" id="btnTuanHienTai">Tuần hiện tại</button>
-                <button class="btn btn-primary" id="btnXuatExcel">Xuất Excel</button>
+                <button class="btn btn-primary" id="btnXuatPdf">Xuất PDF</button>
             </div>
         </div>
 
@@ -231,9 +231,12 @@
             loadChiTietSanPham($('#tuNgay').val(), $('#denNgay').val());
         });
 
-        // Xuất Excel
-        $('#btnXuatExcel').click(function () {
-            window.location.href = `/Admin/ThongKe/ExportExcel?tuNgay=${$('#tuNgay').val()}&denNgay=${$('#denNgay').val()}`;
-        });
+         // Xuất PDF
+    $('#btnXuatPdf').click(function () {
+        const tuNgay = $('#tuNgay').val();
+        const denNgay = $('#denNgay').val();
+        window.open(`/Admin/ThongKe/ExportPdf?tuNgay=${tuNgay}&denNgay=${denNgay}`, '_blank');
+    });
+
     });
 </script>

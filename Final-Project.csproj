@@ -34,6 +34,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGenerators.Mvc" Version="9.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
+    <PackageReference Include="Select.HtmlToPdf.NetCore" Version="25.2.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.7" />
   </ItemGroup>
