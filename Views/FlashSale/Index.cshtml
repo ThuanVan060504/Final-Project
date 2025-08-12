@@ -13,11 +13,11 @@
 <link rel="stylesheet" href="~/css/flashsale.css" />
 
 <div class="row">
-    @foreach (var flashSale in Model)
+    @foreach (var flashSale in Model.Take(10))
     {
         var sp = flashSale.SanPham;
         var giaGoc = sp.GiaGoc ?? sp.DonGia / (1 - flashSale.DiscountPercent / 100m);
-        <div class="col-md-3 mb-4">
+        <div class="col-md-6 mb-4">
             <div class="card h-100 shadow-sm position-relative">
                 <div class="flashsale-badge flash-animate">
                     ⚡ FLASH SALE
