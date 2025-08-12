@@ -1,4 +1,5 @@
-﻿using Final_Project.Models.Shop;
+﻿using Final_Project.Models.Chat;
+using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,7 @@ namespace Final_Project.Models.Shop
         public DbSet<DanhMucDecor> DanhMucDecors { get; set; }
 
         public DbSet<NhaCungCap> NhaCungCaps { get; set; }
+        public DbSet<TinNhan> TinNhans { get; set; }
 
         public DbSet<NhapKho> NhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key

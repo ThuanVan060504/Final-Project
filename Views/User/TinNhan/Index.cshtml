@@ -1,0 +1,82 @@
+﻿@model List<Final_Project.Controllers.MessageModel>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .chat-container {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        height: 500px;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+    }
+
+    .message {
+        margin: 5px 0;
+        padding: 8px 12px;
+        border-radius: 16px;
+        max-width: 70%;
+        display: inline-block;
+        clear: both;
+    }
+
+        .message.user {
+            background-color: #d1ffd6;
+            float: right;
+        }
+
+        .message.admin {
+            background-color: #f0f0f0;
+            float: left;
+        }
+
+    .chat-form {
+        border-top: 1px solid #ddd;
+        padding: 10px;
+        display: flex;
+    }
+
+        .chat-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .chat-form button {
+            margin-left: 10px;
+            padding: 8px 16px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 4px;
+        }
+</style>
+
+<div class="chat-container">
+    <div class="chat-messages">
+        @foreach (var msg in Model)
+        {
+            var cssClass = msg.NguoiGuiId == Context.Session.GetInt32("MaTK") ? "user" : "admin";
+            <div class="message @cssClass">
+                <small>@msg.ThoiGianGui.ToString("HH:mm dd/MM")</small><br />
+                @msg.NoiDung
+            </div>
+        }
+    </div>
+
+    <form class="chat-form" asp-action="GuiTinNhan" method="post">
+        <input type="text" name="noiDung" placeholder="Nhập tin nhắn..." required />
+        <button type="submit">Gửi</button>
+    </form>
+</div>

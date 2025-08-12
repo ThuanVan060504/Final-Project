@@ -561,7 +561,32 @@
 					<a class='header__extra' href='#'><i class='icon-heart'></i></a>
 				</div>
 				<div class='ps-cart--mini'>
-					<a class='header__extra' href='#'><i class='icon-bubble'></i><span><i>0</i></span></a>
+							@{
+								// Lấy số tin nhắn chưa đọc từ Session hoặc ViewBag
+								int soTinChuaDoc = Context.Session.GetInt32("SoTinChuaDoc") ?? 0;
+							}
+
+							<div class='ps-cart--mini'>
+								@if (User.Identity.IsAuthenticated)
+								{
+									<a class='header__extra' asp-controller="UserChat" asp-action="Index">
+										<i class='icon-bubble'></i>
+										<span>
+											<i>@soTinChuaDoc</i>
+										</span>
+									</a>
+								}
+								else
+								{
+									<a class='header__extra' asp-controller="Auth" asp-action="Login">
+										<i class='icon-bubble'></i>
+										<span>
+											<i>0</i>
+										</span>
+									</a>
+								}
+							</div>
+
 				</div>	
 				<div class='ps-cart--mini'>
 					<a class='header__extra' href='#'><i class='icon-history'></i></a>
