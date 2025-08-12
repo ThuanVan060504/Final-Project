@@ -58,7 +58,6 @@
                                     <input asp-for="Email" class="form-control" placeholder="Nhập địa chỉ email" />
                                     <img src="~/Admin/img/icons/mail.svg" alt="mail icon" />
                                 </div>
-                                <span asp-validation-for="Email" class="text-danger small"></span>
                             </div>
 
                             <div class="form-login">
@@ -67,7 +66,6 @@
                                     <input asp-for="MatKhau" type="password" class="form-control pass-input" placeholder="Nhập mật khẩu của bạn" />
                                     <span class="fas toggle-password fa-eye-slash"></span>
                                 </div>
-                                <span asp-validation-for="MatKhau" class="text-danger small"></span>
                             </div>
 
                             <div class="form-login">
@@ -112,12 +110,11 @@
             </div>
         </div>
     </div>
-
     <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
     <script src="~/Admin/js/feather.min.js"></script>
     <script src="~/Admin/js/bootstrap.bundle.min.js"></script>
     <script src="~/Admin/js/script.js"></script>
-
+    <script src="~/js/Dangnhap.js"></script>
     @section Scripts {
         <partial name="_ValidationScriptsPartial" />
     }
