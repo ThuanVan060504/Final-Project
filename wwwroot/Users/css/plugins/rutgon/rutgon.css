@@ -96,7 +96,7 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after {
     text-align: center;
     z-index: 99999;
     position: fixed;
-    bottom: 70px;
+    bottom: 115px;
     right: 30px;
     cursor: pointer;
     display: none;
@@ -152,7 +152,7 @@ table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after {
 }
 
 .container .ps-section__content {
-    min-height: 340px ;
+    min-height: 400px;
 }
 
 input[type=number]::-webkit-inner-spin-button {

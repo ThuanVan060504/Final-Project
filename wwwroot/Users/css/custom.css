@@ -90,9 +90,7 @@ color: #666666;
 line-height: 30px;
 }
 
-.header .header__topone .header__left p strong {
-color: #000;
-}
+
 
 .header .header__topone .header__right {
 text-align: right;
@@ -191,8 +189,8 @@ line-height: 30px;
 }
 
 .header .header__topone .header__left p strong {
-color: #000;
-}
+  color: #ff0000;
+ }
 
 .header .header__topone .header__right {
 text-align: right;

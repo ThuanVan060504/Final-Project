@@ -939,9 +939,9 @@ h6 {
 }
 
 p {
-  font-size: 1.4rem;
-  line-height: 1.6em;
-  color: #666;
+    font-size: 1.4rem;
+    line-height: 1.6em;
+    color: #000000;
 }
 
 p span {
@@ -1479,12 +1479,12 @@ body {
   padding: 2px 0;
 }
 
-.ps-list--link li a {
-  display: inline-block;
-  color: #666;
-  line-height: 20px;
-  position: relative;
-}
+    .ps-list--link li a {
+        display: inline-block;
+        color: #ffffff;
+        line-height: 20px;
+        position: relative;
+    }
 
 .ps-list--link li a:before {
   content: '';
@@ -11639,14 +11639,14 @@ textarea.form-control {
   color: #666666;
 }
 
-.ps-form--quick-search button {
-  background-color: #c1c1c1;
-  color: #000;
-  border: none;
-  font-weight: 700;
-  padding: 0 24px;
-  border-radius: 0 4px 4px 0;
-}
+    .ps-form--quick-search button {
+        background-color: #ff0000;
+        color: #000;
+        border: none;
+        font-weight: 700;
+        padding: 0 24px;
+        border-radius: 0 4px 4px 0;
+    }
 
 .ps-form--widget-search {
   position: relative;
@@ -16026,15 +16026,15 @@ textarea.form-control {
   transform: translateX(270px);
 }
 
-.header--mobile.header--sticky .navigation--mobile {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
-  background-color: #ff0202;
-  -ms-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12);
-  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12);
-}
+    .header--mobile.header--sticky .navigation--mobile {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        background-color: #ff9e4f;
+        -ms-box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12);
+        box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.12);
+    }
 
 @media (min-width: 1200px) {
   .header--mobile {
@@ -16501,19 +16501,20 @@ textarea.form-control {
 }
 
 .ps-footer {
-  padding-top: 20px;
-  background-color: #fafafa;
+    padding-top: 20px;
+    background-color: #ff9e4f;
 }
 
 .ps-footer__widgets {
-  display: -webkit-box;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-          flex-flow: row nowrap;
-  -webkit-box-pack: justify;
-          justify-content: space-between;
-  padding-bottom: 35px;
+    
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-flow: row nowrap;
+    -webkit-box-pack: justify;
+    justify-content: space-around;
+    padding-bottom: 0;
+    align-items: baseline;
 }
 
 .ps-footer__links {
@@ -16576,11 +16577,10 @@ textarea.form-control {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: normal;
     flex-flow: row nowrap;
-    justify-content: center; /* căn giữa ngang */
-    align-items: center; /* căn giữa dọc */
     -webkit-box-pack: justify;
-    justify-content: space-between;
     border-top: 1px solid #e1e1e1;
+    align-items: center;
+    justify-content: space-around;
 }
 
 .ps-footer__copyright p {

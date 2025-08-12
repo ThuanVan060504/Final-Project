@@ -529,7 +529,7 @@
 					</select>
 				</div>
 				<input class="form-control" name='kata' type="text" placeholder="Tìm kiếm ở đây..." autocomplete='off' required>
-				<button type='submit' name='cari'>Tìm Kiếm</button>
+				<button type='submit' class="icon-magnifier" name='cari'></button>
 			</form>
 		</div>
 		<div class="header__right">
@@ -818,7 +818,7 @@
 			</li>
 
 			<li class='current-menu-item'>
-				<a class="nav-link text-danger fw-bold" asp-controller="FlashSale" asp-action="Index">
+				<a class="nav-link texts-danger fw-bold" asp-controller="FlashSale" asp-action="Index">
                         <i class="bi bi-lightning-charge"></i> FLASH SALE
                     </a>
 			</li>
@@ -1208,7 +1208,7 @@
 		<h4 class='widget-title'>Nội Thật Shop G3TD</h4>
 		<div class='widget_content'>
 			<p>
-				 G3TD (0751) 461692<br/>
+				Chúng tôi cung cấp các sản phẩm nội thất chất lượng...<br/>
 				<h3>0812 6777 13xx</h3>
 				 194 Võ Văn Kiệt, Phường 3, Quận 1, TPHCM <br/>web@gmail.com</p>
 			<ul class='ps-list--social'>
@@ -1227,52 +1227,27 @@
 			</ul>
 		</div>
 		</aside><aside class='widget widget_footer'>
-		<h4 class='widget-title'>Link Terkait</h4>
+		<h4 class='widget-title'>Về Chúng Tôi</h4>
 		<ul class='ps-list--link'>
-			<li>
-				<a href='#'>Tentang Tajalapak</a>
-			</li>
-			<li>
-				<a href='#'>Aturan Penggunaan</a>
-			</li>
-			<li>
-				<a href='#'>Kebijakan Privasi</a>
-			</li>
-			<li>
-				<a href='#'>Affiliate Program</a>
-			</li>
+							 <li><a asp-controller="GioiThieu" asp-action="Index">Giới Thiệu</a></li>
+                            <li><a asp-controller="SanPham" asp-action="Index">Sản Phẩm</a></li>
+                            <li><a asp-controller="Decor" asp-action="Index">Decor</a></li>
+                            <li><a asp-controller="TinTuc" asp-action="Index">Tin Tức</a></li>
 		</ul>
 		</aside><aside class='widget widget_footer'>
-		<h4 class='widget-title'>Pembeli</h4>
+		<h4 class='widget-title'>Hỗ Trợ</h4>
 		<ul class='ps-list--link'>
-			<li>
-				<a href='#'>Cara Belanja</a>
-			</li>
-			<li>
-				<a href='#'>Pembayaran</a>
-			</li>
-			<li>
-				<a href='#'>Jaminan Aman</a>
-			</li>
-			<li>
-				<a href='#'>Jasa Pengadaan</a>
-			</li>
+							 <li><a asp-controller="LienHe" asp-action="Index">Liên hệ</a></li>
+                            <li><a href="/User/Profile#historySection">Thông Tin Giao Hàng</a></li>
+                            <li><a asp-controller="ThongTin" asp-action="DieuKhoan">Điều Khoản</a></li>
+                            <li><a asp-controller="ThongTin" asp-action="BaoMat">Bảo Mật</a></li>
 		</ul>
 		</aside><aside class='widget widget_footer'>
-		<h4 class='widget-title'>Pelapak</h4>
+		<h4 class='widget-title'>Tài Nguyên</h4>
 		<ul class='ps-list--link'>
-			<li>
-				<a href='#'>Cara Berjualan</a>
-			</li>
-			<li>
-				<a href='#'>Keuntungan Jualan</a>
-			</li>
-			<li>
-				<a href='#'>Indeks Merek</a>
-			</li>
-			<li>
-				<a href='#'>Direktori Pelapak</a>
-			</li>
+							<li><a href="#">Tư Vấn Miễn Phí</a></li>
+                            <li><a href="#">Blog</a></li>
+                            <li><a href="#">YouTube</a></li>
 		</ul>
 		</aside>
 	</div>
