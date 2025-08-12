@@ -1,0 +1,282 @@
+﻿/* Sidebar */
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+}
+
+    .sidebar-menu li {
+        padding: 10px 15px;
+        border: 1px solid #dee2e6;
+        margin-bottom: 5px;
+        cursor: pointer;
+        border-radius: 5px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+        .sidebar-menu li.active,
+        .sidebar-menu li:hover {
+            background-color: #ff9e4f;
+            color: white;
+            font-weight: bold;
+            border-color: #ff9e4f;
+            box-shadow: 0 2px 8px rgba(255,158,79,0.3);
+        }
+
+/* Content section */
+.content-section {
+    display: none;
+}
+
+    .content-section.active {
+        display: block;
+    }
+
+/* Hộp lịch sử */
+.history-box {
+    border: 1px solid #ced4da;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #ffffff;
+}
+
+.order-item {
+    margin-left: 15px;
+}
+
+/* Card đơn hàng */
+.order-card {
+    background-color: #fff;
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+    .order-card:hover {
+        box-shadow: 0 0 12px rgba(0,0,0,0.08);
+        transform: translateY(-2px);
+    }
+
+/* Thanh tiến trình đơn hàng */
+.order-progress {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    position: relative;
+    padding: 0 10px;
+}
+
+    .order-progress::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 10px;
+        right: 10px;
+        height: 4px;
+        background-color: #dee2e6;
+        z-index: 0;
+    }
+
+.progress-step {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    flex: 1;
+}
+
+    .progress-step .circle {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        color: white;
+        margin: 0 auto;
+        font-size: 13px;
+        transition: background-color 0.3s ease;
+    }
+
+    .progress-step.active .circle {
+        background-color: #ff9e4f;
+    }
+
+    .progress-step.cancelled .circle {
+        background-color: #dc3545;
+    }
+
+    .progress-step span {
+        display: block;
+        margin-top: 5px;
+        font-size: 12px;
+        color: #6c757d;
+    }
+
+    .progress-step.active span {
+        color: #ff9e4f;
+        font-weight: bold;
+    }
+
+    .progress-step.cancelled span {
+        color: #dc3545;
+        font-weight: bold;
+    }
+
+/* Button nhóm */
+.button-group {
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
+}
+
+.custom-btn {
+    flex: 1;
+    padding: 8px 12px;
+    text-align: center;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+    .custom-btn.green {
+        background-color: #ff9e4f;
+        color: white;
+    }
+
+        .custom-btn.green:hover {
+            background-color: #e8893d;
+        }
+
+    .custom-btn.red {
+        background-color: #dc3545;
+        color: white;
+    }
+
+        .custom-btn.red:hover {
+            background-color: #b02a37;
+        }
+
+/* Button địa chỉ */
+.address-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.address-btn {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+    .address-btn.blue {
+        background-color: #ff9e4f;
+    }
+
+        .address-btn.blue:hover {
+            background-color: #e8893d;
+        }
+
+    .address-btn.orange {
+        background-color: #ffc107;
+        color: black;
+    }
+
+        .address-btn.orange:hover {
+            background-color: #e0a800;
+        }
+
+.product-card {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    max-width: 280px; /* Giữ thẻ gọn */
+}
+
+    .product-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+
+.favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: white;
+    border-radius: 50%;
+    padding: 6px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    font-size: 14px;
+    color: #ff4d6d;
+}
+
+.product-price {
+    color: #ff9e4f;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+/* Tiêu đề cam */
+.text-orange {
+    color: #ff9e4f;
+}
+
+/* Form đẹp hơn */
+.password-form .form-control {
+    border-radius: 8px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .password-form .form-control:focus {
+        border-color: #ff9e4f;
+        box-shadow: 0 0 0 0.2rem rgba(255, 158, 79, 0.25);
+    }
+
+/* Nút đổi mật khẩu */
+.custom-btn.orange {
+    background-color: #ff9e4f;
+    color: white;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    padding: 10px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .custom-btn.orange:hover {
+        background-color: #e88c43;
+        transform: translateY(-1px);
+    }
+button.btn.btn-outline-primary.btn-sm {
+    border-radius: 20px; /* Bo tròn */
+    padding: 5px 12px;
+    font-size: 14px;
+    font-weight: 500;
+    
+
+    background-color: #ff9e4f;
+    transition: all 0.3s ease;
+}
+
+    button.btn.btn-outline-primary.btn-sm:hover {
+       
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 6px rgba(0, 123, 255, 0.3);
+    }
+
+    button.btn.btn-outline-primary.btn-sm i {
+        margin-right: 5px; /* Nếu có icon thì cách chữ */
+        font-size: 14px;
+    }

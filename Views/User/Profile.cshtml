@@ -6,192 +6,7 @@
 }
 
 
-<!-- ✅ CSS ngay trong file -->
-<style>
-    .sidebar-menu {
-        list-style: none;
-        padding: 0;
-    }
-
-        .sidebar-menu li {
-            padding: 10px 15px;
-            border: 1px solid #dee2e6;
-            margin-bottom: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-            background-color: #f8f9fa;
-        }
-
-            .sidebar-menu li.active,
-            .sidebar-menu li:hover {
-                background-color: #198754;
-                color: white;
-                font-weight: bold;
-            }
-
-    .content-section {
-        display: none;
-    }
-
-        .content-section.active {
-            display: block;
-        }
-
-    .history-box {
-        border: 1px solid #ced4da;
-        border-radius: 10px;
-        padding: 15px;
-        margin-bottom: 15px;
-        background-color: #ffffff;
-    }
-
-    .order-item {
-        margin-left: 15px;
-    }
-
-    .order-card {
-        background-color: #fff;
-        transition: box-shadow 0.3s;
-    }
-
-        .order-card:hover {
-            box-shadow: 0 0 10px rgba(0,0,0,0.05);
-        }
-
-    .order-progress {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 15px;
-        position: relative;
-        padding: 0 10px;
-    }
-
-        .order-progress::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 10px;
-            right: 10px;
-            height: 4px;
-            background-color: #dee2e6;
-            z-index: 0;
-        }
-
-    .progress-step {
-        position: relative;
-        z-index: 1;
-        text-align: center;
-        flex: 1;
-    }
-
-        .progress-step .circle {
-            width: 25px;
-            height: 25px;
-            line-height: 25px;
-            border-radius: 50%;
-            background-color: #dee2e6;
-            color: white;
-            margin: 0 auto;
-            font-size: 13px;
-        }
-
-        .progress-step.active .circle {
-            background-color: #198754;
-        }
-
-        .progress-step.cancelled .circle {
-            background-color: #dc3545;
-        }
-
-        .progress-step span {
-            display: block;
-            margin-top: 5px;
-            font-size: 12px;
-            color: #6c757d;
-        }
-
-        .progress-step.active span {
-            color: #198754;
-            font-weight: bold;
-        }
-
-        .progress-step.cancelled span {
-            color: #dc3545;
-            font-weight: bold;
-        }
-        .button-group {
-    display: flex;
-    gap: 10px;
-    margin-top: auto;
-}
-
-.custom-btn {
-    flex: 1;
-    padding: 8px 12px;
-    text-align: center;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
-}
-
-.custom-btn.green {
-    background-color: #198754;
-    color: white;
-}
-
-.custom-btn.green:hover {
-    background-color: #146c43;
-}
-
-.custom-btn.red {
-    background-color: #dc3545;
-    color: white;
-}
-
-.custom-btn.red:hover {
-    background-color: #b02a37;
-}
-.address-buttons {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.address-btn {
-    flex: 1;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    color: white;
-    transition: background-color 0.3s ease;
-}
-
-.address-btn.blue {
-    background-color: #0d6efd;
-}
-
-.address-btn.blue:hover {
-    background-color: #0b5ed7;
-}
-
-.address-btn.orange {
-    background-color: #ffc107;
-    color: black;
-}
-
-.address-btn.orange:hover {
-    background-color: #e0a800;
-}
-
-</style>
+<link rel="stylesheet" href="~/css/canhan.css">
 
 <!-- ✅ Script để chuyển đổi nội dung -->
 <script>
@@ -476,7 +291,7 @@
                 </form>
             </div>
 
-            <!-- ❤️ Sản phẩm yêu thích -->
+          <!-- ❤️ Sản phẩm yêu thích -->
 <div id="favoritesSection" class="content-section">
     <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
 
@@ -487,50 +302,55 @@
     else
     {
         var yeuThichList = (List<SanPham>)ViewBag.SanPhamYeuThich;
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        <div class="row justify-content-center row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
             @foreach (var sp in yeuThichList)
             {
-                <div class="col">
-                    <div class="card h-100">
-                        <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
-                       <div class="card-body d-flex flex-column">
-    <h6 class="fw-semibold">@sp.TenSP</h6>
-    <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
+                <div class="col-auto">
+                    <div class="card h-100 product-card">
+                        <div class="position-relative">
+                            <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                            <span class="favorite-icon">❤️</span>
+                        </div>
+                        <div class="card-body d-flex flex-column">
+                            <h6 class="fw-semibold">@sp.TenSP</h6>
+                            <p class="product-price">@sp.DonGia.ToString("N0") đ</p>
 
-    <div class="button-group">
-        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="custom-btn green">Xem chi tiết</a>
+                            <div class="button-group mt-auto">
+                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="custom-btn green">Xem chi tiết</a>
 
-        <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
-            <input type="hidden" name="maSP" value="@sp.MaSP" />
-            <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
-        </form>
-    </div>
-</div>
-
+                                <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
+                                    <input type="hidden" name="maSP" value="@sp.MaSP" />
+                                    <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+
+
 <!-- 🔐 Đổi mật khẩu -->
 <div id="changePasswordSection" class="content-section" style="display: none;">
-    <h4 class="mb-3 text-primary">Đổi mật khẩu</h4>
+    <h4 class="mb-3 fw-bold text-orange">🔐 Đổi mật khẩu</h4>
 
-    <form asp-controller="User" asp-action="DoiMatKhau" method="post">
-        <div class="form-group mb-2">
+    <form asp-controller="User" asp-action="DoiMatKhau" method="post" class="password-form">
+        <div class="form-group mb-3">
             <label for="OldPassword">Mật khẩu hiện tại</label>
-            <input type="password" class="form-control" name="OldPassword" required />
-        </div>
-        <div class="form-group mb-2">
-            <label for="NewPassword">Mật khẩu mới</label>
-            <input type="password" class="form-control" name="NewPassword" required />
+            <input type="password" class="form-control" name="OldPassword" placeholder="Nhập mật khẩu hiện tại" required />
         </div>
         <div class="form-group mb-3">
-            <label for="ConfirmPassword">Xác nhận mật khẩu mới</label>
-            <input type="password" class="form-control" name="ConfirmPassword" required />
+            <label for="NewPassword">Mật khẩu mới</label>
+            <input type="password" class="form-control" name="NewPassword" placeholder="Nhập mật khẩu mới" required />
         </div>
-        <button type="submit" class="btn btn-success">Đổi mật khẩu</button>
+        <div class="form-group mb-4">
+            <label for="ConfirmPassword">Xác nhận mật khẩu mới</label>
+            <input type="password" class="form-control" name="ConfirmPassword" placeholder="Xác nhận mật khẩu mới" required />
+        </div>
+        <button type="submit" class="custom-btn orange w-100">Đổi mật khẩu</button>
     </form>
 
     @if (TempData["PasswordChangeMessage"] != null)
@@ -538,10 +358,6 @@
         <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
     }
 </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
 <script>
     function toggleOrderItems(sectionId, btn) {

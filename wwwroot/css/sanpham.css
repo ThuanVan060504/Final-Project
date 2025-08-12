@@ -9,6 +9,9 @@ h2 {
     color: #333;
 }
 
+.col-md-4.col-sm-6.col-12 {
+    margin-bottom: 20px;
+}
 /* ===== Card sản phẩm ===== */
 .card-hover {
     border: none;

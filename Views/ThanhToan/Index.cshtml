@@ -9,158 +9,168 @@
     var phiVanChuyen = 17000;
     var tongThanhToan = tongTien + phiVanChuyen;
 }
-
-<!-- CSS -->
 <style>
-    .section-title {
+/* 🎨 Màu chủ đạo */
+:root {
+    --main-orange: #ff9e4f;
+    --main-orange-dark: #e88738;
+    --text-dark: #333;
+    --text-light: #555;
+    --bg-light: #fafafa;
+}
+
+/* Tiêu đề section */
+.section-title {
     font-weight: 600;
     font-size: 1.25rem;
     margin-top: 30px;
     margin-bottom: 15px;
-    border-bottom: 2px solid #ccc;
+    border-bottom: 2px solid #000000);
     padding-bottom: 6px;
-    color: #444;
+    color: var(--text-dark);
 }
 
-/* Địa chỉ */
+/* Địa chỉ mặc định */
 #default-address {
-    background-color: #fafafa;
-    border: 1px solid #ccc;
-    border-radius: 6px;
+    background-color: var(--bg-light);
+    border: 1px solid #ddd;
+    border-radius: 8px;
     padding: 15px 20px;
     max-width: 500px;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 #default-address p {
     margin-bottom: 6px;
     font-size: 1rem;
-    color: #333;
+    color: var(--text-dark);
 }
 #default-address strong#default-name {
     font-size: 1.1rem;
     font-weight: 600;
+    color: var(--main-orange);
 }
 #default-address button {
-    color: #555;
+    color: var(--main-orange);
     font-weight: 500;
     background: none;
     border: none;
     padding: 0;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
 #default-address button:hover {
     text-decoration: underline;
-    color: #000;
+    color: var(--main-orange-dark);
 }
 
 /* Danh sách địa chỉ */
 #addressList {
     max-width: 600px;
     background: #fff;
-    border: 1px solid #ddd;
+    border: 1px solid #eee;
     border-radius: 8px;
     padding: 15px 20px;
-    box-shadow: none;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 #addressList #addresses div {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
+    background-color: #fffaf5;
+    border: 1px solid #ffd8b2;
     border-radius: 6px;
     padding: 12px 15px;
     margin-bottom: 12px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 #addressList #addresses div:hover {
-    background-color: #e6e6e6;
+    background-color: #ffe7cc;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 }
 #addressList #addresses div p {
     margin: 3px 0;
     font-size: 0.95rem;
-    color: #333;
+    color: var(--text-dark);
 }
+
+/* Nút phụ */
 #addressList button.btn-outline-secondary {
-    border-color: #888;
-    color: #555;
+    border-color: var(--main-orange);
+    color: var(--main-orange);
     font-weight: 500;
 }
 #addressList button.btn-outline-secondary:hover {
-    background-color: #ddd;
-    color: #333;
-    border-color: #666;
+    background-color: var(--main-orange);
+    color: #fff;
 }
 
 /* Form thêm địa chỉ */
 #addForm input {
-    border-radius: 4px;
+    border-radius: 6px;
     border: 1px solid #ccc;
     padding: 8px 12px;
     font-size: 0.95rem;
     transition: border-color 0.3s ease;
 }
 #addForm input:focus {
-    border-color: #999;
+    border-color: var(--main-orange);
     outline: none;
-    box-shadow: none;
+    box-shadow: 0 0 5px rgba(255,158,79,0.5);
 }
 #addForm button.btn-primary {
-    background-color: #555;
-    border-color: #555;
+    background-color: var(--main-orange);
+    border-color: var(--main-orange);
     font-weight: 600;
-    border-radius: 4px;
+    border-radius: 6px;
     padding: 6px 16px;
+    transition: background-color 0.3s ease;
 }
 #addForm button.btn-primary:hover {
-    background-color: #333;
-    border-color: #333;
+    background-color: var(--main-orange-dark);
 }
 
 /* Sản phẩm */
 .row.align-items-center.border {
     background-color: #fff;
-    border-radius: 6px;
-    box-shadow: none;
+    border-radius: 8px;
     padding: 12px 15px !important;
+    border: 1px solid #eee;
     transition: box-shadow 0.3s ease;
-    border: 1px solid #ddd;
 }
 .row.align-items-center.border:hover {
-    box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 .product-image {
-    border-radius: 4px;
-    border: 1px solid #ccc;
+    border-radius: 6px;
+    border: 1px solid #ddd;
 }
 .col-md-5 p.mb-0 {
     font-weight: 600;
     font-size: 1.05rem;
-    color: #222;
+    color: var(--text-dark);
 }
 .col-md-5 small {
-    color: #666;
+    color: var(--text-light);
     font-style: italic;
 }
 .col-md-2.text-center, .col-md-2.text-end {
     font-weight: 600;
     font-size: 1rem;
-    color: #444;
+    color: var(--main-orange);
 }
 
 /* Phương thức vận chuyển */
 .border.p-3.mb-3 {
     background-color: #fff;
-    border-radius: 6px;
-    box-shadow: none;
-    border: 1px solid #ddd;
+    border-radius: 8px;
+    border: 1px solid #eee;
     padding: 12px;
 }
 .border.p-3.mb-3 p strong {
-    color: #222;
+    color: var(--text-dark);
     font-weight: 600;
     font-size: 1.05rem;
 }
 .border.p-3.mb-3 small {
-    color: #666;
+    color: var(--text-light);
     font-style: italic;
 }
 
@@ -168,40 +178,40 @@
 .d-flex.justify-content-between.mb-3 p {
     font-weight: 500;
     font-size: 1rem;
-    color: #333;
+    color: var(--text-dark);
 }
 .btn-outline-primary {
-    border-color: #888;
-    color: #555;
+    border-color: var(--main-orange);
+    color: var(--main-orange);
     font-weight: 600;
+    transition: all 0.3s ease;
 }
 .btn-outline-primary:hover {
-    background-color: #ccc;
-    color: #222;
+    background-color: var(--main-orange);
+    color: #fff;
 }
 
 /* Phương thức thanh toán */
 .d-flex.gap-3.flex-wrap.mb-3 button {
     min-width: 150px;
     font-weight: 600;
-    border-radius: 6px;
-    transition: background-color 0.3s ease;
-    border: 1.5px solid #000000;
+    border-radius: 8px;
+    border: 1.5px solid var(--main-orange);
     background-color: #fff;
-    color: #555;
+    color: var(--main-orange);
+    transition: all 0.3s ease;
 }
-.btn-outline-secondary {
-    border-color: #888;
-    color: #555;
-}
-.btn-outline-secondary:hover {
-    background-color: #ddd;
-    color: #333;
+.d-flex.gap-3.flex-wrap.mb-3 button:hover {
+    background-color: var(--main-orange);
+    color: #fff;
 }
 .btn-danger {
-    background-color: #444 !important;
-    border-color: #444 !important;
+    background-color: var(--main-orange) !important;
+    border-color: var(--main-orange) !important;
     color: white !important;
+}
+.btn-danger:hover {
+    background-color: var(--main-orange-dark) !important;
 }
 
 /* Tổng tiền */
@@ -209,11 +219,11 @@
     font-size: 1.05rem;
     margin: 6px 0;
     font-weight: 600;
-    color: #333;
+    color: var(--text-dark);
 }
 .order-summary h5 {
     margin-top: 10px;
-    color: #222;
+    color: var(--main-orange-dark);
 }
 
 /* Nút đặt hàng */
@@ -221,16 +231,18 @@
     font-size: 1.15rem;
     font-weight: 700;
     padding: 10px 30px;
-    border-radius: 6px;
-    background-color: #444;
+    border-radius: 8px;
+    background-color: var(--main-orange);
     border: none;
+    margin:10px;
     color: white;
-    box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
-    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 8px rgba(255,158,79,0.5);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     cursor: pointer;
 }
 .btn-place-order:hover {
-    background-color: #222;
+    background-color: var(--main-orange-dark);
+    box-shadow: 0 4px 12px rgba(255,158,79,0.7);
 }
 
 </style>
