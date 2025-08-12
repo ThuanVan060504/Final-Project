@@ -13,42 +13,227 @@
 <!-- CSS -->
 <style>
     .section-title {
-        font-weight: bold;
-        margin-top: 20px;
-        border-bottom: 2px solid #eee;
-        padding-bottom: 10px;
-    }
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 6px;
+    color: #444;
+}
 
-    .product-image {
-        width: 60px;
-        height: 60px;
-        object-fit: cover;
-    }
+/* Địa chỉ */
+#default-address {
+    background-color: #fafafa;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 15px 20px;
+    max-width: 500px;
+    box-shadow: none;
+}
+#default-address p {
+    margin-bottom: 6px;
+    font-size: 1rem;
+    color: #333;
+}
+#default-address strong#default-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+#default-address button {
+    color: #555;
+    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+#default-address button:hover {
+    text-decoration: underline;
+    color: #000;
+}
 
-    .order-summary {
-        text-align: right;
-    }
+/* Danh sách địa chỉ */
+#addressList {
+    max-width: 600px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px 20px;
+    box-shadow: none;
+}
 
-    .btn-place-order {
-        background-color: #ee4d2d;
-        color: white;
-        border: none;
-    }
+#addressList #addresses div {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 12px 15px;
+    margin-bottom: 12px;
+    transition: background-color 0.3s ease;
+}
+#addressList #addresses div:hover {
+    background-color: #e6e6e6;
+}
+#addressList #addresses div p {
+    margin: 3px 0;
+    font-size: 0.95rem;
+    color: #333;
+}
+#addressList button.btn-outline-secondary {
+    border-color: #888;
+    color: #555;
+    font-weight: 500;
+}
+#addressList button.btn-outline-secondary:hover {
+    background-color: #ddd;
+    color: #333;
+    border-color: #666;
+}
 
-    .address-box {
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        padding: 10px;
-        margin-bottom: 10px;
-    }
+/* Form thêm địa chỉ */
+#addForm input {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    font-size: 0.95rem;
+    transition: border-color 0.3s ease;
+}
+#addForm input:focus {
+    border-color: #999;
+    outline: none;
+    box-shadow: none;
+}
+#addForm button.btn-primary {
+    background-color: #555;
+    border-color: #555;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 6px 16px;
+}
+#addForm button.btn-primary:hover {
+    background-color: #333;
+    border-color: #333;
+}
 
-        .address-box.default {
-            border-color: #ee4d2d;
-            background-color: #fff6f0;
-        }
+/* Sản phẩm */
+.row.align-items-center.border {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: none;
+    padding: 12px 15px !important;
+    transition: box-shadow 0.3s ease;
+    border: 1px solid #ddd;
+}
+.row.align-items-center.border:hover {
+    box-shadow: 0 2px 8px rgb(0 0 0 / 0.12);
+}
+.product-image {
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.col-md-5 p.mb-0 {
+    font-weight: 600;
+    font-size: 1.05rem;
+    color: #222;
+}
+.col-md-5 small {
+    color: #666;
+    font-style: italic;
+}
+.col-md-2.text-center, .col-md-2.text-end {
+    font-weight: 600;
+    font-size: 1rem;
+    color: #444;
+}
+
+/* Phương thức vận chuyển */
+.border.p-3.mb-3 {
+    background-color: #fff;
+    border-radius: 6px;
+    box-shadow: none;
+    border: 1px solid #ddd;
+    padding: 12px;
+}
+.border.p-3.mb-3 p strong {
+    color: #222;
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+.border.p-3.mb-3 small {
+    color: #666;
+    font-style: italic;
+}
+
+/* Voucher */
+.d-flex.justify-content-between.mb-3 p {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #333;
+}
+.btn-outline-primary {
+    border-color: #888;
+    color: #555;
+    font-weight: 600;
+}
+.btn-outline-primary:hover {
+    background-color: #ccc;
+    color: #222;
+}
+
+/* Phương thức thanh toán */
+.d-flex.gap-3.flex-wrap.mb-3 button {
+    min-width: 150px;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: background-color 0.3s ease;
+    border: 1.5px solid #000000;
+    background-color: #fff;
+    color: #555;
+}
+.btn-outline-secondary {
+    border-color: #888;
+    color: #555;
+}
+.btn-outline-secondary:hover {
+    background-color: #ddd;
+    color: #333;
+}
+.btn-danger {
+    background-color: #444 !important;
+    border-color: #444 !important;
+    color: white !important;
+}
+
+/* Tổng tiền */
+.order-summary p {
+    font-size: 1.05rem;
+    margin: 6px 0;
+    font-weight: 600;
+    color: #333;
+}
+.order-summary h5 {
+    margin-top: 10px;
+    color: #222;
+}
+
+/* Nút đặt hàng */
+.btn-place-order {
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 10px 30px;
+    border-radius: 6px;
+    background-color: #444;
+    border: none;
+    color: white;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 0.3);
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+.btn-place-order:hover {
+    background-color: #222;
+}
+
 </style>
-
-<body class="container py-4">
 
     <!-- Địa chỉ -->
     <h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
@@ -245,4 +430,3 @@
     </script>
 
 
-</body>
