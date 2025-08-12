@@ -1,63 +1,45 @@
-﻿// Controller
+﻿using Final_Project.Models.Chat;
 using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using System.Data.SqlClient;
 
 namespace Final_Project.Controllers
 {
     public class UserChatController : Controller
     {
         private readonly AppDbContext _context;
-        private readonly string _connectionString;
-        public UserChatController(IConfiguration configuration, AppDbContext context)
+
+        public UserChatController(AppDbContext context)
         {
             _context = context;
-            _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
+
         public IActionResult Index()
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
-            if (maTK != null)
-            {
-                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
-                ViewBag.Avatar = taiKhoan?.Avatar;
-                ViewBag.HoTen = taiKhoan?.HoTen;
-            }
-            var userId = HttpContext.Session.GetInt32("MaTK");
-            if (userId == null)
+            if (maTK == null)
                 return RedirectToAction("Login", "Auth");
 
-            var messages = new List<MessageModel>();
+            // Lấy thông tin tài khoản để hiển thị avatar & họ tên
+            var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+            ViewBag.Avatar = taiKhoan?.Avatar;
+            ViewBag.HoTen = taiKhoan?.HoTen;
 
-            using (var con = new SqlConnection(_connectionString))
-            {
-                con.Open();
-                using (var cmd = new SqlCommand(@"
-                    SELECT MaTinNhan, NguoiGuiId, NguoiNhanId, NoiDung, ThoiGianGui 
-                    FROM TinNhan
-                    WHERE (NguoiGuiId = @UserId AND NguoiNhanId = 3) 
-                       OR (NguoiGuiId = 3 AND NguoiNhanId = @UserId)
-                    ORDER BY ThoiGianGui ASC", con))
+            // Lấy danh sách tin nhắn giữa user hiện tại và admin (ID = 3)
+            var messages = _context.TinNhans
+                .Where(m =>
+                    (m.NguoiGuiId == maTK && m.NguoiNhanId == 3) ||
+                    (m.NguoiGuiId == 3 && m.NguoiNhanId == maTK))
+                .OrderBy(m => m.ThoiGianGui)
+                .Select(m => new MessageModel
                 {
-                    cmd.Parameters.AddWithValue("@UserId", userId);
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            messages.Add(new MessageModel
-                            {
-                                MaTinNhan = (int)reader["MaTinNhan"],
-                                NguoiGuiId = (int)reader["NguoiGuiId"],
-                                NguoiNhanId = (int)reader["NguoiNhanId"],
-                                NoiDung = reader["NoiDung"].ToString(),
-                                ThoiGianGui = (DateTime)reader["ThoiGianGui"]
-                            });
-                        }
-                    }
-                }
-            }
+                    MaTinNhan = m.MaTinNhan,
+                    NguoiGuiId = m.NguoiGuiId,
+                    NguoiNhanId = m.NguoiNhanId,
+                    NoiDung = m.NoiDung,
+                    ThoiGianGui = m.ThoiGianGui
+                })
+                .ToList();
 
             return View("~/Views/User/TinNhan/Index.cshtml", messages);
         }
@@ -69,18 +51,16 @@ namespace Final_Project.Controllers
             if (userId == null)
                 return RedirectToAction("Login", "Auth");
 
-            using (var con = new SqlConnection(_connectionString))
+            var tinNhan = new TinNhan
             {
-                con.Open();
-                using (var cmd = new SqlCommand(@"
-                    INSERT INTO TinNhan (NguoiGuiId, NguoiNhanId, NoiDung, ThoiGianGui)
-                    VALUES (@NguoiGuiId, 3, @NoiDung, GETDATE())", con))
-                {
-                    cmd.Parameters.AddWithValue("@NguoiGuiId", userId);
-                    cmd.Parameters.AddWithValue("@NoiDung", noiDung);
-                    cmd.ExecuteNonQuery();
-                }
-            }
+                NguoiGuiId = userId.Value,
+                NguoiNhanId = 3, // ID admin
+                NoiDung = noiDung,
+                ThoiGianGui = DateTime.Now
+            };
+
+            _context.TinNhans.Add(tinNhan);
+            _context.SaveChanges();
 
             return RedirectToAction("Index");
         }
@@ -88,7 +68,7 @@ namespace Final_Project.Controllers
 
     public class MessageModel
     {
-        public int MaTinNhan { get; set; } // đổi từ Id sang MaTinNhan
+        public int MaTinNhan { get; set; }
         public int NguoiGuiId { get; set; }
         public int NguoiNhanId { get; set; }
         public string NoiDung { get; set; }
