@@ -490,47 +490,48 @@
 
 		</div>
 		<div class="header__center">
-			<form class="ps-form--quick-search" asp-controller="SanPham" asp-action="Search" method="POST">
-				<div class="form-group--icon">
-					<i class="icon-chevron-down"></i>
-					<select class="form-control" name='filter'>
-						<option value="0" selected="selected">Semua</option>
-						<option class='level-0' value='kategori|9'>Alat Musik & Pro Audio</option>
-						<option class='level-1' value='subkategori|21'>- Gitar</option>
-						<option class='level-1' value='subkategori|22'>- Piano</option>
-						<option class='level-1' value='subkategori|23'>- Talempong</option>
-						<option class='level-0' value='kategori|6'>Fashion & Busana Pria</option>
-						<option class='level-1' value='subkategori|14'>- Accessories</option>
-						<option class='level-1' value='subkategori|15'>- Kid's Fashion</option>
-						<option class='level-1' value='subkategori|16'>- Shoes</option>
-						<option class='level-0' value='kategori|2'>Fashion & Busana Wanita</option>
-						<option class='level-1' value='subkategori|2'>- Kiyora Dalam</option>
-						<option class='level-1' value='subkategori|1'>- Kiyora Sedang</option>
-						<option class='level-0' value='kategori|13'>Olahraga dan Luar Rumah</option>
-						<option class='level-1' value='subkategori|11'>- Freezer Burn</option>
-						<option class='level-1' value='subkategori|12'>- Frigde Cooler</option>
-						<option class='level-1' value='subkategori|13'>- Wine Cabinets</option>
-						<option class='level-0' value='kategori|1'>Perhiasan dan Aksesoris</option>
-						<option class='level-1' value='subkategori|6'>- Cincin</option>
-						<option class='level-1' value='subkategori|4'>- Jam tangan</option>
-						<option class='level-1' value='subkategori|3'>- Kalung</option>
-						<option class='level-1' value='subkategori|24'>- sdasd</option>
-						<option class='level-0' value='kategori|12'>Perhiasan dan Jam Tangan</option>
-						<option class='level-1' value='subkategori|20'>- Cincin Kawin</option>
-						<option class='level-1' value='subkategori|19'>- Emas Putih</option>
-						<option class='level-0' value='kategori|14'>Taman dan Alat Dapur</option>
-						<option class='level-1' value='subkategori|7'>- Cookware</option>
-						<option class='level-1' value='subkategori|8'>- Decoration</option>
-						<option class='level-1' value='subkategori|9'>- Furniture</option>
-						<option class='level-1' value='subkategori|10'>- Garden Tools</option>
-						<option class='level-0' value='kategori|10'>Tas, Koper & Perjalanan</option>
-						<option class='level-1' value='subkategori|17'>- Car Electronics</option>
-						<option class='level-1' value='subkategori|18'>- Office Electronics</option>
-					</select>
-				</div>
-				<input class="form-control" name='kata' type="text" placeholder   asp-controller="SanPham" asp-action="Search ="Tìm kiếm ở đây..." autocomplete='off' required>
-				<button type='submit' class="icon-magnifier" name='cari'></button>
-			</form>
+		<form class="ps-form--quick-search" asp-controller="SanPham" asp-action="Search" method="get">
+    <div class="form-group--icon">
+        <i class="icon-chevron-down"></i>
+        <select class="form-control" name="filter">
+            <option value="0" selected>Tất Cả</option>
+            <option value="Phòng khách">Phòng khách</option>
+            <option value="Phòng ngủ">Phòng ngủ</option>
+            <option value="Phòng ăn">Phòng ăn</option>
+            <option value="Phòng làm việc">Phòng làm việc</option>
+            <option value="Nội thất trẻ em">Nội thất trẻ em</option>
+            <option value="Đồ trang trí">Đồ trang trí</option>
+            <option value="Đèn & chiếu sáng">Đèn & chiếu sáng</option>
+            <option value="Rèm, thảm & phụ kiện">Rèm, thảm & phụ kiện</option>
+            <option value="Bàn làm việc">Bàn làm việc</option>
+            <option value="Ghế văn phòng">Ghế văn phòng</option>
+            <option value="Tủ kệ trang trí">Tủ kệ trang trí</option>
+        </select>
+    </div>
+
+    <!-- Input từ khóa để tìm kiếm -->
+    <input class="form-control" name="keyword" type="text" placeholder="Tìm kiếm ở đây..." autocomplete="off" required>
+
+    <button type="submit" class="icon-magnifier" name="cari"></button>
+</form>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		</div>
 		<div class="header__right">
 			<div class="header__actions">
@@ -931,7 +932,7 @@
 	</div>
 </div>
 <div class="ps-search--mobile">
-	<form class="ps-form--search-mobile" asp-controller="SanPham" asp-action="Search" method="post">
+	<form class="ps-form--search-mobile" method="get" asp-controller="SanPham" asp-action="Search" method="post">
   <div class="form-group--nest">
     <input class="form-control" name="kata" type="text" placeholder="Tìm Kiếm Tại Đây..." required />
     <button type="submit" name="timkiem" aria-label="Tìm kiếm">
@@ -944,13 +945,13 @@
 </header>
 <div class="ps-panel--sidebar" id="cart-mobile">
 	<div class="ps-panel__header">
-		<h3>Shopping Cart</h3>
+		<h3> Giỏ Hàng</h3>
 	</div>
 	<div class="navigation__content">
 		<div class="ps-cart--mobile">
 			<div class="ps-cart__content"></div>
 			<div class="ps-cart__footer">
-				<h3>Sub Total:<strong>Rp 0</strong></h3>
+				<h3>Tổng giá :<strong> 0 Vnđ</strong></h3>
 				<figure><a class="ps-btn" href="#">Keranjang</a>
 				<a class="ps-btn" href="#">Pembayaran</a></figure>
 			</div>
@@ -1110,9 +1111,9 @@
 <div class="navigation--list">
 	<div class="navigation__content">
 		<a class="navigation__item ps-toggle--sidebar" href="#menu-mobile"><i class="icon-menu"></i><span>Menu</span></a>
-		<a class="navigation__item ps-toggle--sidebar" href="#navigation-mobile"><i class="icon-list4"></i><span>Kategori</span></a>
+		<a class="navigation__item ps-toggle--sidebar" href="#navigation-mobile"><i class="icon-list4"></i><span>Danh Mục</span></a>
 		<a class="navigation__item ps-toggle--sidebar" href="#search-sidebar"><i class="icon-magnifier"></i><span>Tìm Kiếm</span></a>
-		<a class="navigation__item ps-toggle--sidebar" href="#cart-mobile"><i class="icon-bag2"></i><span>Keranjang</span></a>
+		<a class="navigation__item ps-toggle--sidebar" href="#cart-mobile"><i class="icon-bag2"></i><span>Giỏ Hàng</span></a>
 	</div>
 </div>
 <div class="ps-panel--sidebar" id="search-sidebar">

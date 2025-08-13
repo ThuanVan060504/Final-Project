@@ -6873,12 +6873,12 @@ textarea.form-control {
   transition: all 0.5s cubic-bezier(0.7, 0, 0.3, 1) 0s;
 }
 
-.ps-panel--sidebar .ps-panel__header {
-  position: relative;
-  text-align: center;
-  padding: 15px 20px;
-  background-color: #ff0202;
-}
+    .ps-panel--sidebar .ps-panel__header {
+        position: relative;
+        text-align: center;
+        padding: 15px 20px;
+        background-color: #ff8003;
+    }
 
 .ps-panel--sidebar .ps-panel__header h3 {
   margin-bottom: 0;

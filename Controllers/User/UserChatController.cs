@@ -1,5 +1,6 @@
 ﻿using Final_Project.Models.Chat;
 using Final_Project.Models.Shop;
+using Final_Project.Models.User; // để dùng TaiKhoan
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +21,15 @@ namespace Final_Project.Controllers
             if (maTK == null)
                 return RedirectToAction("Login", "Auth");
 
-            // Lấy thông tin tài khoản để hiển thị avatar & họ tên
+            // Lấy thông tin tài khoản hiện tại
             var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
             ViewBag.Avatar = taiKhoan?.Avatar;
             ViewBag.HoTen = taiKhoan?.HoTen;
 
-            // Lấy danh sách tin nhắn giữa user hiện tại và admin (ID = 3)
+            // Lấy tin nhắn giữa user và admin (ID = 3), kèm thông tin người gửi & người nhận
             var messages = _context.TinNhans
+                .Include(m => m.NguoiGui)
+                .Include(m => m.NguoiNhan)
                 .Where(m =>
                     (m.NguoiGuiId == maTK && m.NguoiNhanId == 3) ||
                     (m.NguoiGuiId == 3 && m.NguoiNhanId == maTK))
@@ -37,7 +40,11 @@ namespace Final_Project.Controllers
                     NguoiGuiId = m.NguoiGuiId,
                     NguoiNhanId = m.NguoiNhanId,
                     NoiDung = m.NoiDung,
-                    ThoiGianGui = m.ThoiGianGui
+                    ThoiGianGui = m.ThoiGianGui,
+                    NguoiGuiHoTen = m.NguoiGui.HoTen,
+                    NguoiGuiAvatar = string.IsNullOrEmpty(m.NguoiGui.Avatar)
+                        ? "/Admin/img/default-avatar.png"
+                        : m.NguoiGui.Avatar
                 })
                 .ToList();
 
@@ -73,5 +80,9 @@ namespace Final_Project.Controllers
         public int NguoiNhanId { get; set; }
         public string NoiDung { get; set; }
         public DateTime ThoiGianGui { get; set; }
+
+        // Thêm thuộc tính mới để hiển thị tên và avatar
+        public string NguoiGuiHoTen { get; set; }
+        public string NguoiGuiAvatar { get; set; }
     }
 }
