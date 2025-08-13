@@ -3,42 +3,125 @@
     ViewData["Title"] = "Tin tức";
 }
 
-<h2 class="mb-4 text-center">📰 Tin tức nội thất cập nhật</h2>
+<style>
+    /* Container rộng gần full màn hình */
+    .news-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px; /* khoảng cách giữa các ô */
+        justify-content: space-between;
+        margin: 0 auto;
+        max-width: 1400px; /* hoặc 100% nếu muốn full */
+        padding: 0 20px;
+    }
 
-<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    .news-card {
+        flex: 0 0 23%; /* 4 card / hàng */
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+        min-width: 250px;
+    }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+        }
+
+        .news-card img {
+            width: 100%;
+            height: 250px; /* to hơn */
+            object-fit: cover;
+        }
+
+    .news-card-body {
+        padding: 25px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+        .news-card-body h5 {
+            font-size: 1.2rem; /* chữ to hơn */
+            margin-bottom: 10px;
+            flex-shrink: 0;
+        }
+
+    .news-meta {
+        font-size: 0.9rem; /* chữ meta to hơn */
+        color: #444;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+    }
+
+    .news-summary {
+        flex: 1;
+        font-size: 1rem; /* chữ nội dung to hơn */
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 4; /* tối đa 4 dòng */
+        -webkit-box-orient: vertical;
+    }
+
+    .news-card-body a.btn {
+        margin-top: 12px;
+        font-size: 1.15rem;
+        padding: 12px 0;
+        text-align: center;
+    }
+
+    /* Responsive nhỏ lại màn hình */
+    @@media (max-width: 1200px) {
+        .news-card {
+            flex: 0 0 31%;
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .news-card {
+            flex: 0 0 48%;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .news-card {
+            flex: 0 0 100%;
+        }
+    }
+
+</style>
+
+<h2 class="mb-5 text-center display-5 fw-bold">📰 Tin tức nội thất cập nhật</h2>
+
+<div class="news-grid">
     @foreach (var tin in Model)
     {
-        <div class="col">
-            <div class="card h-100 shadow-sm">
-                @* Hiển thị ảnh nếu có trong mô tả *@
-                @{
-                    string imageUrl = "";
-                    var match = System.Text.RegularExpressions.Regex.Match(tin.TomTat ?? "", "<img.+?src=[\"'](.+?)[\"']");
+        <div class="news-card">
+            @if (!string.IsNullOrEmpty(tin.ImageUrl))
+            {
+                <img src="@tin.ImageUrl" loading="lazy" />
+            }
 
-                    if (match.Success)
-                    {
-                        imageUrl = match.Groups[1].Value;
-                    }
-                }
+            <div class="news-card-body">
+                <h5>
+                    <a href="@tin.Link" target="_blank" class="text-decoration-none text-dark fw-bold">
+                        @tin.TieuDe
+                    </a>
+                </h5>
 
-                @if (!string.IsNullOrEmpty(imageUrl))
-                {
-                    <img src="@imageUrl" class="card-img-top" style="max-height: 220px; object-fit: cover;" />
-                }
-
-                <div class="card-body text-center">
-                    <h5 class="card-title">
-                        <a href="@tin.Link" target="_blank" class="text-decoration-none text-primary">
-                            @tin.TieuDe
-                        </a>
-                    </h5>
-                    <p class="card-text text-muted">
-                        🗓 @tin.NgayDang.ToString("dd/MM/yyyy HH:mm") | 📌 @tin.Nguon
-                    </p>
-                    <div class="card-text text-start">
-                        @Html.Raw(tin.TomTat)
-                    </div>
+                <div class="news-meta">
+                    <span>🗓 @tin.NgayDang.ToString("dd/MM/yyyy")</span>
+                    <span>📌 @tin.Nguon</span>
                 </div>
+
+                <p class="news-summary">@Html.Raw(tin.TomTat)</p>
+
+                <a href="@tin.Link" target="_blank" class="btn btn-primary w-100">Xem chi tiết</a>
             </div>
         </div>
     }
