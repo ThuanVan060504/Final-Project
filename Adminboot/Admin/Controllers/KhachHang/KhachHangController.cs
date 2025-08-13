@@ -1,16 +1,17 @@
-﻿using Final_Project.Models.User;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Shop;
+using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using Final_Project.Models.Shop;
 
 namespace Final_Project.Adminboot.Admin.Controllers.KhachHang
 {
     [Area("Admin")]
-    public class KhachHangController : Controller
+    public class KhachHangController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public KhachHangController(AppDbContext context)
+        public KhachHangController(AppDbContext context) : base(context)
         {
             _context = context;
         }

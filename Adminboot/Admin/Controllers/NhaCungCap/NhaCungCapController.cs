@@ -5,11 +5,11 @@ using System.Linq;
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class NhaCungCapController : Controller
+    public class NhaCungCapController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public NhaCungCapController(AppDbContext context)
+        public NhaCungCapController(AppDbContext context) : base(context)
         {
             _context = context;
         }

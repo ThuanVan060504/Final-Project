@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Final_Project.Models.Chat;
+using System;
 using System.Collections.Generic;
 
 namespace Final_Project.Models.ViewModels
@@ -14,6 +15,7 @@ namespace Final_Project.Models.ViewModels
         public int TotalGuestVisits { get; set; }    // Truy cập của guest
 
         public List<ProductViewModel> RecentProducts { get; set; } = new();
+        public List<TinNhan> RecentMessages { get; set; }
     }
 
     public class ProductViewModel

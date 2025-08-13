@@ -1,14 +1,15 @@
-﻿using Final_Project.Models.Shop;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 [Area("Admin")]
-public class TonKhoController : Controller
+public class TonKhoController : BaseAdminController
 {
     private readonly AppDbContext _context;
 
-    public TonKhoController(AppDbContext context)
+    public TonKhoController(AppDbContext context) : base(context)
     {
         _context = context;
     }

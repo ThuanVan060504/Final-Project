@@ -1,18 +1,19 @@
-﻿using Final_Project.Models.Shop;
-using Microsoft.AspNetCore.Mvc;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using System.IO;
 namespace Final_Project.Adminboot.Admin.Controllers.Decor
 {
     [Area("Admin")]
 
-    public class DanhMucDecorController : Controller
+    public class DanhMucDecorController : BaseAdminController
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _env; 
 
         // ✅ Inject cả ApplicationDbContext và IWebHostEnvironment
-        public DanhMucDecorController(AppDbContext context, IWebHostEnvironment env)
+        public DanhMucDecorController(AppDbContext context, IWebHostEnvironment env) : base(context)
         {
             _context = context;
             _env = env; // ✅ gán vào biến

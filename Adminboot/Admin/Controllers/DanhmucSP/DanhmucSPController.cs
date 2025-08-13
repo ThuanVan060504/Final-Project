@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class DanhmucSPController : Controller
+    public class DanhmucSPController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public DanhmucSPController(AppDbContext context)
+        public DanhmucSPController(AppDbContext context) : base(context)
         {
             _context = context;
         }

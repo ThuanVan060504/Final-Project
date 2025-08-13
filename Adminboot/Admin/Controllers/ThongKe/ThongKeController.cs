@@ -10,11 +10,11 @@ using System.IO;
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class ThongKeController : Controller
+    public class ThongKeController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public ThongKeController(AppDbContext context)
+        public ThongKeController(AppDbContext context) : base(context)
         {
             _context = context;
         }

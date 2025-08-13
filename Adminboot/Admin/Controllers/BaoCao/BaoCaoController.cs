@@ -6,11 +6,11 @@ using System.Linq;
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class BaoCaoController : Controller
+    public class BaoCaoController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public BaoCaoController(AppDbContext context)
+        public BaoCaoController(AppDbContext context) : base(context)
         {
             _context = context;
         }

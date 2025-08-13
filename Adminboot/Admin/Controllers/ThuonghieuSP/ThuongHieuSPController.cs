@@ -9,12 +9,12 @@
     namespace Final_Project.Areas.Admin.Controllers
     {
         [Area("Admin")]
-        public class ThuongHieuSPController : Controller
-        {
+        public class ThuongHieuSPController : BaseAdminController
+    {
             private readonly AppDbContext _context;
 
-            public ThuongHieuSPController(AppDbContext context)
-            {
+            public ThuongHieuSPController(AppDbContext context) : base(context)
+        {
                 _context = context;
             }
 

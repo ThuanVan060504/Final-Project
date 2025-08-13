@@ -1,4 +1,5 @@
-﻿using Final_Project.Models.Chat;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Chat;
 using Final_Project.Models.Shop;
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
@@ -9,13 +10,13 @@ using System.Linq;
 namespace Final_Project.Adminboot.Admin.Controllers
 {
     [Area("Admin")]
-    public class TinNhanController : Controller
+    public class TinNhanController : BaseAdminController
     {
         private readonly AppDbContext _context;
         private string _connectionString;
         private const int AdminId = 3;
 
-        public TinNhanController(AppDbContext context)
+        public TinNhanController(AppDbContext context) : base(context)
         {
             _context = context;
         }
