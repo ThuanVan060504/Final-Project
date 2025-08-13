@@ -39,4 +39,8 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="9.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\news-images\" />
+  </ItemGroup>
+
 </Project>
