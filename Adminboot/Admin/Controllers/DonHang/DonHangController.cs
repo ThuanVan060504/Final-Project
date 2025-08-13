@@ -1,13 +1,14 @@
-﻿using Final_Project.Models.Shop;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Shop;
 using Final_Project.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 [Area("Admin")]
-public class DonHangController : Controller
+public class DonHangController : BaseAdminController
 {
     private readonly AppDbContext _context;
 
-    public DonHangController(AppDbContext context)
+    public DonHangController(AppDbContext context) : base(context)
     {
         _context = context;
     }

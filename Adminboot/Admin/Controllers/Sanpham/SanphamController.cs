@@ -10,11 +10,11 @@ using System.Linq;
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class SanPhamController : Controller
+    public class SanPhamController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public SanPhamController(AppDbContext context)
+        public SanPhamController(AppDbContext context) : base(context)
         {
             _context = context;
         }

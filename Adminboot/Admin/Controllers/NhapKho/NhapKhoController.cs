@@ -1,15 +1,16 @@
-﻿using Final_Project.Models;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models;
 using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 [Area("Admin")]
-public class NhapKhoController : Controller
+public class NhapKhoController : BaseAdminController
 {
     private readonly AppDbContext _context;
 
-    public NhapKhoController(AppDbContext context)
+    public NhapKhoController(AppDbContext context) : base(context)
     {
         _context = context;
     }

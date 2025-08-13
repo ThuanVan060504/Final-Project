@@ -1,19 +1,25 @@
 ﻿using Final_Project.Models.ViewModels;
+using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Final_Project.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class HomeController : Controller
+    public class HomeController : BaseAdminController
     {
         private readonly string _connectionString;
+        private readonly AppDbContext _context;
 
-        public HomeController(IConfiguration configuration)
+        public HomeController(IConfiguration configuration, AppDbContext context) : base(context)
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
+            _context = context;
         }
 
         // 📌 Hàm ghi nhận lượt truy cập
@@ -48,7 +54,11 @@ namespace Final_Project.Areas.Admin.Controllers
                 TotalSuppliers = 0,
                 TotalSaleAmount = 0,
                 TotalSalesInvoice = 0,
-                RecentProducts = new List<ProductViewModel>()
+                TotalVisits = 0,
+                TotalUserVisits = 0,
+                TotalGuestVisits = 0,
+                RecentProducts = new List<ProductViewModel>(),
+                RecentMessages = new List<Models.Chat.TinNhan>()
             };
 
             using (var con = new SqlConnection(_connectionString))
@@ -104,6 +114,14 @@ namespace Final_Project.Areas.Admin.Controllers
                     }
                 }
             }
+
+            // 📩 Lấy tin nhắn mới nhất gửi tới admin
+            model.RecentMessages = _context.TinNhans
+                .Include(t => t.NguoiGui)
+                .Where(t => t.NguoiNhan.VaiTro == "Admin")
+                .OrderByDescending(t => t.ThoiGianGui)
+                .Take(5)
+                .ToList();
 
             return View("~/Adminboot/Admin/Views/Home/Index.cshtml", model);
         }

@@ -1,4 +1,5 @@
-﻿using Final_Project.Models.Shop;
+﻿using Final_Project.Areas.Admin.Controllers;
+using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -6,11 +7,11 @@ using System.Linq;
 namespace Final_Project.Adminboot.Admin.Controllers.Decor
 {
     [Area("Admin")]
-    public class DecorController : Controller
+    public class DecorController : BaseAdminController
     {
         private readonly AppDbContext _context;
 
-        public DecorController(AppDbContext context)
+        public DecorController(AppDbContext context) : base(context)
         {
             _context = context;
         }
