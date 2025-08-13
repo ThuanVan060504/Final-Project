@@ -48,7 +48,56 @@ img.suggestion-img {
                 <li class="list-group-item"><a href="/products/phu-kien" class="text-decoration-none text-dark">Phụ Kiện Trang Trí</a></li>
             </ul>
         </div>
+        <!-- CSS riêng cho carousel -->
+<style>
+.custom-carousel .carousel-item img {
+    transition: transform 1s ease, opacity 1s ease; /* chuyển sang 3s */
+}
 
+.custom-carousel .carousel-item {
+    height: 300px; /* Chiều cao cố định nếu muốn */
+    overflow: hidden;
+}
+
+.custom-carousel .carousel-item img {
+    object-fit: cover; /* Đảm bảo ảnh đầy đủ và không bị biến dạng */
+    width: 100%;
+    height: 100%;
+}
+
+.custom-prev, .custom-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0,0,0,0.5);
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.custom-prev {
+    left: 10px;
+}
+
+.custom-next {
+    right: 10px;
+}
+
+.custom-prev-icon, .custom-next-icon {
+    color: #fff;
+    font-size: 24px;
+    line-height: 1;
+}
+
+</style>
+<!-- Bootstrap JS riêng -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Banner & Ads (Carousel) -->
         <div class="col-md-6">
             <div id="mainCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
@@ -66,14 +115,15 @@ img.suggestion-img {
                         <img src="https://noithatzear.vn/wp-content/uploads/2023/09/Banner-noi-that.png" class="d-block w-100 rounded" alt="Slide 4">
                     </div>
                 </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
+               <button class="custom-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                    <span class="custom-prev-icon" aria-hidden="true">&#10094;</span>
+                    <span class="visually-hidden"></span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
+                <button class="custom-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+                    <span class="custom-next-icon" aria-hidden="true">&#10095;</span>
+                    <span class="visually-hidden"></span>
                 </button>
+
             </div>
 
             <!-- 3 Banner nhỏ -->
@@ -433,117 +483,30 @@ img.suggestion-img {
 
     </div>
 </div>
+<div class="ps-popup" id="subscribe" data-time="500">
+    <div class="ps-popup__content bg--cover" style="background-image: url('/Users/img/subscribe.png');">
 
-	<div class="ps-home-ads">
-		<div class="ps-container">
-			<div class="row">
-				<div class='col-xl-8 col-lg-8 col-md-12 col-sm-12 col-12 '>
-					<a class='ps-collection' href='#' target='_blank'><img src='~/Users/img/ad-1.jpg' alt='Footer - Iklan No 1'/></a>
-				</div>
-				<div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
-					<a class='ps-collection' href='#' target='_blank'><img src='~/Users/img/ad-2.jpg' alt='Footer - Iklan No 2'/></a>
-				</div>
-			</div>
-		</div>
-	</div>
+        <a class="ps-popup__close" href="#"><i class="icon-cross"></i></a>
+        <form class="ps-form--subscribe-popup" action="#" method="POST">
+            <div class="ps-form__content">
+                <h4>Nhận ngay ưu đãi giảm 25%</h4>
+                <p>
+                    Đăng ký nhận bản tin từ Nội Thất G3TD Shop để cập nhật thông tin mới nhất, các ưu đãi đặc biệt và chương trình khuyến mãi của chúng tôi.
+                </p>
+                <div class="form-group">
+                    <input class="form-control" type="email" name='email' placeholder="Địa chỉ Email" required>
+                    <div class="ps-checkbox">
+                        <input class="form-control" type="checkbox" id="not-show" name="notshow">
+                        <label for="not-show">Không hiển thị lại biểu mẫu này.</label>
+                    </div>
+                    <br>
+                    <button type='submit' name='submit' class="ps-btn">Đăng ký</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 	
-	<div style='clear:both'>
-		<br></div>
-	
-			<div class="ps-section__content">
-				<div class="row">
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/no-image.png' alt='no-image.png'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Ini bukan jual diri, tapi numpang eksi,..</a>
-								<p class='ps-product__price'>Rp 75,000</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/no-image.png' alt='no-image.png'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Jilbab Syariah Indonesia raya Meriah</a>
-								<p class='ps-product__price'>Rp 50,000</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/sendok1.jpg' alt='sendok1.jpg'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Sendok Goreng Cantik dan Imut</a>
-								<p class='ps-product__price'>Rp 18,000</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/Capture111.jpg' alt='Capture111.JPG'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>ACER Swift 7 (SF713-51) (Core i7-7Y75),..</a>
-								<p class='ps-product__price'>Rp 1,000,000</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/no-image.png' alt='no-image.png'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Consina Expert Series Lunara Biru Gela,..</a>
-								<p class='ps-product__price'>
-									 Rp 749,000 <del>759,000</del>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/baju_dalam7.jpg' alt='baju_dalam7.jpg'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Men Singelete - Baju Dalam Menarik</a>
-								<p class='ps-product__price'>Rp 5,000</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/panci.jpg' alt='panci.jpg'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Panci Masak Super Hebat dan Awet</a>
-								<p class='ps-product__price'>
-									 Rp 120,000 <del>130,000</del>
-								</p>
-							</div>
-						</div>
-					</div>
-					<div class='col-xl-3 col-lg-4 col-md-4 col-sm-6 col-12 '>
-						<div class='ps-product--horizontal'>
-							<div class='ps-product__thumbnail'>
-								<a href='#'><img src='~/Users/img/subscribe.jpg' alt='foto_kopers.jpg'></a>
-							</div>
-							<div class='ps-product__content'>
-								<a class='ps-product__title' href='#'>Koper anti Maling Conggih Sekali</a>
-								<p class='ps-product__price'>Rp 550,000</p>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
