@@ -309,6 +309,13 @@ namespace Final_Project.Controllers
             // Giữ model để giữ lại email khi chuyển sang form nhập OTP + mật khẩu mới
             return View(model);
         }
+        [HttpGet]
+        public IActionResult CheckLogin()
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            bool loggedIn = maTK != null;
+            return Json(new { loggedIn });
+        }
 
         // POST xác nhận OTP và đổi mật khẩu
         [HttpPost("/Xacnhanotp")]

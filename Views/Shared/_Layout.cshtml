@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="format-detection" content="telephone=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Nội Thất G3TD - Wellcom !</title>
+<title>Nội Thất G3TD - Wellcome !</title>
 <meta name="robots" content="index, follow">
 <meta name="description" content="Menyajikan berita terbaru, tercepat, dan terpercaya seputar tunggul hitam.">
 <meta name="keywords" content="Selamat datang di CMS Swarakalibata, adalah penyempurnaan dan perbaikan.">
@@ -167,7 +167,8 @@
 									<a href='https://accounts.google.com/o/oauth2/auth?response_type=code&redirect_uri=https%3A%2F%2Ftajalapak.com%2Fauth%2Fgoogle_login&client_id=299574065913-7h05p08ljjab5ddc3u9l1s3geibrd36d.apps.googleusercontent.com&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email&access_type=online&approval_prompt=auto' class='ps-btn ps-btn--fullwidth red-btn' style='margin: 4px 0px'>Google</a>
 									<a href='https://www.facebook.com/v3.2/dialog/oauth?client_id=239427474160015&state=2ccf8557e0a07250bb8b4815a52d44d2&response_type=code&sdk=php-sdk-5.7.0&redirect_uri=https%3A%2F%2Ftajalapak.com%2Fauth%2Ffacebook_login&scope=email' class='ps-btn ps-btn--fullwidth blue-btn'>Facebook</a>
 								</div>
-								<br></div>
+								<br>
+							</div>
 						</form>
 					</div>
 				</div>
@@ -194,7 +195,7 @@
 							<div class='ps-block__right'>
 								<h5 style='margin-bottom:0px'>Pengiriman gratis</h5>
 								<p>
-									 Untuk pesanan min Rp 999.000
+									 Untuk pesanan min  999.000
 								</p>
 							</div>
 						</div>
@@ -319,7 +320,7 @@
 							</div>
 
                             </li>
-                                                        <li>
+                                <li>
                                 <div class="ps-block--user-header">
                                     <div class="ps-block__left"><i class="icon-user"></i></div>
                                     <div class="ps-block__right">
@@ -515,23 +516,6 @@
     <button type="submit" class="icon-magnifier" name="cari"></button>
 </form>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 		</div>
 		<div class="header__right">
 			<div class="header__actions">
@@ -558,9 +542,32 @@
 					</a>
 				}
 
-				<div class='ps-cart--mini'>
-					<a class='header__extra' href='#'><i class='icon-heart'></i></a>
-				</div>
+						<div class='ps-cart--mini'>
+							<a class="header__extra" href="/User/Profile#favoritesSection" id="favoriteLink">
+								<i class="icon-heart"></i>
+							</a>
+						</div>
+						<script>
+							document.getElementById("favoriteLink").addEventListener("click", function(e) {
+								e.preventDefault();
+
+								fetch('/Auth/CheckLogin')
+									.then(res => res.json())
+									.then(data => {
+										if (data.loggedIn) {
+											window.location.href = "/User/Profile#favoritesSection";
+										} else {
+											window.location.href = "/Auth/Login";
+										}
+									})
+									.catch(err => {
+										console.error(err);
+										// fallback nếu lỗi API
+										window.location.href = "/Auth/Login";
+									});
+							});
+						</script>
+
 				<div class='ps-cart--mini'>
 							@{
 								// Lấy số tin nhắn chưa đọc từ Session hoặc ViewBag
@@ -875,8 +882,6 @@
         </li>
     }
 </ul>
-
-
 		</ul>
 	</div>
 </div>
@@ -895,7 +900,7 @@
 				<div class='ps-cart__content'>
 					<div class='ps-cart__items'></div>
 					<div class='ps-cart__footer'>
-						<h3>Sub Total : <strong>Rp 0</strong></h3>
+						<h3>Sub Total : <strong> 0</strong></h3>
 						<figure><a class='ps-btn' href='#'>Keranjang</a><a class='ps-btn' href='#'>Pembayaran</a></figure>
 					</div>
 				</div>
@@ -1257,10 +1262,29 @@
 		</aside><aside class='widget widget_footer'>
 		<h4 class='widget-title'>Hỗ Trợ</h4>
 		<ul class='ps-list--link'>
-							 <li><a asp-controller="LienHe" asp-action="Index">Liên hệ</a></li>
-                            <li><a href="/User/Profile#historySection">Thông Tin Giao Hàng</a></li>
-                            <li><a asp-controller="ThongTin" asp-action="DieuKhoan">Điều Khoản</a></li>
+							<li><a asp-controller="LienHe" asp-action="Index">Liên hệ</a></li>
+							<li><a href="/User/Profile#historySection" id="historyLink">Thông Tin Giao Hàng</a></li>
+							<li><a asp-controller="ThongTin" asp-action="DieuKhoan">Điều Khoản</a></li>
                             <li><a asp-controller="ThongTin" asp-action="BaoMat">Bảo Mật</a></li>
+						<script>
+							document.getElementById("historyLink").addEventListener("click", function(e) {
+								e.preventDefault();
+
+								fetch('/Auth/CheckLogin')
+									.then(res => res.json())
+									.then(data => {
+										if (data.loggedIn) {
+											window.location.href = "/User/Profile#historySection";
+										} else {
+											window.location.href = "/Auth/Login";
+										}
+									})
+									.catch(err => {
+										console.error(err);
+										window.location.href = "/Auth/Login";
+									});
+							});
+						</script>
 		</ul>
 		</aside><aside class='widget widget_footer'>
 		<h4 class='widget-title'>Tài Nguyên</h4>
@@ -1442,8 +1466,8 @@
 	    duit = duit.split('').reverse().join('')
 	        .replace(/(\d{3}(?!$))/g, '$1,')
 	        .split('').reverse().join('');
-	    return 'Rp ' + duit ;
-    }
+		return `${duit} VNĐ`;
+			}
     </script>
 <script>
     $(function () { 

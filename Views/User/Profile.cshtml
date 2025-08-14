@@ -358,33 +358,39 @@
         <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
     }
 </div>
-@section Scripts {
-<script>
-    function toggleOrderItems(sectionId, btn) {
-        const section = document.getElementById(sectionId);
-        const isHidden = getComputedStyle(section).display === "none";
-        section.style.display = isHidden ? "block" : "none";
-        btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
-    }
+            @section Scripts {
+                <script>
+                    function toggleOrderItems(sectionId, btn) {
+                        const section = document.getElementById(sectionId);
+                        const isHidden = getComputedStyle(section).display === "none";
+                        section.style.display = isHidden ? "block" : "none";
+                        btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
+                    }
 
-    function toggleNewAddress() {
-        const form = document.getElementById("newAddressForm");
-        const isHidden = getComputedStyle(form).display === "none";
-        form.style.display = isHidden ? "block" : "none";
-    }
-    function showSection(id, el) {
-    document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
-    document.getElementById(id).style.display = 'block';
+                    function toggleNewAddress() {
+                        const form = document.getElementById("newAddressForm");
+                        const isHidden = getComputedStyle(form).display === "none";
+                        form.style.display = isHidden ? "block" : "none";
+                    }
 
-    document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-    el.classList.add('active');
-}
- window.addEventListener("DOMContentLoaded", function () {
-            const hash = window.location.hash;
-            if (hash === "#historySection") {
-                showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
+                    function showSection(id, el) {
+                        document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+                        document.getElementById(id).style.display = 'block';
+
+                        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+                        el.classList.add('active');
+                    }
+
+                    window.addEventListener("DOMContentLoaded", function () {
+                        const hash = window.location.hash;
+
+                        if (hash === "#historySection") {
+                            showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
+                        }
+                        else if (hash === "#favoritesSection") {
+                            showSection("favoritesSection", document.querySelector('li[onclick*="favoritesSection"]'));
+                        }
+                    });
+                </script>
             }
-        });
-</script>
-}
 
