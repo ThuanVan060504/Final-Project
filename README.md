@@ -1,35 +1,29 @@
-# 🛋️ Web Shop Nội Thất - Final Project
+# 🛋️ Final Project - Web Shop Nội Thất
 
-![GitHub stars](https://img.shields.io/github/stars/username/Final-Project?style=social) ![GitHub forks](https://img.shields.io/github/forks/username/Final-Project?style=social) ![GitHub issues](https://img.shields.io/github/issues/username/Final-Project) ![License](https://img.shields.io/github/license/username/Final-Project)
+![Project Badge](https://img.shields.io/badge/Status-Active-brightgreen)
+![GitHub stars](https://img.shields.io/github/stars/ThuanVan060504/Final-Project?style=social)
+![License](https://img.shields.io/github/license/ThuanVan060504/Final-Project)
 
-Chào mừng đến với **Web Shop Nội Thất** – nơi trải nghiệm mua sắm trực tuyến nội thất trở nên nhanh chóng, tiện lợi và hiện đại.  
+## 🚀 Giới thiệu
+Đây là một **web shop mua bán nội thất** được xây dựng bằng ASP.NET Core MVC.  
+Người dùng có thể:
+- Xem danh sách sản phẩm
+- Đăng ký / đăng nhập
+- Thêm sản phẩm vào giỏ hàng
+- Thanh toán online (demo)
 
----
+## 📸 Demo
+### Giao diện đăng nhập
+![Login Demo](wwwroot/images/Login.jpg)
 
-## 🌟 Giới thiệu
+### Giao diện sản phẩm
+![Product Demo](link-ảnh-demo-nếu có)
 
-Web shop cung cấp:  
-- **Danh mục sản phẩm phong phú:** Ghế, bàn, giường, tủ, trang trí, v.v.  
-- **Giao diện thân thiện:** Dễ dàng tìm kiếm và chọn lọc sản phẩm.  
-- **Quản lý đơn hàng:** Thêm vào giỏ, thanh toán, xem lịch sử đơn.  
-- **Hỗ trợ người dùng:** Hướng dẫn chi tiết cách sử dụng web.  
+### GIF tương tác
+![Demo GIF](link-gif-demo.gif)
 
-> **Mục tiêu:** Mang đến trải nghiệm mua sắm nội thất trực tuyến dễ dàng và hiện đại.  
-
----
-
-## 🖼️ Demo & Hình ảnh
-
-**Homepage:**  
-![Demo Homepage](./bfcf1b3b-5a04-4412-aaff-716b879e118b.png)  
-
-
----
-
-## 📌 Hướng dẫn sử dụng
-
-1. **Clone repository**  
+## 🛠️ Hướng dẫn cài đặt
+1. Clone repo về máy:
 ```bash
 git clone https://github.com/ThuanVan060504/Final-Project.git
 cd Final-Project
-
