@@ -4,31 +4,26 @@ namespace Final_Project.Models.User
 {
     public class RegisterViewModel
     {
-        [Required]
-        [Display(Name = "Họ tên")]
+        [Required(ErrorMessage = "Họ tên là bắt buộc")]
         public string HoTen { get; set; }
 
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email là bắt buộc")]
+        [EmailAddress(ErrorMessage = "Email không hợp lệ")]
         public string Email { get; set; }
 
-        [Required]
-        [Display(Name = "Số điện thoại")]
-        public string SDT { get; set; }
-
-        [Required]
-        [Display(Name = "Địa chỉ")]
-        public string DiaChi { get; set; }
-
-        [Required]
+        [Required(ErrorMessage = "Mật khẩu là bắt buộc")]
         [DataType(DataType.Password)]
-        [Display(Name = "Mật khẩu")]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*()_+\-=[\]{};':""\\|,.<>/?]).{6,}$",
+            ErrorMessage = "Mật khẩu phải có ít nhất 1 chữ in hoa, 1 số, 1 ký tự đặc biệt và dài tối thiểu 6 ký tự")]
         public string MatKhau { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Xác nhận mật khẩu là bắt buộc")]
         [DataType(DataType.Password)]
-        [Compare("MatKhau", ErrorMessage = "Xác nhận mật khẩu không khớp")]
-        [Display(Name = "Xác nhận mật khẩu")]
+        [Compare("MatKhau", ErrorMessage = "Mật khẩu xác nhận không khớp")]
         public string XacNhanMatKhau { get; set; }
+
+        public string SDT { get; set; }
+        public string DiaChi { get; set; }
     }
 }
+

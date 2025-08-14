@@ -251,13 +251,11 @@
                                 <span> Thống kê </span>
                             </a>
                         </li>
+                        <li>
 
-                        <li class="submenu">
-                            <a href="javascript:void(0);"><img src="~/Admin/img/icons/product.svg" alt="img"><span> Tin Nhắn</span> <span class="menu-arrow"></span></a>
-                            <ul>
-                                <li><a asp-area="Admin" asp-controller="TinNhan" asp-action="" >Tin Nhắn trực tiếp</a></li> 
-                                <li><a href="email.html">Tin nhắn qua Email</a></li>
-                            </ul>
+                       <a asp-area="Admin" asp-controller="TinNhan" asp-action="Index" >
+                         <img src="~/Admin/img/icons/product.svg" alt="img"><span   > Tin Nhắn</span></a>
+                       
                         </li>
                         <li>
                             <a asp-area="Admin" asp-controller="BaoCao" asp-action="Index">
