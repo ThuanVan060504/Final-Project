@@ -51,5 +51,8 @@ namespace Final_Project.Models.Shop
         // Không lưu trong DB
         [NotMapped]
         public string? ChiTiet { get; set; }
+        [NotMapped]
+        public string TenDanhMuc => DanhMuc?.TenDanhMuc;
+
     }
 }
