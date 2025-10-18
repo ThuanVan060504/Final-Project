@@ -1,10 +1,12 @@
-﻿@using Final_Project.Models.Shop
+﻿<link rel="stylesheet" href="/css/videorv.css" />
+@using Final_Project.Models.Shop
 @model IEnumerable<SanPham>
 
 @{
 
     ViewData["Title"] = "Sản phẩm nổi bật";
 }
+
 
 <style>
 	.container .ps-section__content {
@@ -29,7 +31,10 @@ img.suggestion-img {
 .ps-deal-of-day {
     margin-top: 20px;
 }
+
 </style>
+
+
 <div class="container mt-4">
     <div class="row">
         <!-- Sidebar -->
@@ -329,6 +334,7 @@ img.suggestion-img {
 
 
 
+    
 	<div class="ps-home-ads">
 		<div class="ps-container">
 			<div class="row">
@@ -344,145 +350,143 @@ img.suggestion-img {
 			</div>
 		</div>
 	</div>
-	
-	
-	<div class="ps-product-list ps-clothings">
-		<div class="ps-container">
-			<div class="ps-section__header">
-				<h3>Danh Mục & Sản Phẩm</h3>
-				<ul class='ps-section__links'>
-					<li>
-						<a href='#'>Tại Đây</a>
-					</li>
-				</ul>
-			</div>
-			<div class="ps-section__content">
-    <div class="ps-carousel--nav owl-slider"
-         data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
-         data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
-         data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
-         data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
-         data-owl-duration="1000" data-owl-mousedrag="on">
 
-        @* === SẢN PHẨM YÊU THÍCH === *@
-        @if (ViewBag.SanPhamYeuThich != null)
-        {
-            foreach (var item in ViewBag.SanPhamYeuThich)
-            {
-                var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
-                int yeuThich = item.SoLuongYeuThich;
-                <div class="ps-product">
-                    <div class="ps-product__thumbnail">
-                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                            <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")"
-                                 alt="@sp.TenSP" />
-                        </a>
-                        <ul class="ps-product__actions">
-                            <li>
-                                <a href="#"><i class="icon-bag2"></i></a>
-                            </li>
-                            <li>
-                                <a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a>
-                            </li>
-                            <li>
-                                <a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="ps-product__container">
-                        <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
-                        <div class="ps-product__content">
-                            <a class="ps-product__title" href="#">@sp.TenSP</a>
-                            <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                            <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
-                        </div>
-                        <div class="ps-product__content hover">
-                            <a class="ps-product__title" href="#">@sp.TenSP</a>
-                            <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
+    <!-- ==== SẢN PHẨM MỚI NHẤT ==== -->
+    <div class="ps-product-list ps-clothings">
+        <div class="ps-container">
+            <div class="ps-section__header">
+                <h3>Sản phẩm mới nhất</h3>
+            </div>
+            <div class="ps-section__content">
+                <div class="ps-carousel--nav owl-slider"
+                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                     data-owl-duration="1000" data-owl-mousedrag="on">
 
-        @* === SẢN PHẨM BÁN CHẠY === *@
-        @if (ViewBag.SanPhamBanChay != null)
-        {
-            foreach (var item in ViewBag.SanPhamBanChay)
-            {
-                var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
-                int daBan = item.SoLuongDaBan;
-                <div class="ps-product">
-                    <div class="ps-product__thumbnail">
-                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                            <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")"
-                                 alt="@sp.TenSP" />
-                        </a>
-                        <ul class="ps-product__actions">
-                            <li>
-                                <a href="#"><i class="icon-bag2"></i></a>
-                            </li>
-                            <li>
-                                <a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a>
-                            </li>
-                            <li>
-                                <a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="ps-product__container">
-                        <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
-                        <div class="ps-product__content">
-                            <a class="ps-product__title" href="#">@sp.TenSP</a>
-                            <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                            <p><i class="fa fa-shopping-cart text-primary"></i> Đã bán: @daBan</p>
+                    @foreach (var sp in Model)
+                    {
+                        <div class="ps-product">
+                            <div class="ps-product__thumbnail">
+                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
+                                    <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                                </a>
+                                <ul class="ps-product__actions">
+                                    <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                    <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+                                    <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="ps-product__container">
+                                <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                                <div class="ps-product__content">
+                                    <a class="ps-product__title" href="#">@sp.TenSP</a>
+                                    <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="ps-product__content hover">
-                            <a class="ps-product__title" href="#">@sp.TenSP</a>
-                            <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-
-        @* === SẢN PHẨM MỚI NHẤT === *@
-        @foreach (var sp in Model)
-        {
-            <div class="ps-product">
-                <div class="ps-product__thumbnail">
-                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                        <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")"
-                             alt="@sp.TenSP" />
-                    </a>
-                    <ul class="ps-product__actions">
-                        <li>
-                            <a href="#"><i class="icon-bag2"></i></a>
-                        </li>
-                        <li>
-                            <a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a>
-                        </li>
-                        <li>
-                            <a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="ps-product__container">
-                    <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
-                    <div class="ps-product__content">
-                        <a class="ps-product__title" href="#">@sp.TenSP</a>
-                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                    </div>
-                    <div class="ps-product__content hover">
-                        <a class="ps-product__title" href="#">@sp.TenSP</a>
-                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                    </div>
+                    }
                 </div>
             </div>
-        }
-
+        </div>
     </div>
-</div>
+    <!-- ==== SẢN PHẨM YÊU THÍCH ==== -->
+    <div class="ps-product-list ps-clothings">
+        <div class="ps-container">
+            <div class="ps-section__header">
+                <h3>Sản phẩm được yêu thích</h3>
+            </div>
+            <div class="ps-section__content">
+                <div class="ps-carousel--nav owl-slider"
+                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                     data-owl-duration="1000" data-owl-mousedrag="on">
+
+                    @if (ViewBag.SanPhamYeuThich != null)
+                    {
+                        foreach (var item in ViewBag.SanPhamYeuThich)
+                        {
+                            var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                            int yeuThich = item.SoLuongYeuThich;
+                            <div class="ps-product">
+                                <div class="ps-product__thumbnail">
+                                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
+                                        <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                                    </a>
+                                    <ul class="ps-product__actions">
+                                        <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                        <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+                                        <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                    </ul>
+                                </div>
+                                <div class="ps-product__container">
+                                    <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                                    <div class="ps-product__content">
+                                        <a class="ps-product__title" href="#">@sp.TenSP</a>
+                                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                        <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==== SẢN PHẨM BÁN CHẠY ==== -->
+    <div class="ps-product-list ps-clothings">
+        <div class="ps-container">
+            <div class="ps-section__header">
+                <h3>Sản phẩm bán chạy</h3>
+            </div>
+            <div class="ps-section__content">
+                <div class="ps-carousel--nav owl-slider"
+                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                     data-owl-duration="1000" data-owl-mousedrag="on">
+
+                    @if (ViewBag.SanPhamBanChay != null)
+                    {
+                        foreach (var item in ViewBag.SanPhamBanChay)
+                        {
+                            var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                            int daBan = item.SoLuongDaBan;
+                            <div class="ps-product">
+                                <div class="ps-product__thumbnail">
+                                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
+                                        <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                                    </a>
+                                    <ul class="ps-product__actions">
+                                        <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                        <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+                                        <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                    </ul>
+                                </div>
+                                <div class="ps-product__container">
+                                    <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                                    <div class="ps-product__content">
+                                        <a class="ps-product__title" href="#">@sp.TenSP</a>
+                                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                        <p><i class="fa fa-shopping-cart text-primary"></i> Đã bán: @daBan</p>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
 <div class="ps-popup" id="subscribe" data-time="500">
     <div class="ps-popup__content bg--cover" style="background-image: url('/Users/img/subscribe.png');">
 

@@ -337,7 +337,7 @@ strong {
 
             <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
             <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
-
+        <button type="button" class="btn btn-outline-secondary" id="btnPaypal">Ví PAYPAL</button>
         </div>
         <input type="hidden" name="paymentMethod" id="paymentMethod" />
 
@@ -355,63 +355,80 @@ strong {
             <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
         </div>
     </form>
-    <script>
-            let selectedMethod = "";
+<script>
+    let selectedMethod = "";
 
-            document.getElementById("btnCOD").addEventListener("click", function () {
-                selectedMethod = "COD";
-                highlightSelected(this);
-            });
+    document.getElementById("btnCOD").addEventListener("click", function () {
+        selectedMethod = "COD";
+        highlightSelected(this);
+    });
 
+    document.getElementById("btnMomo").addEventListener("click", function () {
+        selectedMethod = "MOMO";
+        highlightSelected(this);
+    });
 
+    document.getElementById("btnVnpay").addEventListener("click", function () {
+        selectedMethod = "VNPAY";
+        highlightSelected(this);
+    });
 
-            document.getElementById("btnMomo").addEventListener("click", function () {
-                selectedMethod = "MOMO";
-                highlightSelected(this);
-            });
+    // ✅ Thêm xử lý cho PayPal
+    document.getElementById("btnPaypal").addEventListener("click", function () {
+        selectedMethod = "PAYPAL";
+        highlightSelected(this);
+    });
 
-            document.getElementById("btnVnpay").addEventListener("click", function () {
-            selectedMethod = "VNPAY";
-            highlightSelected(this);
+    function highlightSelected(button) {
+        document.querySelectorAll("#btnCOD, #btnMomo, #btnVnpay, #btnPaypal").forEach(btn => {
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-outline-secondary");
         });
+        button.classList.remove("btn-outline-secondary");
+        button.classList.add("btn-danger");
+    }
 
+    function submitFinalOrder() {
+        if (!selectedMethod) {
+            alert("Vui lòng chọn phương thức thanh toán.");
+            return;
+        }
 
-            function highlightSelected(button) {
-            document.querySelectorAll("#btnCOD, #btnMomo, #btnVnpay").forEach(btn => {
-                btn.classList.remove("btn-danger");
-                btn.classList.add("btn-outline-secondary");
+        // MOMO
+        if (selectedMethod === "MOMO") {
+            let url = "/ThanhToan/TaoMomoQRCode?";
+            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
+                url += "chonSP=" + sp.value + "&";
             });
-            button.classList.remove("btn-outline-secondary");
-            button.classList.add("btn-danger");
+            url += "tongTien=" + @tongThanhToan;
+            window.location.href = url;
         }
-
-           function submitFinalOrder() {
-            if (!selectedMethod) {
-                alert("Vui lòng chọn phương thức thanh toán.");
-                return;
-            }
-
-            if (selectedMethod === "MOMO") {
-                let url = "/ThanhToan/TaoMomoQRCode?";
-                document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-                    url += "chonSP=" + sp.value + "&";
-                });
-                url += "tongTien=" + @tongThanhToan;
-                window.location.href = url;
-            } else if (selectedMethod === "VNPAY") {
-                let url = "/ThanhToan/TaoVnpayQRCode?";
-                document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-                    url += "chonSP=" + sp.value + "&";
-                });
-                url += "tongTien=" + @tongThanhToan;
-                window.location.href = url;
-            } else {
-                document.getElementById("paymentMethod").value = selectedMethod;
-                document.getElementById("checkoutForm").submit();
-            }
+        // VNPAY
+        else if (selectedMethod === "VNPAY") {
+            let url = "/ThanhToan/TaoVnpayQRCode?";
+            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
+                url += "chonSP=" + sp.value + "&";
+            });
+            url += "tongTien=" + @tongThanhToan;
+            window.location.href = url;
         }
+        // ✅ PAYPAL
+        else if (selectedMethod === "PAYPAL") {
+            let url = "/ThanhToan/TaoPaypalPayment?";
+            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
+                url += "chonSP=" + sp.value + "&";
+            });
+            url += "tongTien=" + @tongThanhToan;
+            window.location.href = url;
+        }
+        // COD
+        else {
+            document.getElementById("paymentMethod").value = selectedMethod;
+            document.getElementById("checkoutForm").submit();
+        }
+    }
+</script>
 
-    </script>
 
 
     <!-- Script quản lý địa chỉ -->

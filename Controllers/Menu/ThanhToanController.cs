@@ -2,12 +2,15 @@
 using Final_Project.Models.Momo;
 using Final_Project.Models.Shop;
 using Final_Project.Models.VnPay;
+using Final_Project.Models.PayPal;
+
 using Final_Project.Service.VnPay;
 using Final_Project.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Text;
+using Final_Project.Services.PayPal;
 
 namespace Final_Project.Controllers
 {
@@ -17,13 +20,15 @@ namespace Final_Project.Controllers
         private readonly IMomoService _momoService;
         private readonly IVnPayService _vnPayService;
         private readonly IEmailService _emailService; // ✅ THÊM TRƯỜNG NÀY
- 
-        public ThanhToanController(AppDbContext context, IMomoService momoService, IVnPayService vnPayService, IEmailService emailService)
+        private readonly IPayPalService _paypalService;
+
+        public ThanhToanController(AppDbContext context, IMomoService momoService, IVnPayService vnPayService, IEmailService emailService, IPayPalService paypalService)
         {
             _context = context;
             _momoService = momoService;
             _vnPayService = vnPayService;
             _emailService = emailService;
+            _paypalService = paypalService;
         }
 
         private void GanThongTinNguoiDung()
@@ -531,6 +536,192 @@ namespace Final_Project.Controllers
 
             return RedirectToAction("Index", "GioHang");
         }
+        [HttpGet]
+        public async Task<IActionResult> PayPalSuccess()
+        {
+            var response = await _paypalService.ExecutePaymentAsync(Request.Query);
+
+            if (response.Success)
+            {
+                // ✅ Lấy orderId từ query hoặc session (phòng trường hợp PayPal không trả về orderId)
+                string orderIdStr = Request.Query["orderId"];
+
+                if (string.IsNullOrEmpty(orderIdStr))
+                {
+                    var sessionOrderId = HttpContext.Session.GetInt32("CurrentOrderId");
+                    if (sessionOrderId.HasValue)
+                        orderIdStr = sessionOrderId.Value.ToString();
+                }
+
+                if (string.IsNullOrEmpty(orderIdStr))
+                {
+                    TempData["Error"] = "⚠ Không tìm thấy mã đơn hàng trong phản hồi từ PayPal.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                // ✅ Chuyển đổi và cập nhật đơn hàng
+                if (int.TryParse(orderIdStr, out int maDonHang))
+                {
+                    var donHang = _context.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+                    if (donHang != null)
+                    {
+                        donHang.TrangThaiThanhToan = "DaThanhToan";
+                        _context.SaveChanges();
+
+                        await SendOrderConfirmationEmail(maDonHang);
+                        TempData["Success"] = "✅ Thanh toán PayPal thành công!";
+                    }
+                    else
+                    {
+                        TempData["Error"] = "❌ Không tìm thấy đơn hàng trong hệ thống.";
+                    }
+                }
+                else
+                {
+                    TempData["Error"] = "⚠ Mã đơn hàng không hợp lệ.";
+                }
+            }
+            else
+            {
+                TempData["Error"] = "❌ Thanh toán PayPal thất bại hoặc bị hủy.";
+            }
+
+            return RedirectToAction("Index", "GioHang");
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> PayPalCallback()
+        {
+            var response = await _paypalService.ExecutePaymentAsync(Request.Query);
+
+            if (response.Success)
+            {
+                int maDonHang = int.Parse(Request.Query["orderId"]); // nếu bạn truyền orderId theo URL
+                var donHang = _context.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
+                if (donHang != null)
+                {
+                    donHang.TrangThaiThanhToan = "DaThanhToan";
+                    _context.SaveChanges();
+
+                    await SendOrderConfirmationEmail(maDonHang);
+                    TempData["Success"] = "✅ Thanh toán PayPal thành công!";
+                }
+            }
+            else
+            {
+                TempData["Error"] = "❌ Thanh toán PayPal thất bại.";
+            }
+
+            return RedirectToAction("Index", "GioHang");
+        }
+
+        [HttpGet]
+        public IActionResult PayPalCancel()
+        {
+            TempData["Error"] = "🚫 Bạn đã hủy thanh toán PayPal.";
+            return RedirectToAction("Index", "GioHang");
+        }
+        [HttpGet]
+        public async Task<IActionResult> TaoPaypalPayment(List<int> chonSP, decimal tongTien)
+        {
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            if (maTK == null)
+                return RedirectToAction("Login", "Auth");
+
+            var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
+            if (diaChi == null)
+            {
+                TempData["Error"] = "⚠ Bạn chưa có địa chỉ mặc định.";
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            var gioHang = _context.GioHangs
+                .Where(g => g.MaTK == maTK && chonSP.Contains(g.MaSP))
+                .ToList();
+
+            if (!gioHang.Any())
+            {
+                TempData["Error"] = "Không có sản phẩm nào trong giỏ.";
+                return RedirectToAction("Index", "GioHang");
+            }
+
+            // ✅ Tính tổng tiền hàng
+            decimal tongTienHang = gioHang.Sum(g =>
+            {
+                var sp = _context.SanPhams.First(s => s.MaSP == g.MaSP);
+                return g.SoLuong * sp.DonGia;
+            });
+
+            // ✅ Tạo đơn hàng (Chưa thanh toán ban đầu)
+            var donHang = new DonHang
+            {
+                MaTK = maTK.Value,
+                MaDiaChi = diaChi.MaDiaChi,
+                NgayDat = DateTime.Now,
+                NgayYeuCau = DateTime.Now.AddDays(3),
+                PhiVanChuyen = 17000,
+                TongTien = tongTienHang + 17000,
+                GiamGia = 0,
+                PhuongThucThanhToan = "PayPal",
+                TrangThaiThanhToan = "DaThanhToan",
+                TrangThaiDonHang = "DangXuLy"
+            };
+
+            _context.DonHangs.Add(donHang);
+            _context.SaveChanges(); // Lưu để có MaDonHang
+
+            // ✅ Lưu chi tiết sản phẩm vào bảng ChiTietDonHang
+            foreach (var item in gioHang)
+            {
+                var sp = _context.SanPhams.FirstOrDefault(s => s.MaSP == item.MaSP);
+                if (sp != null)
+                {
+                    var chiTiet = new ChiTietDonHang
+                    {
+                        MaDonHang = donHang.MaDonHang,
+                        MaSP = sp.MaSP,
+                        SoLuong = item.SoLuong,
+                        DonGia = sp.DonGia
+                    };
+                    _context.ChiTietDonHangs.Add(chiTiet);
+                }
+            }
+
+            _context.SaveChanges();
+
+            // ✅ (Tuỳ chọn) Xoá sản phẩm khỏi giỏ hàng
+            _context.GioHangs.RemoveRange(gioHang);
+            _context.SaveChanges();
+
+            // ✅ Lưu vào Session để dùng khi callback
+            HttpContext.Session.SetInt32("CurrentOrderId", donHang.MaDonHang);
+
+            // ✅ Quy đổi VNĐ → USD
+            decimal tyGia = 24000m;
+            decimal amountUsd = Math.Round(donHang.TongTien / tyGia, 2, MidpointRounding.AwayFromZero);
+
+            // ✅ URL callback PayPal
+            var returnUrl = Url.Action("PayPalSuccess", "ThanhToan", new { orderId = donHang.MaDonHang }, Request.Scheme);
+            var cancelUrl = Url.Action("PayPalCancel", "ThanhToan", new { orderId = donHang.MaDonHang }, Request.Scheme);
+
+            // ✅ Tạo liên kết PayPal
+            var paymentUrl = await _paypalService.CreatePaymentUrlAsync(
+                new PayPalPaymentModel
+                {
+                    Amount = amountUsd,
+                    ReturnUrl = returnUrl,
+                    CancelUrl = cancelUrl,
+                    Description = $"Thanh toán đơn hàng #{donHang.MaDonHang} - {amountUsd} USD (≈ {donHang.TongTien:N0} VNĐ)"
+                },
+                HttpContext
+            );
+
+            return Redirect(paymentUrl);
+        }
+
+
+
 
 
         // =================== HÀM GỬI EMAIL ===================

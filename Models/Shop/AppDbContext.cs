@@ -29,8 +29,10 @@ namespace Final_Project.Models.Shop
         public DbSet<NhaCungCap> NhaCungCaps { get; set; }
         public DbSet<TinNhan> TinNhans { get; set; }
 
+
         public DbSet<NhapKho> NhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

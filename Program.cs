@@ -1,8 +1,10 @@
 ﻿using Final_Project.Models.Momo;
 using Final_Project.Models.Shop;
 using Final_Project.Service.Momo;
+
 using Final_Project.Service.VnPay;
 using Final_Project.Services;
+using Final_Project.Services.PayPal;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // ---------- Cấu hình dịch vụ ----------
+// Cấu hình paypal API
+builder.Services.AddScoped<IPayPalService, PayPalService>();
 
 builder.Services.AddScoped<IEmailService, EmailService>();
 

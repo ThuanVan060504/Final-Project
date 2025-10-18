@@ -1,7 +1,7 @@
 ﻿using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
+using Microsoft.AspNetCore.Http;
 using System.Linq;
 
 namespace Final_Project.Controllers.Menu
@@ -29,10 +29,9 @@ namespace Final_Project.Controllers.Menu
 
         public IActionResult Index()
         {
-            // Gọi hàm load danh mục trước khi render view
             LoadCommonData();
 
-            // Lấy thông tin tài khoản đang đăng nhập
+            // Thông tin tài khoản đăng nhập
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK != null)
             {
@@ -41,51 +40,49 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
 
-            // Sản phẩm được yêu thích nhiều nhất
-            var topYeuThich = _context.SanPhamYeuThichs
+            // ==============================
+            // Top sản phẩm yêu thích
+            // ==============================
+            var spYeuThichOrdered = _context.SanPhamYeuThichs
                 .GroupBy(y => y.MaSP)
                 .OrderByDescending(g => g.Count())
                 .Select(g => new { MaSP = g.Key, SoLuongYeuThich = g.Count() })
-                .Take(6)
-                .ToList();
-
-            var spYeuThichOrdered = topYeuThich
                 .Join(_context.SanPhams.Include(s => s.DanhMuc),
                     yt => yt.MaSP,
                     sp => sp.MaSP,
                     (yt, sp) => new { SanPham = sp, SoLuongYeuThich = yt.SoLuongYeuThich })
                 .Take(6)
                 .ToList();
-
             ViewBag.SanPhamYeuThich = spYeuThichOrdered;
 
-            // Sản phẩm bán chạy nhất
-            var topBanChay = _context.ChiTietDonHangs
+            // ==============================
+            // Top sản phẩm bán chạy
+            // ==============================
+            var spBanChayOrdered = _context.ChiTietDonHangs
                 .GroupBy(c => c.MaSP)
                 .OrderByDescending(g => g.Sum(x => x.SoLuong))
                 .Select(g => new { MaSP = g.Key, SoLuongBan = g.Sum(x => x.SoLuong) })
-                .Take(6)
-                .ToList();
-
-            var spBanChayOrdered = topBanChay
                 .Join(_context.SanPhams.Include(s => s.DanhMuc),
                     bc => bc.MaSP,
                     sp => sp.MaSP,
                     (bc, sp) => new { SanPham = sp, SoLuongDaBan = bc.SoLuongBan })
                 .Take(6)
                 .ToList();
-
             ViewBag.SanPhamBanChay = spBanChayOrdered;
 
-            // Lấy danh sách sản phẩm mới nhất
-            var sanPhams = _context.SanPhams
+
+
+            // ==============================
+            // Sản phẩm mới nhất
+            // ==============================
+            var sanPhamsMoi = _context.SanPhams
                 .Include(sp => sp.DanhMuc)
-                .Include(p => p.ThuongHieu)
+                .Include(sp => sp.ThuongHieu)
                 .OrderByDescending(sp => sp.MaSP)
                 .Take(6)
                 .ToList();
 
-            return View(sanPhams);
+            return View(sanPhamsMoi);
         }
 
         public IActionResult Details(int id)
@@ -93,6 +90,8 @@ namespace Final_Project.Controllers.Menu
             LoadCommonData();
 
             var product = _context.SanPhams
+                .Include(sp => sp.DanhMuc)
+                .Include(sp => sp.ThuongHieu)
                 .FirstOrDefault(p => p.MaSP == id);
 
             if (product == null)
