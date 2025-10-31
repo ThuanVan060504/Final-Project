@@ -15,9 +15,7 @@ namespace Final_Project.Controllers.Menu
             _context = context;
         }
 
-        /// <summary>
-        /// Nạp dữ liệu danh mục dùng chung cho menu trong Layout
-        /// </summary>
+    
         private void LoadCommonData()
         {
             var danhMucs = _context.DanhMucs

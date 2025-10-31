@@ -47,7 +47,7 @@
             </div>
 
             @{
-                int soLuongBanDau = Model.SoLuong;
+                int soLuongBanDau = Model.SoLuong ?? 0;
                 int soLuongDaBan = ViewBag.SoLuongDaBan != null && ((Dictionary<int, int>)ViewBag.SoLuongDaBan).ContainsKey(Model.MaSP)
                     ? ((Dictionary<int, int>)ViewBag.SoLuongDaBan)[Model.MaSP]
                     : 0;

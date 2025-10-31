@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
-<form id="form-nhap-kho" asp-area="Admin" asp-controller="NhapKho" asp-action="Index" method="post" enctype="multipart/form-data">
+<form id="form-nhap-kho" asp-area="Admin" asp-controller="NhapKho" asp-action="Index" method="post">
     @Html.AntiForgeryToken()
     <div class="page-wrapper">
         <div class="content">
@@ -30,7 +30,6 @@
             <div class="card">
                 <div class="card-body">
                     <div class="row">
-                        <!-- Tìm kiếm sản phẩm -->
                         <div class="col-lg-12">
                             <div class="form-group">
                                 <label>Nhập mã hoặc tên sản phẩm</label>
@@ -43,7 +42,6 @@
                             </div>
                         </div>
 
-                        <!-- Danh sách sản phẩm -->
                         <div class="col-lg-12">
                             <div class="table-responsive">
                                 <table class="table">
@@ -52,9 +50,15 @@
                                             <th>X</th>
                                             <th>Mã hàng</th>
                                             <th>Tên sản phẩm</th>
-                                            <th>Số lượng còn</th>
-                                            <th>Số lượng nhập</th>
-                                            <th>Giá nhập</th>
+                                            <th>Tồn Kho</th>
+
+                                            <th style="background-color: #f0f8ff;">Giá Vốn (GiaGoc)</th>
+                                            <th style="background-color: #f0fff0;">Giá Bán (DonGia)</th>
+
+                                            <th style="background-color: #ffc;">Tỷ Lệ (Markup)</th>
+
+                                            <th>SL Nhập</th>
+                                            <th>Giá Nhập</th>
                                             <th>Thành tiền</th>
                                         </tr>
                                     </thead>
@@ -63,28 +67,42 @@
                                         {
                                             foreach (var sp in sanPhams)
                                             {
-                                               <tr class="product-row d-none">
+                                                <tr class="product-row d-none">
                                                     <td>
                                                         <input type="checkbox" class="sp-checkbox" value="@sp.MaSP" />
                                                     </td>
                                                     <td>@sp.MaSP</td>
                                                     <td class="productimgname">
                                                         <a href="javascript:void(0);" class="product-img">
-                                                            <img src="@sp.ImageURL" alt="product" />
+                                                            <img src="@(sp.ImageURL ?? "/images/default-product.png")" alt="product" />
                                                         </a>
                                                         <a href="javascript:void(0);">@sp.TenSP</a>
                                                     </td>
                                                     <td>
-                                                        <input type="number" class="form-control" value="@sp.SoLuong" readonly />
+                                                        <input type="text" class="form-control" value="@(sp.SoLuong?.ToString("N0") ?? "0")" readonly style="text-align:right;" />
+                                                    </td>
+
+                                                    <td>
+                                                        <input type="text" class="form-control" value="@(sp.GiaGoc?.ToString("N0") ?? "0")" readonly style="background-color: #f0f8ff; text-align:right; font-weight:bold;" />
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="Soluong_@sp.MaSP" class="form-control sl-input" min="1" value="1" />
+                                                        <input type="text" class="form-control" value="@(sp.DonGia.ToString("N0"))" readonly style="background-color: #f0fff0; text-align:right; font-weight:bold;" />
+                                                    </td>
+
+                                                    <td>
+                                                        <input type="number" class="form-control markup-input"
+                                                               value="@(sp.MarkupRatio?.ToString("N2", System.Globalization.CultureInfo.InvariantCulture) ?? "1.50")"
+                                                               step="0.01" min="0.01" style="background-color: #ffc; text-align:right; font-weight:bold;" />
+                                                    </td>
+
+                                                    <td>
+                                                        <input type="number" class="form-control sl-input" min="1" value="1" style="text-align:right;" />
                                                     </td>
                                                     <td>
-                                                        <input type="number" name="GiaNhap_@sp.MaSP" class="form-control gia-input" min="0" value="0" />
+                                                        <input type="number" class="form-control gia-input" min="0" value="0" style="text-align:right;" />
                                                     </td>
                                                     <td>
-                                                        <input type="text" class="form-control thanh-tien" value="0" readonly />
+                                                        <input type="text" class="form-control thanh-tien" value="0" readonly style="text-align:right;" />
                                                     </td>
                                                 </tr>
                                             }
@@ -94,14 +112,20 @@
                             </div>
                         </div>
 
-                        <!-- Thông tin nhập kho -->
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Nhà cung cấp</label>
                                 <select name="MaNCC" class="form-control select">
-                                    @foreach (var ncc in nhaCungCaps)
+                                    @if (nhaCungCaps != null)
                                     {
-                                        <option value="@ncc.MaNCC">@ncc.TenNCC</option>
+                                        foreach (var ncc in nhaCungCaps)
+                                        {
+                                            <option value="@ncc.MaNCC">@ncc.TenNCC</option>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <option value="">-- Lỗi tải NCC --</option>
                                     }
                                 </select>
                             </div>
@@ -147,7 +171,7 @@
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Tiền hàng</label>
-                                <input name="TongTienHang" id="tien-hang" type="text" class="form-control" value="0" readonly />
+                                <input id="tien-hang" type="text" class="form-control" value="0" readonly />
                             </div>
                         </div>
 
@@ -160,15 +184,22 @@
 
                         <div class="col-lg-4">
                             <div class="form-group">
+                                <label>Phí phát sinh (Thuế, Vận chuyển...)</label>
+                                <input name="ChiPhiPhatSinh" id="chi-phi-phat-sinh" type="number" class="form-control" value="0" />
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4">
+                            <div class="form-group">
                                 <label>Tổng cộng</label>
-                                <input name="TongTien" id="tong-cong" type="text" class="form-control" value="0" readonly />
+                                <input id="tong-cong" type="text" class="form-control" value="0" readonly />
                             </div>
                         </div>
 
                         <div class="col-lg-4">
                             <div class="form-group">
                                 <label>Thanh toán</label>
-                                <input name="DaThanhToan" id="thanh-toan" type="number" class="form-control" value="0" />
+                                <input id="thanh-toan" type="number" class="form-control" value="0" />
                             </div>
                         </div>
 
@@ -179,7 +210,6 @@
                             </div>
                         </div>
 
-                        <!-- Hidden inputs -->
                         <input type="hidden" name="TongTien" id="hd-tong-tien" />
                         <input type="hidden" name="DaThanhToan" id="hd-thanh-toan" />
                         <input type="hidden" name="ConNo" id="hd-con-no" />
@@ -187,7 +217,7 @@
                         <div class="col-lg-12 mt-3">
                             <div class="form-group d-flex gap-2">
                                 <button type="submit" class="btn btn-primary">Lưu</button>
-                                <a href="#" class="btn btn-danger">Trở lại</a>
+                                <a asp-action="Index" asp-controller="NhapKho" class="btn btn-danger">Hủy</a>
                             </div>
                         </div>
                     </div>
@@ -197,12 +227,18 @@
     </div>
 </form>
 
-       
+
 
 @section Scripts {
     <script>
         $(document).ready(function () {
             const formId = '#form-nhap-kho';
+
+            // --- SỬA 1: Biến toàn cục để giữ giá trị (số thực)
+            //     Không đọc/ghi từ DOM đã format, tránh lỗi
+            let rawTienHang = 0;
+            let rawTongCong = 0;
+            let rawConNo = 0;
 
             // Hàm ẩn/hiện sản phẩm theo từ khóa hoặc checkbox
             function updateVisibleRows(keyword) {
@@ -215,7 +251,9 @@
                         if (rowText.includes(keyword)) {
                             row.removeClass('d-none');
                         } else {
-                            row.addClass('d-none');
+                            if (!isChecked) { // Nếu không khớp và cũng không được check -> ẩn
+                                row.addClass('d-none');
+                            }
                         }
                     } else {
                         if (isChecked) {
@@ -238,13 +276,25 @@
                 updateVisibleRows(keyword);
             });
 
-            // Format số
+
+            // --- SỬA 2: Hàm format tiền
+            //     Theo yêu cầu của bạn, luôn hiển thị 5 số thập phân
             function formatCurrency(number) {
-                return number.toLocaleString('vi-VN');
+                if (typeof number !== 'number') {
+                    number = parseFloat(number) || 0;
+                }
+
+                const options = {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                };
+                // Dùng 'vi-VN' để có dấu phẩy (,) ngăn cách thập phân
+                return number.toLocaleString('vi-VN', options);
             }
-            function parseNumber(val) {
-                return parseFloat(val.toString().replace(/,/g, '')) || 0;
-            }
+
+            // --- SỬA 3: Xóa hoàn toàn hàm parseNumber(val) cũ.
+            //     Chúng ta sẽ dùng parseFloat() trực tiếp cho các ô input
+            //     và dùng các biến (rawTienHang, rawTongCong)
 
             // Tính tiền hàng
             function tinhTienHang() {
@@ -254,36 +304,57 @@
                     const isChecked = row.find('.sp-checkbox').is(':checked');
 
                     if (isChecked) {
+                        // SỬA 4: Dùng parseFloat cho các ô input (type="number")
                         const sl = parseFloat(row.find('.sl-input').val()) || 0;
                         const gia = parseFloat(row.find('.gia-input').val()) || 0;
                         const thanhTien = sl * gia;
                         tongTienHang += thanhTien;
+
+                        // Hiển thị đã format (với 5 số thập phân)
                         row.find('.thanh-tien').val(formatCurrency(thanhTien));
                     } else {
-                        row.find('.thanh-tien').val(0);
+                        row.find('.thanh-tien').val(formatCurrency(0));
                     }
                 });
+
+                // Lưu giá trị SỐ (raw) vào biến
+                rawTienHang = tongTienHang;
+
+                // Hiển thị giá trị đã format
                 $('#tien-hang').val(formatCurrency(tongTienHang));
+
+                // Gọi hàm tính toán tiếp theo
                 tinhTongCong();
             }
 
             // Tính tổng cộng
             function tinhTongCong() {
-                const tienHang = parseNumber($('#tien-hang').val());
-                const chietKhau = parseNumber($('#chiet-khau').val());
-                const thanhToan = parseNumber($('#thanh-toan').val());
+                // SỬA 5: Dùng parseFloat cho các ô input
+                const chietKhau = parseFloat($('#chiet-khau').val()) || 0;
+                const chiPhiPhatSinh = parseFloat($('#chi-phi-phat-sinh').val()) || 0;
+                const thanhToan = parseFloat($('#thanh-toan').val()) || 0;
 
-                const tongCong = tienHang - chietKhau;
+                // Dùng giá trị SỐ (rawTienHang) đã lưu để tính
+                const tongCong = rawTienHang - chietKhau + chiPhiPhatSinh;
                 const conNo = tongCong - thanhToan;
 
-                $('#tong-cong').val(formatCurrency(tongCong));
-                $('#con-no').val(formatCurrency(Math.max(conNo, 0)));
+                // Lưu các giá trị SỐ (raw)
+                rawTongCong = tongCong;
+                rawConNo = Math.max(conNo, 0);
+
+                // Hiển thị các giá trị đã format (với 5 số thập phân)
+                $('#tong-cong').val(formatCurrency(rawTongCong));
+                $('#con-no').val(formatCurrency(rawConNo));
             }
 
             // Tick sản phẩm khi nhập số lượng hoặc giá
             $('#product-list').on('input', '.sl-input, .gia-input', function () {
                 const row = $(this).closest('.product-row');
-                row.find('.sp-checkbox').prop('checked', true);
+                if (!row.find('.sp-checkbox').is(':checked')) {
+                    row.find('.sp-checkbox').prop('checked', true);
+                    var keyword = $('#search-input').val().toLowerCase().trim();
+                    updateVisibleRows(keyword);
+                }
                 tinhTienHang();
             });
 
@@ -294,41 +365,59 @@
                 tinhTienHang();
             });
 
-            // Khi nhập chiết khấu hoặc thanh toán
-            $('#chiet-khau, #thanh-toan').on('input', function () {
+            // Khi nhập chiết khấu, phí, hoặc thanh toán
+            $('#chiet-khau, #thanh-toan, #chi-phi-phat-sinh').on('input', function () {
                 tinhTongCong();
             });
 
             // Khởi tạo
             tinhTienHang();
 
-            // Submit form
-            $(formId).on('submit', function () {
-                $('input[name="MaSP"], input[name="SoLuong"], input[name="DonGia"]').remove();
+           // Submit form
+           $(formId).on('submit', function (e) {
+                // Xóa input ẩn cũ (nếu có) trước khi tạo mới
+                $('input[name="MaSP"], input[name="SoLuong"], input[name="DonGia"], input[name="MarkupRatio"]').remove();
 
+                let hasValidProduct = false;
                 $('.product-row').each(function () {
                     const row = $(this);
                     if (row.find('.sp-checkbox').is(':checked')) {
                         const maSP = row.find('.sp-checkbox').val();
-                        const soLuong = row.find('.sl-input').val();
-                        const giaNhap = row.find('.gia-input').val();
 
-                        $('<input>', { type: 'hidden', name: 'MaSP', value: maSP }).appendTo(formId);
-                        $('<input>', { type: 'hidden', name: 'SoLuong', value: soLuong }).appendTo(formId);
-                        $('<input>', { type: 'hidden', name: 'DonGia', value: giaNhap }).appendTo(formId);
+                        const soLuong = parseFloat(row.find('.sl-input').val()) || 0;
+                        const giaNhap = parseFloat(row.find('.gia-input').val()) || 0;
+
+                        // THÊM MỚI: Lấy giá trị MarkupRatio từ ô input
+                        const markupRatio = parseFloat(row.find('.markup-input').val()) || 0;
+
+                        // Chỉ thêm nếu hợp lệ (Thêm markupRatio > 0 vào điều kiện)
+                        if (soLuong > 0 && giaNhap > 0 && markupRatio > 0) {
+                            hasValidProduct = true;
+                            $('<input>', { type: 'hidden', name: 'MaSP', value: maSP }).appendTo(formId);
+                            $('<input>', { type: 'hidden', name: 'SoLuong', value: soLuong }).appendTo(formId);
+                            $('<input>', { type: 'hidden', name: 'DonGia', value: giaNhap }).appendTo(formId);
+
+                            // THÊM MỚI: Add hidden input cho MarkupRatio
+                            $('<input>', { type: 'hidden', name: 'MarkupRatio', value: markupRatio }).appendTo(formId);
+                        }
                     }
                 });
 
-                $('#hd-tong-tien').val(parseNumber($('#tong-cong').val()));
-                $('#hd-thanh-toan').val(parseNumber($('#thanh-toan').val()));
-                $('#hd-con-no').val(parseNumber($('#con-no').val()));
+                if (!hasValidProduct) {
+                    alert("Bạn chưa chọn sản phẩm nào HOẶC S/L, Giá nhập, Tỷ lệ markup không hợp lệ (phải > 0).");
+                    e.preventDefault(); // Ngăn chặn submit
+                    return false;
+                }
 
-                console.log($(this).serialize()); // Debug
+                $('#hd-tong-tien').val(rawTienHang);
+                $('#hd-thanh-toan').val(parseFloat($('#thanh-toan').val()) || 0);
+                $('#hd-con-no').val(rawConNo);
+
+                return true; // Cho phép submit
             });
         });
     </script>
 }
-
 
 
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
