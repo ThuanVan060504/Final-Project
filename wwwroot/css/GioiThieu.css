@@ -1,163 +1,168 @@
-﻿/* styles.css */
-
-
-    header h1 {
-        margin: 0;
-        font-size: 2.5em;
-        font-weight: 600;
-    }
-
-element.style {
-    max-width: 1000px;
-}
-
-
-section img {
-    padding-left:100px;
-    padding-right:100px;
-    width: 100%;
-   
-    max-height: 300px ;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.introduction {
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 35px;
-}
-
-    .introduction .img {
-        max-width: 100%; /* Đảm bảo hình ảnh không vượt quá chiều rộng của phần tử chứa */
-        height: auto; /* Giữ tỷ lệ khung hình của hình ảnh */
-        display: block; /* Xóa khoảng trống bên dưới hình ảnh */
-        margin: 0 auto; /* Căn giữa hình ảnh nếu có kích thước cố định */
-    }
-
-
-    .introduction p {
-        line-height: 1.8;
-        color: #555;
-    }
-
-.features {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.feature {
-    flex: 1 1 calc(50% - 20px);
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-    .feature:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-
-    .feature img {
-        width: 100%;
-        height: 150px;
-        object-fit: cover;
-    }
-
-    .feature h3 {
-        margin: 0;
-        padding: 15px;
-        font-size: 1.3em;
-        background: #f4a300;
-        color: #fff;
-    }
-
-    .feature p {
-        padding: 15px;
-        font-size: 1em;
-        line-height: 1.6;
-    }
-
-h2 {
-    font-size: 2em;
-    margin: 0 0 20px;
-    padding-bottom: 10px;
-    border-bottom: 4px solid #f4a300;
-    color: #333;
-    text-align: center; /* Căn giữa tiêu đề */
-}
-
-.core-values {
-    background: #fff;
-    padding: 40px 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-    .core-values ul {
-        list-style: none;
-        padding: 0;
-    }
-
-    .core-values li {
-        margin-bottom: 20px;
-        font-size: 1.1em;
-        line-height: 1.6;
-    }
-
-@media (max-width: 768px) {
-    .features {
-        flex-direction: column;
-    }
-
-    .feature {
-        flex: 1 1 100%;
-    }
-}
-
-.vision-mission-values {
+﻿.vision-mission-values {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 30px;
-    margin: 50px 0;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 50px;
+    background: #fff;
+    padding: 100px 10%;
 }
 
 .vmv-block {
-    background-color: #fff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    padding: 50px;
+    border-radius: 24px;
+    border-left: 8px solid #f7a600;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
 }
 
+    .vmv-block:hover {
+        transform: translateY(-8px);
+        background-color: #fffaf3;
+    }
+
     .vmv-block h2 {
-        font-size: 1.8em;
-        margin-bottom: 15px;
-        color: #dc3545;
+        font-size: 3rem;
+        color: #f58b00;
+        margin-bottom: 25px;
     }
 
     .vmv-block p,
     .vmv-block ul {
-        font-size: 1.1em;
+        font-size: 1.8rem;
         color: #444;
-        line-height: 1.7;
-    }
-
-    .vmv-block ul {
-        padding-left: 20px;
     }
 
     .vmv-block li {
         margin-bottom: 12px;
     }
 
-/* Responsive layout */
-@media (min-width: 768px) {
-    .vision-mission-values {
-        grid-template-columns: repeat(3, 1fr);
+/* ===================== 👥 ĐỘI NGŨ ===================== */
+.team {
+    background: #fffaf3;
+    padding: 100px 10%;
+    text-align: center;
+}
+
+    .team h2 {
+        color: #f58b00;
+        font-size: 3.2rem;
+        margin-bottom: 40px;
+    }
+
+    .team p {
+        font-size: 1.9rem;
+        color: #555;
+    }
+
+/* ===================== 🏢 SHOWROOM & XƯỞNG ===================== */
+.facilities {
+    background: #fff;
+    padding: 100px 10%;
+    text-align: center;
+    border-top: 4px solid #f7a600;
+    border-bottom: 4px solid #f7a600;
+}
+
+    .facilities h2 {
+        color: #f58b00;
+        font-size: 3rem;
+        margin-bottom: 25px;
+    }
+
+    .facilities p {
+        font-size: 1.8rem;
+        color: #555;
+    }
+
+/* ===================== 🛍️ CTA ===================== */
+.cta {
+    width: 100%;
+    background: linear-gradient(135deg, #fff5e6, #fff);
+    text-align: center;
+    padding: 120px 10%;
+}
+
+    .cta h2 {
+        color: #f58b00;
+        font-size: 3.2rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+    }
+
+    .cta p {
+        color: #555;
+        font-size: 2rem;
+        margin-bottom: 40px;
+    }
+
+    .cta .btn {
+        display: inline-block;
+        border: 3px solid #ff9900;
+        background: #fff8eb;
+        color: #ff7a00;
+        font-size: 1.8rem;
+        font-weight: 700;
+        padding: 20px 45px;
+        border-radius: 50px;
+        box-shadow: 0 6px 15px rgba(255, 122, 0, 0.25);
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+
+        .cta .btn:hover {
+            background: #ff7a00;
+            color: #fff;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.35);
+        }
+
+/* ===================== 📱 RESPONSIVE ===================== */
+@media (max-width: 1024px) {
+    header h1 {
+        font-size: 4.5rem;
+    }
+
+    header p {
+        font-size: 1.8rem;
+    }
+
+    .feature h3 {
+        font-size: 2.2rem;
+    }
+
+    .feature p {
+        font-size: 1.6rem;
+    }
+}
+
+@media (max-width: 768px) {
+    header {
+        padding: 100px 5%;
+    }
+
+        header h1 {
+            font-size: 3.2rem;
+        }
+
+        header p {
+            font-size: 1.6rem;
+        }
+
+    .features {
+        flex-direction: column;
+        padding: 60px 5%;
+    }
+
+    .cta h2 {
+        font-size: 2.4rem;
+    }
+
+    .cta p {
+        font-size: 1.6rem;
+    }
+
+    .cta .btn {
+        font-size: 1.4rem;
+        padding: 16px 35px;
     }
 }

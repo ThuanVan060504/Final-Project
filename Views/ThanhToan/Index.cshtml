@@ -310,11 +310,17 @@ strong {
     }
 
     <!-- Vận chuyển -->
-    <h4 class="section-title">🚚 Phương thức vận chuyển</h4>
-    <div class="border p-3 mb-3">
-        <p><strong>Vận Chuyển Nhanh</strong> - ₫@phiVanChuyen.ToString("n0")</p>
-        <small>Dự kiến nhận hàng từ 1 Tháng 8 - 5 Tháng 8</small>
-    </div>
+<h4 class="section-title">🚚 Phương thức vận chuyển</h4>
+<div class="border p-3 mb-3">
+    <p><strong>Vận Chuyển Nhanh</strong> - ₫@phiVanChuyen.ToString("n0")</p>
+    @{
+        var ngayBatDau = DateTime.Now.AddDays(3);
+        var ngayKetThuc = DateTime.Now.AddDays(5);
+    }
+    <small>
+        Dự kiến nhận hàng từ @ngayBatDau.ToString("dd 'Tháng' MM") - @ngayKetThuc.ToString("dd 'Tháng' MM")
+    </small>
+</div>
 
     <!-- Voucher -->
     <h4 class="section-title">🎁 Voucher & Shopee Xu</h4>
