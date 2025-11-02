@@ -3,12 +3,14 @@
 @{
     ViewData["Title"] = "Chỉnh sửa địa chỉ";
 }
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <h2 class="mb-4 text-primary">✏️ Chỉnh sửa địa chỉ</h2>
 
 <form asp-action="Edit" method="post" class="row g-3">
-    @* Hidden for MaDiaChi *@
+    @* Hidden fields để lưu ID và MaTK *@
     <input type="hidden" asp-for="MaDiaChi" />
+    <input type="hidden" asp-for="MaTK" />
 
     <div class="col-md-6">
         <label asp-for="TenNguoiNhan" class="form-label">Tên người nhận</label>
@@ -24,28 +26,36 @@
 
     <div class="col-md-12">
         <label asp-for="DiaChiChiTiet" class="form-label">Địa chỉ chi tiết</label>
-        <input asp-for="DiaChiChiTiet" class="form-control" />
+        <input asp-for="DiaChiChiTiet" class="form-control" placeholder="Số nhà, tên đường..." />
         <span asp-validation-for="DiaChiChiTiet" class="text-danger"></span>
     </div>
 
     <div class="col-md-4">
-        <label asp-for="PhuongXa" class="form-label">Phường/Xã</label>
-        <input asp-for="PhuongXa" class="form-control" />
-        <span asp-validation-for="PhuongXa" class="text-danger"></span>
+        <label class="form-label">Tỉnh/Thành phố</label>
+        <select id="provinceDropdown" class="form-control" required>
+            <option value="">-- Đang tải Tỉnh/Thành --</option>
+        </select>
+        <input type="hidden" asp-for="TinhTP" id="provinceNameHidden" />
+        <span asp-validation-for="TinhTP" class="text-danger"></span>
     </div>
 
     <div class="col-md-4">
-        <label asp-for="QuanHuyen" class="form-label">Quận/Huyện</label>
-        <input asp-for="QuanHuyen" class="form-control" />
+        <label class="form-label">Quận/Huyện</label>
+        <select id="districtDropdown" class="form-control" required>
+            <option value="">-- Chọn Tỉnh/Thành trước --</option>
+        </select>
+        <input type="hidden" asp-for="QuanHuyen" id="districtNameHidden" />
         <span asp-validation-for="QuanHuyen" class="text-danger"></span>
     </div>
 
     <div class="col-md-4">
-        <label asp-for="TinhTP" class="form-label">Tỉnh/TP</label>
-        <input asp-for="TinhTP" class="form-control" />
-        <span asp-validation-for="TinhTP" class="text-danger"></span>
+        <label class="form-label">Phường/Xã</label>
+        <select id="wardDropdown" class="form-control" required>
+            <option value="">-- Chọn Quận/Huyện trước --</option>
+        </select>
+        <input type="hidden" asp-for="PhuongXa" id="wardNameHidden" />
+        <span asp-validation-for="PhuongXa" class="text-danger"></span>
     </div>
-
     <div class="col-md-12 form-check">
         <input asp-for="MacDinh" class="form-check-input" />
         <label class="form-check-label" asp-for="MacDinh">Đặt làm địa chỉ mặc định</label>
@@ -53,10 +63,210 @@
 
     <div class="col-md-12">
         <button type="submit" class="btn btn-success">💾 Lưu thay đổi</button>
-        <a asp-action="Index" class="btn btn-secondary">⬅️ Quay lại</a>
+
+        <a asp-controller="User" asp-action="Profile" asp-fragment="addressSection" class="btn btn-secondary">⬅️ Quay lại</a>
     </div>
 </form>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+            // THÊM MỚI: Cấu hình Select2 dùng theme Bootstrap 5
+            $.fn.select2.defaults.set("theme", "bootstrap-5");
+
+            // === HÀM GỌI API CHUNG (giữ nguyên) ===
+            function callApi(url, targetDropdown) {
+                return $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        if (response && response.data) {
+                            return response.data;
+                        } else {
+                            console.error("Không nhận được dữ liệu từ API: ", response);
+                            return null;
+                        }
+                    },
+                    error: function (err) {
+                        console.error("Lỗi khi gọi API trung gian!", err);
+                        alert("Lỗi tải dữ liệu. Vui lòng kiểm tra F12 Console.");
+                    }
+                });
+            }
+
+            // === LOGIC MỚI: TẢI VÀ CHỌN SẴN ĐỊA CHỈ CŨ ===
+            const currentProvinceName = $("#provinceNameHidden").val();
+            const currentDistrictName = $("#districtNameHidden").val();
+            const currentWardName = $("#wardNameHidden").val();
+
+            // 2. Tải Tỉnh/Thành
+            callApi("@Url.Action("GetProvinces", "DiaChi")", $("#provinceDropdown")).done(function (response) {
+                let selectedProvinceId = null;
+                if (response && response.data) {
+                    $("#provinceDropdown").empty().append('<option value="">-- Chọn Tỉnh/Thành --</option>');
+
+                    $.each(response.data, function (i, province) {
+                        const isSelected = (province.ProvinceName === currentProvinceName);
+                        $("#provinceDropdown").append($('<option>', {
+                            value: province.ProvinceID,
+                            text: province.ProvinceName,
+                            selected: isSelected
+                        }));
+                        if (isSelected) {
+                            selectedProvinceId = province.ProvinceID;
+                        }
+                    });
+
+                    // THÊM MỚI: Khởi tạo Select2 cho Tỉnh/Thành
+                    $('#provinceDropdown').select2();
+
+                    // 3. Nếu đã chọn sẵn Tỉnh/Thành, tải Quận/Huyện
+                    if (selectedProvinceId) {
+                        var url = "@Url.Action("GetDistricts", "DiaChi")" + "?provinceId=" + selectedProvinceId;
+                        callApi(url, $("#districtDropdown")).done(function (response) {
+                            let selectedDistrictId = null;
+                            if (response && response.data) {
+                                $("#districtDropdown").empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
+
+                                $.each(response.data, function (i, district) {
+                                    const isSelected = (district.DistrictName === currentDistrictName);
+                                    $("#districtDropdown").append($('<option>', {
+                                        value: district.DistrictID,
+                                        text: district.DistrictName,
+                                        selected: isSelected
+                                    }));
+                                    if (isSelected) {
+                                        selectedDistrictId = district.DistrictID;
+                                    }
+                                });
+
+                                // THÊM MỚI: Khởi tạo Select2 cho Quận/Huyện
+                                $('#districtDropdown').select2();
+
+                                // 4. Nếu đã chọn sẵn Quận/Huyện, tải Phường/Xã
+                                if (selectedDistrictId) {
+                                    var url = "@Url.Action("GetWards", "DiaChi")" + "?districtId=" + selectedDistrictId;
+                                    callApi(url, $("#wardDropdown")).done(function (response) {
+                                        if (response && response.data) {
+                                            $("#wardDropdown").empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+                                            var wardsData = response.data;
+                                            if (!Array.isArray(wardsData)) wardsData = [wardsData];
+
+                                            $.each(wardsData, function (i, ward) {
+                                                const isSelected = (ward.WardName === currentWardName);
+                                                $("#wardDropdown").append($('<option>', {
+                                                    value: ward.WardCode,
+                                                    text: ward.WardName,
+                                                    selected: isSelected
+                                                }));
+                                            });
+
+                                            // THÊM MỚI: Khởi tạo Select2 cho Phường/Xã
+                                            $('#wardDropdown').select2();
+                                        }
+                                    });
+                                } else {
+                                    // THÊM MỚI: Khởi tạo Select2 rỗng nếu không có Huyện
+                                    $('#wardDropdown').select2();
+                                }
+                            }
+                        });
+                    } else {
+                         // THÊM MỚI: Khởi tạo Select2 rỗng nếu không có Tỉnh
+                        $('#districtDropdown').select2();
+                        $('#wardDropdown').select2();
+                    }
+                }
+            });
+
+            // === CÁC HÀM CŨ: KHI NGƯỜI DÙNG TỰ THAY ĐỔI DROPDOWN ===
+
+            // 5. Khi người dùng CHỌN Tỉnh/Thành
+            $("#provinceDropdown").change(function () {
+                var provinceId = $(this).val();
+                var provinceName = $(this).find("option:selected").text();
+                $("#provinceNameHidden").val(provinceName);
+
+                // SỬA ĐỔI: Hủy Select2 cũ trước khi xóa options
+                $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
+                $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+
+                // THÊM MỚI: Khởi tạo lại Select2 rỗng (để giữ giao diện)
+                $('#districtDropdown').select2();
+                $('#wardDropdown').select2();
+
+                $("#districtNameHidden").val("");
+                $("#wardNameHidden").val("");
+
+                if (provinceId) {
+                    var url = "@Url.Action("GetDistricts", "DiaChi")" + "?provinceId=" + provinceId;
+                    callApi(url, $("#districtDropdown")).done(function(response) {
+                        if (response && response.data) {
+                            // SỬA ĐỔI: Hủy Select2 trước khi thêm data mới
+                            $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
+
+                            $.each(response.data, function (i, district) {
+                                $("#districtDropdown").append($('<option>', {
+                                    value: district.DistrictID,
+                                    text: district.DistrictName
+                                }));
+                            });
+
+                            // THÊM MỚI: Khởi tạo lại Select2 với data mới
+                            $('#districtDropdown').select2();
+                        }
+                    });
+                }
+            });
+
+            // 6. Khi người dùng CHỌN Quận/Huyện
+            $("#districtDropdown").change(function () {
+                var districtId = $(this).val();
+                var districtName = $(this).find("option:selected").text();
+                $("#districtNameHidden").val(districtName);
+
+                // SỬA ĐỔI: Hủy Select2 cũ trước khi xóa options
+                $("#wardDropdown").select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+                // THÊM MỚI: Khởi tạo lại Select2 rỗng
+                $('#wardDropdown').select2();
+
+                $("#wardNameHidden").val("");
+
+                if (districtId) {
+                    var url = "@Url.Action("GetWards", "DiaChi")" + "?districtId=" + districtId;
+                    callApi(url, $("#wardDropdown")).done(function(response) {
+                        if (response && response.data) {
+                            // SỬA ĐỔI: Hủy Select2 trước khi thêm data mới
+                            $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+
+                            var wardsData = response.data;
+                            if (!Array.isArray(wardsData)) wardsData = [wardsData];
+
+                            $.each(wardsData, function (i, ward) {
+                                $("#wardDropdown").append($('<option>', {
+                                    value: ward.WardCode,
+                                    text: ward.WardName
+                                }));
+                            });
+
+                             // THÊM MỚI: Khởi tạo lại Select2 với data mới
+                            $('#wardDropdown').select2();
+                        }
+                    });
+                }
+            });
+
+            // 7. Khi người dùng CHỌN Phường/Xã (giữ nguyên)
+            $("#wardDropdown").change(function () {
+                var wardName = $(this).find("option:selected").text();
+                $("#wardNameHidden").val(wardName);
+            });
+        });
+    </script>
 }

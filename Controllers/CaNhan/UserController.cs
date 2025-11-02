@@ -2,6 +2,9 @@
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http; // Đảm bảo bạn đã using
+using System.IO; // Đảm bảo bạn đã using
+using System.Threading.Tasks; // Đảm bảo bạn đã using
 
 namespace Final_Project.Models.Helpers;
 
@@ -22,8 +25,13 @@ public class UserController : Controller
             return RedirectToAction("DangNhap", "Auth");
         }
 
-        var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
-        _context.Entry(taiKhoan).Collection(t => t.DiaChiNguoiDungs).Load();
+        // Tải tài khoản và địa chỉ liên quan
+        var taiKhoan = _context.TaiKhoans
+            .Include(t => t.DiaChiNguoiDungs) // Dùng Include để tải địa chỉ
+            .FirstOrDefault(t => t.MaTK == maTK);
+
+        // Không cần .Load() riêng nếu đã dùng Include
+        // _context.Entry(taiKhoan).Collection(t => t.DiaChiNguoiDungs).Load(); 
 
         ViewBag.Avatar = taiKhoan?.Avatar;
         ViewBag.HoTen = taiKhoan?.HoTen;
@@ -33,6 +41,7 @@ public class UserController : Controller
             return NotFound("Không tìm thấy tài khoản.");
         }
 
+        // Tải đơn hàng
         var donHangs = _context.DonHangs
             .Where(d => d.MaTK == maTK)
             .Include(d => d.ChiTietDonHangs)
@@ -41,6 +50,7 @@ public class UserController : Controller
             .OrderByDescending(d => d.NgayDat)
             .ToList();
 
+        // Tải sản phẩm yêu thích
         var yeuThich = _context.SanPhamYeuThichs
             .Where(y => y.MaTK == maTK)
             .Include(y => y.SanPham)
@@ -48,9 +58,9 @@ public class UserController : Controller
             .ToList();
 
         ViewBag.SanPhamYeuThich = yeuThich;
-        ViewBag.TaiKhoan = taiKhoan;
+        ViewBag.TaiKhoan = taiKhoan; // Gửi toàn bộ tài khoản (bao gồm danh sách địa chỉ)
 
-        return View(donHangs);
+        return View(donHangs); // Model chính là danh sách đơn hàng
     }
 
     [HttpPost]
@@ -66,48 +76,52 @@ public class UserController : Controller
             _context.SaveChanges();
             TempData["Success"] = "Cập nhật thông tin thành công!";
         }
-        return RedirectToAction("Profile");
+        // Chuyển hướng về tab thông tin cá nhân (mặc định)
+        return RedirectToAction("Profile", new { fragment = "profileSection" });
     }
 
+    // === ĐÃ SỬA ĐỂ ĐỒNG BỘ VỚI FORM VÀ MODEL DiaChiNguoiDung ===
     [HttpPost]
-    public IActionResult ThemDiaChi(ThemDiaChiViewModel model)
+    public IActionResult ThemDiaChi(DiaChiNguoiDung model) // Đổi từ ViewModel sang Model chính
     {
         int? maTK = HttpContext.Session.GetInt32("MaTK");
         if (maTK == null) return RedirectToAction("DangNhap", "Auth");
 
-        if (!ModelState.IsValid)
-        {
-            TempData["Error"] = "Dữ liệu không hợp lệ.";
-            return RedirectToAction("Profile");
-        }
+        // Gán MaTK cho địa chỉ mới
+        model.MaTK = maTK.Value;
 
-        if (model.MacDinh)
+        // Bỏ qua kiểm tra ModelState cho TaiKhoan (nếu nó là [Required])
+        ModelState.Remove("TaiKhoan");
+
+        if (ModelState.IsValid)
         {
-            var diaChiCu = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK && d.MacDinh).ToList();
-            foreach (var d in diaChiCu)
+            // Nếu người dùng chọn "Đặt làm mặc định"
+            if (model.MacDinh)
             {
-                d.MacDinh = false;
+                // Bỏ tất cả mặc định cũ của tài khoản này
+                var diaChiCu = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK && d.MacDinh).ToList();
+                foreach (var d in diaChiCu)
+                {
+                    d.MacDinh = false;
+                }
             }
+
+            _context.DiaChiNguoiDungs.Add(model); // Thêm model đã được binding
+            _context.SaveChanges();
+
+            TempData["Success"] = "Thêm địa chỉ thành công!";
+        }
+        else
+        {
+            // Lấy lỗi
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            TempData["Error"] = "Dữ liệu không hợp lệ: " + string.Join(", ", errors);
         }
 
-        var diaChiMoi = new DiaChiNguoiDung
-        {
-            MaTK = maTK.Value,
-            TenNguoiNhan = model.TenNguoiNhan,
-            SoDienThoai = model.SoDienThoai,
-            DiaChiChiTiet = model.DiaChiChiTiet,
-            PhuongXa = model.PhuongXa,
-            QuanHuyen = model.QuanHuyen,
-            TinhTP = model.TinhTP,
-            MacDinh = model.MacDinh
-        };
-
-        _context.DiaChiNguoiDungs.Add(diaChiMoi);
-        _context.SaveChanges();
-
-        TempData["Success"] = "Thêm địa chỉ thành công!";
-        return RedirectToAction("Profile");
+        // Chuyển hướng về tab địa chỉ
+        return RedirectToAction("Profile", new { fragment = "addressSection" });
     }
+    // === KẾT THÚC SỬA ĐỔI ===
 
 
     [HttpPost]
@@ -119,6 +133,7 @@ public class UserController : Controller
             if (taiKhoan == null) return NotFound();
 
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(avatarFile.FileName)}";
+            // Đảm bảo thư mục "avatars" nằm trong "uploads"
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -129,12 +144,14 @@ public class UserController : Controller
                 await avatarFile.CopyToAsync(stream);
             }
 
+            // Lưu đường dẫn tương đối
             taiKhoan.Avatar = $"/uploads/avatars/{fileName}";
             _context.Update(taiKhoan);
             await _context.SaveChangesAsync();
         }
 
-        return RedirectToAction("Profile", "User");
+        // Chuyển hướng về tab thông tin cá nhân
+        return RedirectToAction("Profile", "User", new { fragment = "profileSection" });
     }
 
     [HttpPost]
@@ -146,6 +163,9 @@ public class UserController : Controller
         var user = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
         if (user == null) return NotFound();
 
+        // CẢNH BÁO BẢO MẬT: Không nên so sánh mật khẩu plain-text.
+        // Đây là cách làm tạm thời theo logic code của bạn.
+        // Bạn nên sử dụng Hashing (ví dụ: BCrypt) cho mật khẩu.
         if (OldPassword != user.MatKhau)
         {
             TempData["PasswordChangeMessage"] = "❌ Mật khẩu hiện tại không đúng.";
@@ -156,11 +176,12 @@ public class UserController : Controller
         }
         else
         {
-            user.MatKhau = NewPassword;
+            user.MatKhau = NewPassword; // Cũng không nên lưu plain-text
             _context.SaveChanges();
             TempData["PasswordChangeMessage"] = "✅ Đổi mật khẩu thành công!";
         }
 
-        return RedirectToAction("Profile", "User");
+        // Chuyển hướng về tab đổi mật khẩu
+        return RedirectToAction("Profile", "User", new { fragment = "changePasswordSection" });
     }
 }

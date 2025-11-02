@@ -5,28 +5,15 @@
     var donHangs = Model as List<DonHang>;
 }
 
-
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link rel="stylesheet" href="~/css/canhan.css">
 
-<!-- ✅ Script để chuyển đổi nội dung -->
-<script>
-    function showSection(id, element) {
-        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        element.classList.add('active');
-    }
 
-    function toggleEdit(showEdit) {
-        document.getElementById("viewInfo").style.display = showEdit ? "none" : "block";
-        document.getElementById("editInfo").style.display = showEdit ? "block" : "none";
-    }
-</script>
 
 
 <div class="container mt-4">
     <div class="row">
-        <!-- Sidebar -->
         <div class="col-md-3">
             <ul class="sidebar-menu">
                 <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
@@ -37,9 +24,7 @@
             </ul>
         </div>
 
-        <!-- Nội dung -->
         <div class="col-md-9">
-            <!-- Thông tin cá nhân -->
             <div id="profileSection" class="content-section active">
                 <h4 class="mb-3 text-success">👤 Thông tin tài khoản</h4>
                 <div class="text-center mb-4">
@@ -86,7 +71,6 @@
             </div>
 
 
-            <!-- Lịch sử mua hàng -->
             <div id="historySection" class="content-section">
                 <h4 class="mb-3 text-primary">🛒 Lịch sử mua hàng</h4>
                 @if (donHangs != null && donHangs.Count > 0)
@@ -99,16 +83,15 @@
                                     <span class="fw-semibold">Đơn hàng #@don.MaDonHang</span> -
                                     <span class="text-muted">@don.NgayDat.ToString("dd/MM/yyyy")</span>
                                      <span class="text-muted">
-        <strong>📍 Giao đến:</strong>
-        @don.DiaChiNguoiDung.DiaChiChiTiet,
-        @don.DiaChiNguoiDung.PhuongXa,
-        @don.DiaChiNguoiDung.QuanHuyen,
-        @don.DiaChiNguoiDung.TinhTP
-    </span>
+    <strong>📍 Giao đến:</strong>
+    @don.DiaChiNguoiDung.DiaChiChiTiet,
+    @don.DiaChiNguoiDung.PhuongXa,
+    @don.DiaChiNguoiDung.QuanHuyen,
+    @don.DiaChiNguoiDung.TinhTP
+</span>
                                 </div>
                                 <div class="text-success fw-bold">🟢 @don.TrangThaiDonHang</div>
                             </div>
-                            <!-- Thanh tiến trình trạng thái đơn hàng -->
                             <div class="order-progress">
                                 @{
                                     var trangThai = don.TrangThaiDonHang;
@@ -142,7 +125,6 @@
                                 var otherProducts = don.ChiTietDonHangs.Skip(1).ToList();
                             }
 
-                            <!-- Sản phẩm đầu tiên -->
                             @if (firstProduct != null)
                             {
                                 <div class="d-flex align-items-center border-top pt-3 mt-2">
@@ -158,7 +140,6 @@
                                 </div>
                             }
 
-                            <!-- Các sản phẩm khác (ẩn đi ban đầu) -->
                             @if (otherProducts.Count > 0)
                             {
                                 var sectionId = $"orderItems_{don.MaDonHang}";
@@ -178,7 +159,6 @@
                                         </div>
                                     }
                                 </div>
-                                <!-- Nút xem thêm / ẩn bớt -->
                                 <button class="btn btn-link px-0 text-decoration-none text-primary" type="button"
                                         onclick="toggleOrderItems('@sectionId', this)">
                                     + Xem thêm (@otherProducts.Count sản phẩm)
@@ -207,7 +187,6 @@
                 }
             </div>
 
-            <!-- Địa chỉ đặt hàng -->
             <div id="addressSection" class="content-section">
                 <h4 class="mb-3 text-warning">📍 Địa chỉ đặt hàng</h4>
 
@@ -216,7 +195,7 @@
                     foreach (var diaChi in taiKhoan.DiaChiNguoiDungs)
                     {
                        
-                       <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
+                        <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
     <div><strong>Họ tên:</strong> @diaChi.TenNguoiNhan</div>
     <div><strong>Số điện thoại:</strong> @diaChi.SoDienThoai</div>
     <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
@@ -257,30 +236,41 @@
 
                 <form id="newAddressForm" method="post" asp-action="ThemDiaChi" asp-controller="User" class="row g-3 mt-2" style="display: none;">
                     <div class="col-md-6">
-                    <label class="form-label">Họ tên người nhận</label>
-                    <input type="text" name="TenNguoiNhan" class="form-control" required />
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label">Số điện thoại</label>
-                    <input type="text" name="SoDienThoai" class="form-control" required />
-                </div>
+                        <label class="form-label">Họ tên người nhận</label>
+                        <input type="text" name="TenNguoiNhan" class="form-control" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="text" name="SoDienThoai" class="form-control" required />
+                    </div>
 
                     <div class="col-md-12">
                         <label class="form-label">Địa chỉ chi tiết</label>
-                        <input type="text" name="DiaChiChiTiet" class="form-control" required />
+                        <input type="text" name="DiaChiChiTiet" class="form-control" placeholder="Số nhà, tên đường..." required />
                     </div>
+
                     <div class="col-md-4">
-                        <label class="form-label">Phường/Xã</label>
-                        <input type="text" name="PhuongXa" class="form-control" required />
+                        <label class="form-label">Tỉnh/Thành phố</label>
+                        <select id="provinceDropdown" class="form-control" required>
+                            <option value="">-- Chọn Tỉnh/Thành --</option>
+                        </select>
+                        <input type="hidden" name="TinhTP" id="provinceNameHidden" />
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Quận/Huyện</label>
-                        <input type="text" name="QuanHuyen" class="form-control" required />
+                        <select id="districtDropdown" class="form-control" required>
+                            <option value="">-- Chọn Quận/Huyện --</option>
+                        </select>
+                        <input type="hidden" name="QuanHuyen" id="districtNameHidden" />
                     </div>
                     <div class="col-md-4">
-                        <label class="form-label">Tỉnh/Thành phố</label>
-                        <input type="text" name="TinhTP" class="form-control" required />
+                        <label class="form-label">Phường/Xã</label>
+                        <select id="wardDropdown" class="form-control" required>
+                            <option value="">-- Chọn Phường/Xã --</option>
+                        </select>
+                        <input type="hidden" name="PhuongXa" id="wardNameHidden" />
                     </div>
+
                     <div class="col-md-12 form-check">
                         <input type="checkbox" class="form-check-input" name="MacDinh" id="macDinhCheckbox" />
                         <label class="form-check-label" for="macDinhCheckbox">Đặt làm địa chỉ mặc định</label>
@@ -289,10 +279,9 @@
                         <button type="submit" class="btn btn-success">📍 Lưu địa chỉ</button>
                     </div>
                 </form>
-            </div>
+                </div>
 
-          <!-- ❤️ Sản phẩm yêu thích -->
-<div id="favoritesSection" class="content-section">
+        <div id="favoritesSection" class="content-section">
     <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
 
     @if (ViewBag.SanPhamYeuThich == null || !((List<SanPham>)ViewBag.SanPhamYeuThich).Any())
@@ -333,7 +322,6 @@
 
 
 
-<!-- 🔐 Đổi mật khẩu -->
 <div id="changePasswordSection" class="content-section" style="display: none;">
     <h4 class="mb-3 fw-bold text-orange">🔐 Đổi mật khẩu</h4>
 
@@ -358,39 +346,190 @@
         <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
     }
 </div>
-            @section Scripts {
-                <script>
-                    function toggleOrderItems(sectionId, btn) {
-                        const section = document.getElementById(sectionId);
-                        const isHidden = getComputedStyle(section).display === "none";
-                        section.style.display = isHidden ? "block" : "none";
-                        btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
-                    }
+         @section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
-                    function toggleNewAddress() {
-                        const form = document.getElementById("newAddressForm");
-                        const isHidden = getComputedStyle(form).display === "none";
-                        form.style.display = isHidden ? "block" : "none";
-                    }
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-                    function showSection(id, el) {
-                        document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
-                        document.getElementById(id).style.display = 'block';
+    <script>
+        // === HÀM VỪA DI CHUYỂN TỪ TRÊN XUỐNG ===
+        function toggleEdit(showEdit) {
+            document.getElementById("viewInfo").style.display = showEdit ? "none" : "block";
+            document.getElementById("editInfo").style.display = showEdit ? "block" : "none";
+        }
 
-                        document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
-                        el.classList.add('active');
-                    }
+        // === SCRIPT GỐC CỦA TRANG ===
+        function toggleOrderItems(sectionId, btn) {
+            const section = document.getElementById(sectionId);
+            const isHidden = getComputedStyle(section).display === "none";
+            section.style.display = isHidden ? "block" : "none";
+            btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
+        }
 
-                    window.addEventListener("DOMContentLoaded", function () {
-                        const hash = window.location.hash;
+        function toggleNewAddress() {
+            const form = document.getElementById("newAddressForm");
+            const isHidden = getComputedStyle(form).display === "none";
+            form.style.display = isHidden ? "block" : "none";
+        }
 
-                        if (hash === "#historySection") {
-                            showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
+        // Đây là hàm showSection DUY NHẤT VÀ CHÍNH XÁC
+        function showSection(id, el) {
+            document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+            document.getElementById(id).style.display = 'block';
+
+            document.querySelectorAll('.sidebar-menu li').forEach(li => li.classList.remove('active'));
+            if (el) { // Thêm kiểm tra el tồn tại
+                 el.classList.add('active');
+            }
+        }
+
+        window.addEventListener("DOMContentLoaded", function () {
+            const hash = window.location.hash;
+
+            if (hash === "#historySection") {
+                showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
+            }
+            else if (hash === "#favoritesSection") {
+                showSection("favoritesSection", document.querySelector('li[onclick*="favoritesSection"]'));
+            }
+            else if (hash === "#addressSection") { // Thêm để xử lý khi F5
+                showSection("addressSection", document.querySelector('li[onclick*="addressSection"]'));
+            }
+            else if (hash === "#changePasswordSection") { // Thêm để xử lý khi F5
+                showSection("changePasswordSection", document.querySelector('li[onclick*="changePasswordSection"]'));
+            }
+            // Kích hoạt tab đầu tiên nếu không có hash
+            else if (!hash) {
+                 showSection("profileSection", document.querySelector('li[onclick*="profileSection"]'));
+            }
+        });
+
+        // === SCRIPT MỚI TỪ API GHN (Đã tích hợp Select2) ===
+        $(document).ready(function () {
+            
+            // THÊM MỚI: Cấu hình Select2 dùng theme Bootstrap 5
+            $.fn.select2.defaults.set("theme", "bootstrap-5");
+
+            // Hàm gọi API trung gian (trong DiaChiController)
+            function callApi(url, targetDropdown) {
+                return $.ajax({
+                    url: url,
+                    type: "GET",
+                    success: function (response) {
+                        if (response && response.data) {
+                            // SỬA ĐỔI: Không clear dropdown ở đây, để hàm .done() tự xử lý
+                            return response.data; 
+                        } else {
+                            console.error("Không nhận được dữ liệu từ API: ", response);
+                            return null;
                         }
-                        else if (hash === "#favoritesSection") {
-                            showSection("favoritesSection", document.querySelector('li[onclick*="favoritesSection"]'));
-                        }
-                    });
-                </script>
+                    },
+                    error: function (err) {
+                        console.error("Lỗi khi gọi API trung gian!", err);
+                        alert("Lỗi tải dữ liệu. Vui lòng kiểm tra Token trong DiaChiController và F12 Console.");
+                    }
+                });
             }
 
+            // 1. Tải Tỉnh/Thành
+            callApi("@Url.Action("GetProvinces", "DiaChi")", $("#provinceDropdown")).done(function(response) {
+                // SỬA ĐỔI: Thêm clear dropdown ở đây
+                $("#provinceDropdown").empty().append('<option value="">-- Chọn Tỉnh/Thành --</option>');
+                if (response && response.data) {
+                    $.each(response.data, function (i, province) {
+                        $("#provinceDropdown").append($('<option>', {
+                            value: province.ProvinceID,
+                            text: province.ProvinceName
+                        }));
+                    });
+                }
+                // THÊM MỚI: Khởi tạo Select2 sau khi có dữ liệu
+                $('#provinceDropdown').select2();
+            });
+
+            // THÊM MỚI: Khởi tạo Select2 cho 2 dropdown rỗng ban đầu
+            $('#districtDropdown').select2();
+            $('#wardDropdown').select2();
+
+
+            // 2. Tải Quận/Huyện khi Tỉnh/Thành thay đổi
+            $("#provinceDropdown").change(function () {
+                var provinceId = $(this).val();
+                var provinceName = $(this).find("option:selected").text();
+                $("#provinceNameHidden").val(provinceName); 
+
+                // SỬA ĐỔI: Hủy Select2 cũ trước khi làm rỗng
+                $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
+                $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+
+                // THÊM MỚI: Khởi tạo lại Select2 rỗng
+                $('#districtDropdown').select2();
+                $('#wardDropdown').select2();
+
+                $("#districtNameHidden").val("");
+                $("#wardNameHidden").val("");
+
+                if (provinceId) {
+                    var url = "@Url.Action("GetDistricts", "DiaChi")" + "?provinceId=" + provinceId;
+                    callApi(url, $("#districtDropdown")).done(function(response) {
+                        // SỬA ĐỔI: Hủy Select2 cũ trước khi thêm data
+                        $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
+                        if (response && response.data) {
+                            $.each(response.data, function (i, district) {
+                                $("#districtDropdown").append($('<option>', {
+                                    value: district.DistrictID,
+                                    text: district.DistrictName
+                                }));
+                            });
+                        }
+                        // THÊM MỚI: Khởi tạo lại Select2 với data mới
+                        $('#districtDropdown').select2();
+                    });
+                }
+            });
+
+            // 3. Tải Phường/Xã khi Quận/Huyện thay đổi
+            $("#districtDropdown").change(function () {
+                var districtId = $(this).val();
+                var districtName = $(this).find("option:selected").text();
+                $("#districtNameHidden").val(districtName); 
+
+                // SỬA ĐỔI: Hủy Select2 cũ trước khi làm rỗng
+                $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+                // THÊM MỚI: Khởi tạo lại Select2 rỗng
+                $('#wardDropdown').select2();
+                
+                $("#wardNameHidden").val("");
+
+                if (districtId) {
+                    var url = "@Url.Action("GetWards", "DiaChi")" + "?districtId=" + districtId;
+                    callApi(url, $("#wardDropdown")).done(function(response) {
+                        // SỬA ĐỔI: Hủy Select2 cũ trước khi thêm data
+                        $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
+                        
+                        if (response && response.data) {
+                            var wardsData = response.data;
+                            if (!Array.isArray(wardsData)) {
+                                wardsData = [wardsData]; 
+                            }
+                            $.each(wardsData, function (i, ward) {
+                                $("#wardDropdown").append($('<option>', {
+                                    value: ward.WardCode, 
+                                    text: ward.WardName
+                                }));
+                            });
+                        }
+                        // THÊM MỚI: Khởi tạo lại Select2 với data mới
+                        $('#wardDropdown').select2();
+                    });
+                }
+            });
+
+            // 4. Cập nhật tên Phường/Xã khi chọn (Giữ nguyên)
+            $("#wardDropdown").change(function () {
+                var wardName = $(this).find("option:selected").text();
+                $("#wardNameHidden").val(wardName);
+            });
+        });
+    </script>
+}

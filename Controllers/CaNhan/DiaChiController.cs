@@ -4,15 +4,40 @@ using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration; // <-- THÊM DÒNG NÀY
 
 public class DiaChiController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IHttpClientFactory _httpClientFactory;
 
-    public DiaChiController(AppDbContext context)
+    // Các trường này sẽ đọc giá trị từ appsettings.json
+    private readonly string _ghnToken;
+    private readonly string _provinceApiUrl;
+    private readonly string _districtApiUrl;
+    private readonly string _wardApiUrl;
+
+    // Constructor đã được cập nhật
+    public DiaChiController(AppDbContext context,
+                            IHttpClientFactory httpClientFactory,
+                            IConfiguration configuration) // <-- Tiêm IConfiguration
     {
         _context = context;
+        _httpClientFactory = httpClientFactory;
+
+        // Đọc cấu hình từ appsettings.json
+        _ghnToken = configuration["GhnApi:Token"];
+        _provinceApiUrl = configuration["GhnApi:ProvinceApiUrl"];
+        _districtApiUrl = configuration["GhnApi:DistrictApiUrl"];
+        _wardApiUrl = configuration["GhnApi:WardApiUrl"];
     }
+
+    // --- CÁC ACTION CRUD ĐỊA CHỈ GỐC (GIỮ NGUYÊN) ---
 
     public IActionResult Index()
     {
@@ -33,10 +58,8 @@ public class DiaChiController : Controller
     public IActionResult Create(DiaChiNguoiDung diaChi)
     {
         diaChi.MaTK = (int)HttpContext.Session.GetInt32("MaTK");
-
         _context.DiaChiNguoiDungs.Add(diaChi);
         _context.SaveChanges();
-
         return RedirectToAction("Index");
     }
 
@@ -55,10 +78,8 @@ public class DiaChiController : Controller
         }
 
         diaChi.MacDinh = true;
-
         _context.SaveChanges();
-
-        return RedirectToAction("Profile", "User");
+        return RedirectToAction("Profile", "User", new { fragment = "addressSection" });
     }
 
     public IActionResult Edit(int id)
@@ -83,6 +104,59 @@ public class DiaChiController : Controller
         diaChi.SoDienThoai = model.SoDienThoai;
 
         _context.SaveChanges();
-        return RedirectToAction("Profile", "User");
+        return RedirectToAction("Profile", "User", new { fragment = "addressSection" });
+    }
+
+    // --- CÁC ACTION API (Sử dụng biến cấu hình) ---
+
+    [HttpGet]
+    public async Task<IActionResult> GetProvinces()
+    {
+        var client = _httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Add("Token", _ghnToken); // <-- ĐÃ SỬA
+
+        var response = await client.GetAsync(_provinceApiUrl); // <-- ĐÃ SỬA
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            return Content(json, "application/json");
+        }
+        return BadRequest(new { message = "Lỗi khi gọi API Tỉnh/Thành của GHN." });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetDistricts(int provinceId)
+    {
+        var client = _httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Add("Token", _ghnToken); // <-- ĐÃ SỬA
+
+        var requestBody = new { province_id = provinceId };
+        var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync(_districtApiUrl, content); // <-- ĐÃ SỬA
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            return Content(json, "application/json");
+        }
+        return BadRequest(new { message = "Lỗi khi gọi API Quận/Huyện của GHN." });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetWards(int districtId)
+    {
+        var client = _httpClientFactory.CreateClient();
+        client.DefaultRequestHeaders.Add("Token", _ghnToken); // <-- ĐÃ SỬA
+
+        var requestBody = new { district_id = districtId };
+        var content = new StringContent(JsonSerializer.Serialize(requestBody), Encoding.UTF8, "application/json");
+
+        var response = await client.PostAsync(_wardApiUrl, content); // <-- ĐÃ SỬA
+        if (response.IsSuccessStatusCode)
+        {
+            var json = await response.Content.ReadAsStringAsync();
+            return Content(json, "application/json");
+        }
+        return BadRequest(new { message = "Lỗi khi gọi API Phường/Xã của GHN." });
     }
 }

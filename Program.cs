@@ -1,7 +1,7 @@
 ﻿using Final_Project.Models.Momo;
 using Final_Project.Models.Shop;
 using Final_Project.Service.Momo;
-
+using System.Net.Security;
 using Final_Project.Service.VnPay;
 using Final_Project.Services;
 using Final_Project.Services.PayPal;
@@ -10,6 +10,22 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+// Đăng ký HttpClient và cấu hình SSL
+// Đây là MỘT chuỗi lệnh
+builder.Services.AddHttpClient("MyHttpClient", client => { })
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
+        {
+            // Bỏ qua lỗi (return true) khi ở môi trường Development
+            if (builder.Environment.IsDevelopment())
+            {
+                return true;
+            }
+            // Ở môi trường Production, vẫn kiểm tra lỗi
+            return errors == SslPolicyErrors.None;
+        }
+    }); // <-- Dấu ; kết thúc toàn bộ chuỗi ở đây
 
 // ---------- Cấu hình dịch vụ ----------
 // Cấu hình paypal API
