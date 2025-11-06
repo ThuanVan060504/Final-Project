@@ -6,361 +6,485 @@
     var hoTen = ViewBag.HoTen as string;
     var soDienThoai = ViewBag.SoDienThoai as string;
     var tongTien = Model.Sum(m => m.ThanhTien);
-    var phiVanChuyen = 17000;
+
+    // Xóa phí vận chuyển gán cứng. JS sẽ tính toán và cập nhật.
+    var phiVanChuyen = 0;
     var tongThanhToan = tongTien + phiVanChuyen;
 }
+
+<!--
+    GHI CHÚ QUAN TRỌNG CHO BẠN (DEVELOPER):
+
+    Để code này hoạt động, bạn CẦN THAY ĐỔI 3 ĐIỀU ở backend (Controller):
+
+    1.  Model `DiaChiNguoiDung`:
+        Model này BẮT BUỘC phải có thêm các trường để lưu mã GHN:
+        -   public int ProvinceID { get; set; }
+        -   public int DistrictID { get; set; }
+        -   public string WardCode { get; set; }
+
+    2.  Controller (Action `Index` - tải trang này):
+        Khi bạn `ViewBag.DiaChi`, hãy đảm bảo bạn truyền cả 3 mã ID ở trên.
+        Code JS sẽ đọc các mã này từ `data-` attributes của div#default-address.
+
+    3.  Controller (Action `LayDanhSachDiaChi`):
+        Khi trả về JSON danh sách địa chỉ, hãy đảm bảo mỗi địa chỉ trong danh sách
+        cũng bao gồm `provinceID`, `districtID`, và `wardCode`.
+        Code JS sẽ dùng các mã này để gọi hàm `chonDiaChi`.
+
+    4.  Controller (Tạo Action `ThemDiaChiMoi` [HttpPost]):
+        Bạn cần tạo một Action mới để xử lý việc thêm địa chỉ:
+        [HttpPost]
+        public async Task<IActionResult> ThemDiaChiMoi([FromBody] DiaChiMoiViewModel model)
+        {
+            // model DiaChiMoiViewModel sẽ chứa:
+            // string TenNguoiNhan, string SoDienThoai, string DiaChiChiTiet,
+            // int ProvinceID, string ProvinceName,
+            // int DistrictID, string DistrictName,
+            // string WardCode, string WardName
+
+            // Lưu địa chỉ mới này vào DB cho user...
+            // ...
+            // Sau khi lưu, trả về JSON
+            return Json(new { success = true, message = "Thêm địa chỉ thành công." });
+        }
+
+    5.  Controller (Tạo Action `ChonDiaChi` [HttpGet]):
+        Hàm `chonDiaChi` cũ của bạn dùng `location.reload()`.
+        Tôi đã đổi nó thành `location.href` để gọi 1 Action mới,
+        Action này sẽ set địa chỉ mặc định MỚI cho user, SAU ĐÓ redirect
+        về trang thanh toán.
+
+        [HttpGet]
+        public IActionResult ChonDiaChi(int maDiaChi)
+        {
+            // 1. Lấy user ID hiện tại
+            // 2. Cập nhật DB, set `maDiaChi` này làm địa chỉ mặc định MỚI
+            // ...
+            // 3. Redirect về trang thanh toán (trang này)
+            return RedirectToAction("Index", "ThanhToan");
+        }
+-->
+
 <style>
-/* 🎨 Màu chủ đạo */
-:root {
-    --main-orange: #ff9e4f;
-    --main-orange-dark: #e88738;
-    --text-dark: #333;
-    --text-light: #555;
-    --bg-light: #fafafa;
-}
+    /* 🎨 Màu chủ đạo */
+    :root {
+        --main-orange: #ff9e4f;
+        --main-orange-dark: #e88738;
+        --text-dark: #333;
+        --text-light: #555;
+        --bg-light: #fafafa;
+    }
 
-/* Tiêu đề section */
-.section-title {
-    font-weight: 600;
-    font-size: 25px;
-    margin-top: 30px;
-    margin-bottom: 15px;
-    border-bottom: 2px solid #000000);
-    padding-bottom: 6px;
-    color: var(--text-dark);
-}
+    /* Tiêu đề section */
+    .section-title {
+        font-weight: 600;
+        font-size: 25px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #000000);
+        padding-bottom: 6px;
+        color: var(--text-dark);
+    }
 
-/* Địa chỉ mặc định */
-#default-address {
-    background-color: var(--bg-light);
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px 20px;
-    max-width: 500px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
-#default-address p {
-    margin-bottom: 6px;
-    font-size: 22p;
-    color: var(--text-dark);
-}
-#default-address strong#default-name {
-    font-size: 22px;
-    font-weight: 600;
-    color: var(--main-orange);
-}
-span#default-phone {
-    font-size: 22px;
-}
-#default-address button {
-    font-size: 20px;
-    color: var(--main-orange);
-    font-weight: 500;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-#default-address button:hover {
-    text-decoration: underline;
-    color: var(--main-orange-dark);
-}
+    /* Địa chỉ mặc định */
+    #default-address {
+        background-color: var(--bg-light);
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 15px 20px;
+        max-width: 500px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
-/* Danh sách địa chỉ */
-#addressList {
-    max-width: 600px;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 15px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-}
+        #default-address p {
+            margin-bottom: 6px;
+            font-size: 22p;
+            color: var(--text-dark);
+        }
 
-#addressList #addresses div {
-    background-color: #fffaf5;
-    border: 1px solid #ffd8b2;
-    border-radius: 6px;
-    padding: 12px 15px;
-    margin-bottom: 12px;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-#addressList #addresses div:hover {
-    background-color: #ffe7cc;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-}
-#addressList #addresses div p {
-    margin: 3px 0;
-    font-size: 0.95rem;
-    color: var(--text-dark);
-}
+        #default-address strong#default-name {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--main-orange);
+        }
 
-/* Nút phụ */
-#addressList button.btn-outline-secondary {
-    border-color: var(--main-orange);
-    color: var(--main-orange);
-    font-weight: 500;
-}
-#addressList button.btn-outline-secondary:hover {
-    background-color: var(--main-orange);
-    color: #fff;
-}
+    span#default-phone {
+        font-size: 22px;
+    }
 
-/* Form thêm địa chỉ */
-#addForm input {
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    padding: 8px 12px;
-    font-size: 0.95rem;
-    transition: border-color 0.3s ease;
-}
-#addForm input:focus {
-    border-color: var(--main-orange);
-    outline: none;
-    box-shadow: 0 0 5px rgba(255,158,79,0.5);
-}
-#addForm button.btn-primary {
-    background-color: var(--main-orange);
-    border-color: var(--main-orange);
-    font-weight: 600;
-    border-radius: 6px;
-    padding: 6px 16px;
-    transition: background-color 0.3s ease;
-}
-#addForm button.btn-primary:hover {
-    background-color: var(--main-orange-dark);
-}
+    #default-address button {
+        font-size: 20px;
+        color: var(--main-orange);
+        font-weight: 500;
+        background: none;
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
 
-/* Sản phẩm */
-.row.align-items-center.border {
-    background-color: #fff;
-    border-radius: 8px;
-    padding: 12px 15px !important;
-    border: 1px solid #eee;
-    transition: box-shadow 0.3s ease;
-    font-size: 25px;
-}
-.row.align-items-center.border:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-.product-image {
-    border-radius: 6px;
-    border: 1px solid #ddd;
-}
-.col-md-5 p.mb-0 {
-    font-weight: 600;
-    font-size: 25px;
-    color: var(--text-dark);
-}
-.col-md-5 small {
-    color: var(--text-light);
-    font-style: italic;
-}
-.col-md-2.text-center, .col-md-2.text-end {
-    font-weight: 600;
-    font-size: 20px;
-    color: var(--main-orange);
-}
+        #default-address button:hover {
+            text-decoration: underline;
+            color: var(--main-orange-dark);
+        }
 
-/* Phương thức vận chuyển */
-.border.p-3.mb-3 {
-    background-color: #fff;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    padding: 12px;
-    font-size: 22px;
-}
-.border.p-3.mb-3 p strong {
-    color: var(--text-dark);
-    font-weight: 600;
-    font-size: 22px;
-}
-.border.p-3.mb-3 small {
-    color: var(--text-light);
-    font-style: italic;
-}
+    /* Danh sách địa chỉ */
+    #addressList {
+        max-width: 600px;
+        background: #fff;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        padding: 15px 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
 
-/* Voucher */
-.d-flex.justify-content-between.mb-3 p {
-    font-weight: 500;
-    font-size: 22px;
-    color: var(--text-dark);
-}
-.btn-outline-primary {
-    border-color: var(--main-orange);
-    color: var(--main-orange);
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-.btn-outline-primary:hover {
-    background-color: var(--main-orange);
-    color: #fff;
-}
+        #addressList #addresses div {
+            background-color: #fffaf5;
+            border: 1px solid #ffd8b2;
+            border-radius: 6px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        }
 
-/* Phương thức thanh toán */
-.d-flex.gap-3.flex-wrap.mb-3 button {
-    min-width: 150px;
-    font-weight: 600;
-    border-radius: 8px;
-    height: 40px;
-    border: 1.5px solid var(--main-orange);
-    background-color: #fff;
-    color: var(--main-orange);
-    transition: all 0.3s ease;
-    margin-right: 20px;
-    font-size: 20px;
-}
-.d-flex.gap-3.flex-wrap.mb-3 button:hover {
-    background-color: var(--main-orange);
-    color: #fff;
-}
-.btn-danger {
-    background-color: var(--main-orange) !important;
-    border-color: var(--main-orange) !important;
-    color: white !important;
-}
-.btn-danger:hover {
-    background-color: var(--main-orange-dark) !important;
-}
-button.btn.btn-place-order.px-4.py-2 {
-    font-size: 30px;
-}
-button.btn.btn-sm.btn-outline-primary {
-    font-size: 22px;
-}
-/* Tổng tiền */
-.order-summary p {
-    font-size: 23px;
-    margin: 6px 0;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-.order-summary h5 {
-    margin-top: 10px;
-    color: var(--main-orange-dark);
-}
-strong {
-    font-size: 25px;
-}
-/* Nút đặt hàng */
-.btn-place-order {
-    font-size: 1.15rem;
-    font-weight: 700;
-    padding: 10px 30px;
-    border-radius: 8px;
-    background-color: var(--main-orange);
-    border: none;
-    margin:10px;
-    color: white;
-    box-shadow: 0 3px 8px rgba(255,158,79,0.5);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
-}
-.btn-place-order:hover {
-    background-color: var(--main-orange-dark);
-    box-shadow: 0 4px 12px rgba(255,158,79,0.7);
-}
+            #addressList #addresses div:hover {
+                background-color: #ffe7cc;
+                box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            }
+
+            #addressList #addresses div p {
+                margin: 3px 0;
+                font-size: 0.95rem;
+                color: var(--text-dark);
+            }
+
+        /* Nút phụ */
+        #addressList button.btn-outline-secondary {
+            border-color: var(--main-orange);
+            color: var(--main-orange);
+            font-weight: 500;
+        }
+
+            #addressList button.btn-outline-secondary:hover {
+                background-color: var(--main-orange);
+                color: #fff;
+            }
+
+    /* Form thêm địa chỉ */
+    #addForm input,
+    #addForm select { /* Thêm select vào style */
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        font-size: 0.95rem;
+        width: 100%; /* Đảm bảo select chiếm đủ chiều rộng */
+        transition: border-color 0.3s ease;
+    }
+
+        #addForm input:focus,
+        #addForm select:focus { /* Thêm select vào style */
+            border-color: var(--main-orange);
+            outline: none;
+            box-shadow: 0 0 5px rgba(255,158,79,0.5);
+        }
+
+    #addForm button.btn-primary {
+        background-color: var(--main-orange);
+        border-color: var(--main-orange);
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 6px 16px;
+        transition: background-color 0.3s ease;
+    }
+
+        #addForm button.btn-primary:hover {
+            background-color: var(--main-orange-dark);
+        }
+
+    /* Sản phẩm */
+    .row.align-items-center.border {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 12px 15px !important;
+        border: 1px solid #eee;
+        transition: box-shadow 0.3s ease;
+        font-size: 25px;
+    }
+
+        .row.align-items-center.border:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+    .product-image {
+        border-radius: 6px;
+        border: 1px solid #ddd;
+    }
+
+    .col-md-5 p.mb-0 {
+        font-weight: 600;
+        font-size: 25px;
+        color: var(--text-dark);
+    }
+
+    .col-md-5 small {
+        color: var(--text-light);
+        font-style: italic;
+    }
+
+    .col-md-2.text-center, .col-md-2.text-end {
+        font-weight: 600;
+        font-size: 20px;
+        color: var(--main-orange);
+    }
+
+    /* Phương thức vận chuyển */
+    .border.p-3.mb-3 {
+        background-color: #fff;
+        border-radius: 8px;
+        border: 1px solid #eee;
+        padding: 12px;
+        font-size: 22px;
+    }
+
+        .border.p-3.mb-3 p strong {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 22px;
+        }
+
+        .border.p-3.mb-3 small {
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+    /* Voucher */
+    .d-flex.justify-content-between.mb-3 p {
+        font-weight: 500;
+        font-size: 22px;
+        color: var(--text-dark);
+    }
+
+    .btn-outline-primary {
+        border-color: var(--main-orange);
+        color: var(--main-orange);
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+        .btn-outline-primary:hover {
+            background-color: var(--main-orange);
+            color: #fff;
+        }
+
+    /* Phương thức thanh toán */
+    .d-flex.gap-3.flex-wrap.mb-3 button {
+        min-width: 150px;
+        font-weight: 600;
+        border-radius: 8px;
+        height: 40px;
+        border: 1.5px solid var(--main-orange);
+        background-color: #fff;
+        color: var(--main-orange);
+        transition: all 0.3s ease;
+        margin-right: 20px;
+        font-size: 20px;
+    }
+
+        .d-flex.gap-3.flex-wrap.mb-3 button:hover {
+            background-color: var(--main-orange);
+            color: #fff;
+        }
+
+    .btn-danger {
+        background-color: var(--main-orange) !important;
+        border-color: var(--main-orange) !important;
+        color: white !important;
+    }
+
+        .btn-danger:hover {
+            background-color: var(--main-orange-dark) !important;
+        }
+
+    button.btn.btn-place-order.px-4.py-2 {
+        font-size: 30px;
+    }
+
+    button.btn.btn-sm.btn-outline-primary {
+        font-size: 22px;
+    }
+    /* Tổng tiền */
+    .order-summary p {
+        font-size: 23px;
+        margin: 6px 0;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .order-summary h5 {
+        margin-top: 10px;
+        color: var(--main-orange-dark);
+    }
+
+    strong {
+        font-size: 25px;
+    }
+    /* Nút đặt hàng */
+    .btn-place-order {
+        font-size: 1.15rem;
+        font-weight: 700;
+        padding: 10px 30px;
+        border-radius: 8px;
+        background-color: var(--main-orange);
+        border: none;
+        margin: 10px;
+        D-color: white;
+        box-shadow: 0 3px 8px rgba(255,158,79,0.5);
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-place-order:hover {
+            background-color: var(--main-orange-dark);
+            box-shadow: 0 4px 12px rgba(255,158,79,0.7);
+        }
 
 </style>
 
-    <!-- Địa chỉ -->
-    <h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
-    <div id="default-address" class="mb-3">
-        <p>
-            <strong id="default-name">@diaChi?.TenNguoiNhan</strong>
-            (<span id="default-phone">@diaChi?.SoDienThoai</span>)
-        </p>
-        <p id="default-full-address">
-            @diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP
-        </p>
-        <button class="btn btn-link" type="button" onclick="toggleAddressList()">Thay đổi</button>
-    </div>
-
-    <!-- Danh sách địa chỉ -->
-    <div id="addressList" style="display: none;" class="mb-4">
-        <div id="addresses">
-        </div>
-
-        <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
-
-        <div id="addForm" style="display: none;">
-            <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
-            <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
-            <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết"></div>
-            <button class="btn btn-primary btn-sm" type="button" onclick="addAddress()">Lưu địa chỉ</button>
-        </div>
-    </div>
-
-    <!-- Sản phẩm -->
-    <h4 class="section-title">📦 Sản phẩm</h4>
-    @foreach (var sp in Model)
-    {
-        <div class="row align-items-center border p-3 mb-2">
-            <div class="col-md-1">
-                <img src="@sp.ImageURL" alt="product" class="product-image" />
-            </div>
-            <div class="col-md-5">
-                <p class="mb-0">@sp.TenSP</p>
-                <small>Số lượng: @sp.SoLuong</small>
-            </div>
-            <div class="col-md-2 text-center">₫@sp.DonGia.ToString("n0")</div>
-            <div class="col-md-2 text-center">x @sp.SoLuong</div>
-            <div class="col-md-2 text-end">₫@sp.ThanhTien.ToString("n0")</div>
-        </div>
-    }
-
-    <!-- Vận chuyển -->
-<h4 class="section-title">🚚 Phương thức vận chuyển</h4>
-<div class="border p-3 mb-3">
-    <p><strong>Vận Chuyển Nhanh</strong> - ₫@phiVanChuyen.ToString("n0")</p>
-    @{
-        var ngayBatDau = DateTime.Now.AddDays(3);
-        var ngayKetThuc = DateTime.Now.AddDays(5);
-    }
-    <small>
-        Dự kiến nhận hàng từ @ngayBatDau.ToString("dd 'Tháng' MM") - @ngayKetThuc.ToString("dd 'Tháng' MM")
-    </small>
+<!-- Địa chỉ -->
+<h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
+<!--
+    CẬP NHẬT: Thêm data- attributes
+    Bạn CẦN cập nhật Controller để @diaChi chứa DistrictID và WardCode
+-->
+<div id="default-address" class="mb-3"
+     data-district-id="@(diaChi?.GetType().GetProperty("DistrictID")?.GetValue(diaChi, null) ?? 0)"
+     data-ward-code="@(diaChi?.GetType().GetProperty("WardCode")?.GetValue(diaChi, null) ?? "")">
+    <p>
+        <strong id="default-name">@diaChi?.TenNguoiNhan</strong>
+        (<span id="default-phone">@diaChi?.SoDienThoai</span>)
+    </p>
+    <p id="default-full-address">
+        @diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP
+    </p>
+    <button class="btn btn-link" type="button" onclick="toggleAddressList()">Thay đổi</button>
 </div>
 
-    <!-- Voucher -->
-    <h4 class="section-title">🎁 Voucher & Shopee Xu</h4>
-    <div class="d-flex justify-content-between mb-3">
-        <p>Không sử dụng Xu</p>
-        <button class="btn btn-sm btn-outline-primary">Chọn Voucher</button>
+
+<!-- Danh sách địa chỉ -->
+<div id="addressList" style="display: none;" class="mb-4">
+    <div id="addresses">
+        <!-- JS sẽ điền danh sách địa chỉ vào đây -->
     </div>
 
-    <!-- Thanh toán -->
-    <h4 class="section-title">💳 Phương thức thanh toán</h4>
-    <form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
-        @foreach (var sp in Model)
-        {
-            <input type="hidden" name="chonSP" value="@sp.MaSP" />
-        }
-        <input type="hidden" name="paymentMethod" id="paymentMethod" />
+    <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
 
-        <div class="d-flex gap-3 flex-wrap mb-3">
-            <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
+    <!-- CẬP NHẬT: Thêm các <select> của GHN vào form -->
+    <div id="addForm" style="display: none;">
+        <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
+        <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
 
-            <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
-            <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
+        <!-- GHN Tỉnh/Thành -->
+        <div class="mb-2">
+            <select id="ghnProvinceSelect" class="form-control">
+                <option value="">Vui lòng chọn Tỉnh/Thành</option>
+            </select>
+        </div>
+
+        <!-- GHN Quận/Huyện -->
+        <div class="mb-2">
+            <select id="ghnDistrictSelect" class="form-control" disabled>
+                <option value="">Vui lòng chọn Quận/Huyện</option>
+            </select>
+        </div>
+
+        <!-- GHN Phường/Xã -->
+        <div class="mb-2">
+            <select id="ghnWardSelect" class="form-control" disabled>
+                <option value="">Vui lòng chọn Phường/Xã</option>
+            </select>
+        </div>
+
+        <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+
+        <!-- CẬP NHẬT: Đổi `addAddress()` thành `saveNewAddress()` -->
+        <button class="btn btn-primary btn-sm" type="button" onclick="saveNewAddress()">Lưu địa chỉ</button>
+    </div>
+</div>
+
+<!-- Sản phẩm -->
+<h4 class="section-title">📦 Sản phẩm</h4>
+@foreach (var sp in Model)
+{
+    <div class="row align-items-center border p-3 mb-2">
+        <div class="col-md-1">
+            <img src="@sp.ImageURL" alt="product" class="product-image" />
+        </div>
+        <div class="col-md-5">
+            <p class="mb-0">@sp.TenSP</p>
+            <small>Số lượng: @sp.SoLuong</small>
+        </div>
+        <div class="col-md-2 text-center">₫@sp.DonGia.ToString("n0")</div>
+        <div class="col-md-2 text-center">x @sp.SoLuong</div>
+        <div class="col-md-2 text-end">₫@sp.ThanhTien.ToString("n0")</div>
+    </div>
+}
+
+<!-- Vận chuyển -->
+<h4 class="section-title">🚚 Phương thức vận chuyển</h4>
+<div class="border p-3 mb-3">
+    <!-- CẬP NHẬT: Phí vận chuyển sẽ được JS điền vào đây -->
+    <p><strong>Vận Chuyển Nhanh</strong> - <span id="shipping-fee-display">Đang tính...</span></p>
+    <small id="shipping-time-display">Dự kiến nhận hàng...</small>
+</div>
+
+
+<!-- Voucher -->
+<h4 class="section-title">🎁 Voucher & Shopee Xu</h4>
+<div class="d-flex justify-content-between mb-3">
+    <p>Không sử dụng Xu</p>
+    <button class="btn btn-sm btn-outline-primary">Chọn Voucher</button>
+</div>
+
+<!-- Thanh toán -->
+<h4 class="section-title">💳 Phương thức thanh toán</h4>
+<form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
+    @foreach (var sp in Model)
+    {
+        <input type="hidden" name="chonSP" value="@sp.MaSP" />
+    }
+    <input type="hidden" name="paymentMethod" id="paymentMethod" />
+
+    <div class="d-flex gap-3 flex-wrap mb-3">
+        <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
+
+        <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
+        <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
         <button type="button" class="btn btn-outline-secondary" id="btnPaypal">Ví PAYPAL</button>
-        </div>
-        <input type="hidden" name="paymentMethod" id="paymentMethod" />
+    </div>
+    <input type="hidden" name="paymentMethod" id="paymentMethod" />
 
-        <p class="text-muted">Phí thu hộ: ₫0 VND</p>
+    <p class="text-muted">Phí thu hộ: ₫0 VND</p>
 
-        <!-- Tổng tiền -->
-        <h4 class="section-title">🧾 Tổng thanh toán</h4>
-        <div class="order-summary">
-            <p>Tổng tiền hàng: ₫@tongTien.ToString("n0")</p>
-            <p>Phí vận chuyển: ₫@phiVanChuyen.ToString("n0")</p>
-            <h5><strong>Tổng thanh toán: ₫@tongThanhToan.ToString("n0")</strong></h5>
-        </div>
+    <!-- Tổng tiền -->
+    <h4 class="section-title">🧾 Tổng thanh toán</h4>
+    <div class="order-summary">
+        <!-- CẬP NHẬT: Thêm ID để JS cập nhật -->
+        <input type="hidden" id="hidden-base-total" value="@tongTien" />
+        <input type="hidden" id="hidden-shipping-fee" value="0" />
 
-        <div class="text-end mt-4">
-            <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
-        </div>
-    </form>
+        <p>Tổng tiền hàng: ₫@tongTien.ToString("n0")</p>
+        <p>Phí vận chuyển: <span id="shipping-fee-text">Đang tính...</span></p>
+        <h5><strong>Tổng thanh toán: <span id="total-payment-text">Đang tính...</span></strong></h5>
+    </div>
+
+
+    <div class="text-end mt-4">
+        <button class="btn btn-place-order px-4 py-2" type="button" onclick="submitFinalOrder()">Đặt hàng</button>
+    </div>
+</form>
+
+<!-- ===== SCRIPT THANH TOÁN (ĐÃ CẬP NHẬT) ===== -->
 <script>
     let selectedMethod = "";
 
@@ -379,7 +503,6 @@ strong {
         highlightSelected(this);
     });
 
-    // ✅ Thêm xử lý cho PayPal
     document.getElementById("btnPaypal").addEventListener("click", function () {
         selectedMethod = "PAYPAL";
         highlightSelected(this);
@@ -396,88 +519,498 @@ strong {
 
     function submitFinalOrder() {
         if (!selectedMethod) {
-            alert("Vui lòng chọn phương thức thanh toán.");
+            // Sử dụng modal tùy chỉnh thay vì alert
+            showCustomAlert("Vui lòng chọn phương thức thanh toán.");
             return;
         }
 
+        // CẬP NHẬT: Lấy tổng tiền từ các trường ẩn để đảm bảo
+        // nó bao gồm phí vận chuyển động
+        const baseTotal = parseInt(document.getElementById('hidden-base-total').value) || 0;
+        const shippingFee = parseInt(document.getElementById('hidden-shipping-fee').value) || 0;
+        const finalTotal = baseTotal + shippingFee;
+
+        if (finalTotal <= 0) {
+             showCustomAlert("Tổng tiền không hợp lệ. Vui lòng tải lại trang.");
+             return;
+        }
+
+        let url = "";
+        const productInputs = document.querySelectorAll("input[name='chonSP']");
+        let productQuery = "";
+        productInputs.forEach(sp => {
+            productQuery += "chonSP=" + sp.value + "&";
+        });
+
+        // Thêm `shippingFee` vào URL để server có thể lưu lại
+        productQuery += "shippingFee=" + shippingFee + "&";
+
         // MOMO
         if (selectedMethod === "MOMO") {
-            let url = "/ThanhToan/TaoMomoQRCode?";
-            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-                url += "chonSP=" + sp.value + "&";
-            });
-            url += "tongTien=" + @tongThanhToan;
+            url = `/ThanhToan/TaoMomoQRCode?${productQuery}tongTien=${finalTotal}`;
             window.location.href = url;
         }
         // VNPAY
         else if (selectedMethod === "VNPAY") {
-            let url = "/ThanhToan/TaoVnpayQRCode?";
-            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-                url += "chonSP=" + sp.value + "&";
-            });
-            url += "tongTien=" + @tongThanhToan;
+            url = `/ThanhToan/TaoVnpayQRCode?${productQuery}tongTien=${finalTotal}`;
             window.location.href = url;
         }
-        // ✅ PAYPAL
+        // PAYPAL
         else if (selectedMethod === "PAYPAL") {
-            let url = "/ThanhToan/TaoPaypalPayment?";
-            document.querySelectorAll("input[name='chonSP']").forEach(sp => {
-                url += "chonSP=" + sp.value + "&";
-            });
-            url += "tongTien=" + @tongThanhToan;
+            url = `/ThanhToan/TaoPaypalPayment?${productQuery}tongTien=${finalTotal}`;
             window.location.href = url;
         }
         // COD
         else {
             document.getElementById("paymentMethod").value = selectedMethod;
+
+            // Thêm phí vận chuyển vào form
+            const shippingInput = document.createElement('input');
+            shippingInput.type = 'hidden';
+            shippingInput.name = 'shippingFee';
+            shippingInput.value = shippingFee;
+            document.getElementById('checkoutForm').appendChild(shippingInput);
+
             document.getElementById("checkoutForm").submit();
         }
     }
 </script>
 
 
+<!-- ===== SCRIPT QUẢN LÝ ĐỊA CHỈ (ĐÃ CẬP NHẬT) ===== -->
+<script>
+    function toggleAddressList() {
+        const addressList = document.getElementById('addressList');
+        addressList.style.display = addressList.style.display === 'none' ? 'block' : 'none';
 
-    <!-- Script quản lý địa chỉ -->
-    <script>
-        function toggleAddressList() {
-            const addressList = document.getElementById('addressList');
-            addressList.style.display = addressList.style.display === 'none' ? 'block' : 'none';
+        if (addressList.style.display === 'block') {
+            fetch('/ThanhToan/LayDanhSachDiaChi')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const container = document.getElementById('addresses');
+                        container.innerHTML = ''; // Xóa cũ
 
-            if (addressList.style.display === 'block') {
-                fetch('/ThanhToan/LayDanhSachDiaChi')
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            const container = document.getElementById('addresses');
-                            container.innerHTML = ''; // Xóa cũ
+                        // CẬP NHẬT: Đảm bảo JSON từ controller trả về
+                        // maDC, districtID, và wardCode
+                        data.data.forEach(d => {
+                            const div = document.createElement('div');
+                            div.className = 'border rounded p-2 mb-2';
+                            div.innerHTML =
+                                `<p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
+                                 <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
 
-                            data.data.forEach(d => {
-                                const div = document.createElement('div');
-                                div.className = 'border rounded p-2 mb-2';
-                                div.innerHTML =
-                                    <p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
-                                    <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
-                                    <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDC})">Chọn địa chỉ này</button>
-                                ;
-                                container.appendChild(div);
-                            });
-                        } else {
-                            alert(data.message || 'Không thể tải địa chỉ.');
-                        }
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        alert('Có lỗi xảy ra khi tải địa chỉ.');
-                    });
+                                 <!-- CẬP NHẬT: Truyền mã DC vào hàm chonDiaChi -->
+                                 <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDC})">Chọn địa chỉ này</button>`;
+                            container.appendChild(div);
+                        });
+                    } else {
+                        showCustomAlert(data.message || 'Không thể tải địa chỉ.');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    showCustomAlert('Có lỗi xảy ra khi tải địa chỉ.');
+                });
+        }
+    }
+
+    // CẬP NHẬT: Hàm chonDiaChi
+    // Thay vì reload(), hàm này gọi 1 Action mới để set địa chỉ mặc định
+    // và sau đó Action đó sẽ redirect về trang này (để tự động tính lại phí ship)
+    function chonDiaChi(maDiaChi) {
+        console.log("Đang đổi địa chỉ mặc định thành:", maDiaChi);
+        // TODO: Bạn CẦN TẠO Action [HttpGet] /ThanhToan/ChonDiaChi?maDiaChi=...
+        // Action này phải set địa chỉ mặc định MỚI và sau đó RedirectToAction("Index")
+        location.href = `/ThanhToan/ChonDiaChi?maDiaChi=${maDiaChi}`;
+    }
+
+    // CẬP NHẬT: Hàm toggleAddForm
+    // Sẽ gọi hàm initGHNAddressForm() khi mở form
+    let ghnProvincesLoaded = false;
+    function toggleAddForm() {
+        const addForm = document.getElementById('addForm');
+        addForm.style.display = addForm.style.display === 'none' ? 'block' : 'none';
+
+        // Chỉ tải danh sách Tỉnh/Thành lần đầu tiên
+        if (addForm.style.display === 'block' && !ghnProvincesLoaded) {
+            initGHNAddressForm();
+            ghnProvincesLoaded = true;
+        }
+    }
+</script>
+
+
+<!-- ===== SCRIPT API GHN (MỚI) ===== -->
+<script>
+    // --- CÀI ĐẶT API GHN ---
+    const GHN_TOKEN = "c8dd5606-b8d8-11f0-b040-4e257d8388b4"; // Token của bạn
+    // ===== SỬA LỖI (1): Đổi "197908" (string) thành 197908 (number) =====
+    const GHN_SHOP_ID = 197908; // Shop ID của bạn (Đã sửa thành SỐ)
+    const GHN_API_MASTER_DATA = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data";
+    const GHN_API_SERVICE = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order";
+
+    // --- TODO: THAY ĐỔI THÔNG TIN KHO CỦA BẠN ---
+    // Bạn BẮT BUỘC phải thay đổi 2 giá trị này thành ID Quận/Huyện và Mã Phường/Xã
+    // của cửa hàng/kho của bạn để GHN tính phí vận chuyển CHÍNH XÁC.
+    // Bạn có thể tìm ID này bằng cách chọn địa chỉ của bạn trong form "Thêm địa chỉ mới"
+    // và xem log console.
+    const SHOP_DISTRICT_ID = 3695; // TODO: THAY ĐỔI (Ví dụ: 3695 là Quận 9, HCM)
+    const SHOP_WARD_CODE = "90748";  // TODO: THAY ĐỔI (Ví dụ: 90748 là P. Tăng Nhơn Phú A)
+
+    // --- TODO: THAY ĐỔI THÔNG TIN GÓI HÀNG MẶC ĐỊNH ---
+    // Ước lượng cân nặng (gram) và kích thước (cm) trung bình của 1 đơn hàng
+    // để GHN tính phí.
+    const DEFAULT_WEIGHT_GRAMS = 1000; // 1kg
+    const DEFAULT_HEIGHT_CM = 15;
+    const DEFAULT_LENGTH_CM = 20;
+    const DEFAULT_WIDTH_CM = 20;
+
+
+    // --- LẤY DOM ELEMENTS CHO FORM THÊM ĐỊA CHỈ ---
+    const ghnProvinceSelect = document.getElementById('ghnProvinceSelect');
+    const ghnDistrictSelect = document.getElementById('ghnDistrictSelect');
+    const ghnWardSelect = document.getElementById('ghnWardSelect');
+
+    /**
+      * Hàm gọi API GHN (Chung)
+      */
+     async function ghnApiCall(endpoint, options = {}, apiBase = GHN_API_MASTER_DATA) {
+         try {
+             // === SỬA LỖI: Luôn gửi ShopId ===
+             // API master-data (sandbox) CŨNG yêu cầu ShopId
+             const defaultHeaders = {
+                 'Content-Type': 'application/json',
+                 'Token': GHN_TOKEN,
+                 'ShopId': GHN_SHOP_ID // <-- ĐÃ DI CHUYỂN ShopId LÊN ĐÂY (dùng dạng số)
+             };
+
+             // API Dịch vụ (tính phí) yêu cầu ShopId (Giờ đã thừa)
+             // if (apiBase === GHN_API_SERVICE) {
+             //     defaultHeaders['ShopId'] = GHN_SHOP_ID;
+             // }
+
+             const config = {
+                 method: 'GET', // Mặc định
+                 ...options, // Ghi đè nếu có (ví dụ: method: 'POST', body: ...)
+                 headers: {
+                     ...defaultHeaders,
+                     ...(options.headers || {})
+                 }
+             };
+
+             const response = await fetch(`${apiBase}${endpoint}`, config);
+
+             if (!response.ok) {
+                 const errorData = await response.json();
+                 // Bắt lỗi validation của GHN (như lỗi 'required' tag)
+                 if (errorData && errorData.code_message_value) {
+                      throw new Error(errorData.code_message_value);
+                 }
+                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+             }
+
+             const result = await response.json();
+             if (result.code !== 200) {
+                  throw new Error(result.message || 'Lỗi không xác định từ GHN');
+             }
+             return result.data;
+
+         } catch (error) {
+             console.error('Lỗi khi gọi API GHN:', error.message);
+             // Alert này sẽ hiển thị chính xác lỗi GHN trả về (ví dụ: "ShopID failed on 'required' tag")
+             showCustomAlert(`Lỗi API GHN: ${error.message}. Vui lòng kiểm tra lại Token/ShopID.`);
+             return null;
+         }
+     }
+
+    /**
+      * Khởi chạy form địa chỉ (tải Tỉnh/Thành)
+      */
+    async function initGHNAddressForm() {
+        const provinces = await ghnApiCall('/province');
+        if (provinces) {
+            ghnProvinceSelect.innerHTML = '<option value="">--- Chọn Tỉnh/Thành ---</option>';
+            provinces.sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
+
+            provinces.forEach(province => {
+                const option = document.createElement('option');
+                option.value = province.ProvinceID;
+                option.textContent = province.ProvinceName;
+                ghnProvinceSelect.appendChild(option);
+            });
+        }
+    }
+
+    // Gắn sự kiện cho <select> Tỉnh/Thành
+    ghnProvinceSelect.addEventListener('change', async (e) => {
+        const provinceId = e.target.value;
+        ghnDistrictSelect.innerHTML = '<option value="">Đang tải...</option>';
+        ghnWardSelect.innerHTML = '<option value="">Vui lòng chọn Quận/Huyện</option>';
+        ghnDistrictSelect.disabled = true;
+        ghnWardSelect.disabled = true;
+
+        if (!provinceId) return;
+
+        const districts = await ghnApiCall(`/district?province_id=${provinceId}`);
+        if (districts) {
+            ghnDistrictSelect.innerHTML = '<option value="">--- Chọn Quận/Huyện ---</option>';
+            districts.sort((a, b) => a.DistrictName.localeCompare(b.DistrictName));
+
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district.DistrictID;
+                option.textContent = district.DistrictName;
+                ghnDistrictSelect.appendChild(option);
+            });
+            ghnDistrictSelect.disabled = false;
+        }
+    });
+
+    // Gắn sự kiện cho <select> Quận/Huyện
+    ghnDistrictSelect.addEventListener('change', async (e) => {
+        const districtId = e.target.value;
+        ghnWardSelect.innerHTML = '<option value="">Đang tải...</option>';
+        ghnWardSelect.disabled = true;
+
+        if (!districtId) return;
+
+        const wards = await ghnApiCall(`/ward?district_id=${districtId}`);
+        if (wards) {
+            ghnWardSelect.innerHTML = '<option value="">--- Chọn Phường/Xã ---</option>';
+            wards.sort((a, b) => a.WardName.localeCompare(b.WardName));
+
+            wards.forEach(ward => {
+                const option = document.createElement('option');
+                option.value = ward.WardCode;
+                option.textContent = ward.WardName;
+                ghnWardSelect.appendChild(option);
+            });
+            ghnWardSelect.disabled = false;
+        }
+    });
+
+    /**
+      * Lưu địa chỉ mới
+      */
+    async function saveNewAddress() {
+        // 1. Thu thập dữ liệu
+        const tenNguoiNhan = document.getElementById('newName').value.trim();
+        const soDienThoai = document.getElementById('newPhone').value.trim();
+        const diaChiChiTiet = document.getElementById('newAddr').value.trim();
+
+        const provinceID = ghnProvinceSelect.value;
+        const provinceName = ghnProvinceSelect.options[ghnProvinceSelect.selectedIndex].text;
+
+        const districtID = ghnDistrictSelect.value;
+        const districtName = ghnDistrictSelect.options[ghnDistrictSelect.selectedIndex].text;
+
+        const wardCode = ghnWardSelect.value;
+        const wardName = ghnWardSelect.options[ghnWardSelect.selectedIndex].text;
+
+        // 2. Kiểm tra dữ liệu
+        if (!tenNguoiNhan || !soDienThoai || !diaChiChiTiet || !provinceID || !districtID || !wardCode) {
+            showCustomAlert("Vui lòng điền đầy đủ thông tin địa chỉ.");
+            return;
+        }
+
+        // 3. Chuẩn bị dữ liệu gửi đi
+        const data = {
+            TenNguoiNhan: tenNguoiNhan,
+            SoDienThoai: soDienThoai,
+            DiaChiChiTiet: diaChiChiTiet,
+            ProvinceID: parseInt(provinceID),
+            ProvinceName: provinceName,
+            DistrictID: parseInt(districtID),
+            DistrictName: districtName,
+            WardCode: wardCode,
+            WardName: wardName
+        };
+
+        console.log("Đang gửi dữ liệu địa chỉ mới:", data);
+
+        // 4. Gửi lên server
+        // TODO: Bạn CẦN TẠO Action [HttpPost] /ThanhToan/ThemDiaChiMoi
+        // Action này phải nhận 1 model có các trường như `data` ở trên
+        try {
+            const response = await fetch('/ThanhToan/ThemDiaChiMoi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Thêm AntiForgeryToken nếu bạn dùng
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showCustomAlert("Thêm địa chỉ mới thành công!");
+                // Ẩn form và tải lại danh sách địa chỉ
+                document.getElementById('addForm').style.display = 'none';
+                toggleAddressList(); // Mở lại để xem danh sách
+                toggleAddressList(); // Đóng lại
+            } else {
+                showCustomAlert(result.message || "Lưu địa chỉ thất bại.");
             }
+        } catch (error) {
+            console.error("Lỗi khi lưu địa chỉ:", error);
+            showCustomAlert("Lỗi kết nối khi lưu địa chỉ.");
+        }
+    }
+
+    /**
+      * TÍNH PHÍ VẬN CHUYỂN
+      */
+    async function updateShippingFee(toDistrictId, toWardCode) {
+        if (!toDistrictId || !toWardCode) {
+            console.warn("Thiếu DistrictID hoặc WardCode, không thể tính phí vận chuyển.");
+            updateFeeUI(0, "Vui lòng chọn địa chỉ hợp lệ");
+            updateEstimatedTime(null);
+            return;
         }
 
-        function chonDiaChi(maDiaChi) {
-            // Gửi request lên server để chọn địa chỉ, hoặc cập nhật UI tạm thời
-            console.log("Địa chỉ được chọn:", maDiaChi);
-            // Ví dụ: reload lại trang hoặc update div defaultAddress
-            location.reload(); // Giải pháp tạm
+        if (SHOP_DISTRICT_ID === 0 || SHOP_WARD_CODE === "") {
+            console.error("CHƯA CẤU HÌNH SHOP_DISTRICT_ID và SHOP_WARD_CODE trong file JS.");
+            showCustomAlert("Lỗi cấu hình: Thông tin kho hàng chưa được thiết lập.");
+            updateFeeUI(0, "Lỗi cấu hình");
+            updateEstimatedTime(null);
+            return;
         }
-    </script>
 
+        // Cập nhật UI sang "Đang tính..."
+        updateFeeUI(0, "Đang tính...");
+        updateEstimatedTime(null);
 
+        // 1. Lấy loại dịch vụ khả dụng
+        // ===== SỬA LỖI (2): Thêm "shop_id" vào body =====
+        const servicePayload = {
+            "shop_id": GHN_SHOP_ID, // <-- ĐÃ SỬA: Thêm shop_id
+            "from_district": SHOP_DISTRICT_ID,
+            "to_district": parseInt(toDistrictId)
+        };
+
+        const services = await ghnApiCall('/available-services', {
+            method: 'POST',
+            body: JSON.stringify(servicePayload)
+        }, GHN_API_SERVICE);
+
+        if (!services || services.length === 0) {
+            updateFeeUI(0, "Không hỗ trợ vận chuyển");
+            updateEstimatedTime(null);
+            return;
+        }
+
+        // Ưu tiên dịch vụ "Vận chuyển đường bộ" (id: 53320) hoặc "Chuẩn" (id: 2)
+        // Nếu không có thì lấy cái đầu tiên
+        let service = services.find(s => s.service_type_id === 2); // 2 = Chuẩn
+        if (!service) {
+            service = services[0];
+        }
+        const service_type_id = service.service_type_id;
+
+        // 2. Lấy phí vận chuyển
+        // ===== SỬA LỖI (3): Thêm "shop_id" vào body =====
+        const feePayload = {
+            "shop_id": GHN_SHOP_ID, // <-- ĐÃ SỬA: Thêm shop_id
+            "service_type_id": service_type_id,
+            "from_district_id": SHOP_DISTRICT_ID,
+            "from_ward_code": SHOP_WARD_CODE,
+            "to_district_id": parseInt(toDistrictId),
+            "to_ward_code": toWardCode,
+            "height": DEFAULT_HEIGHT_CM,
+            "length": DEFAULT_LENGTH_CM,
+            "width": DEFAULT_WIDTH_CM,
+            "weight": DEFAULT_WEIGHT_GRAMS,
+            "insurance_value": parseInt(document.getElementById('hidden-base-total').value),
+            "coupon": null
+        };
+
+        const feeData = await ghnApiCall('/fee', {
+             method: 'POST',
+             body: JSON.stringify(feePayload)
+        }, GHN_API_SERVICE);
+
+        if (feeData && feeData.total) {
+            updateFeeUI(feeData.total, `₫${feeData.total.toLocaleString('vi-VN')}`);
+        } else {
+            updateFeeUI(0, "Không thể tính phí");
+        }
+
+        // 3. Lấy thời gian giao hàng dự kiến
+        const timePayload = {
+            ...feePayload
+        };
+        // Xóa các trường không cần thiết cho API thời gian
+        delete timePayload.insurance_value;
+        delete timePayload.coupon;
+
+        const timeData = await ghnApiCall('/leadtime', {
+             method: 'POST',
+             body: JSON.stringify(timePayload)
+        }, GHN_API_SERVICE);
+
+        if (timeData && timeData.leadtime) {
+            const deliveryDate = new Date(timeData.leadtime * 1000);
+            updateEstimatedTime(deliveryDate);
+        } else {
+            updateEstimatedTime(null);
+        }
+    }
+
+    /**
+      * Cập nhật UI phí vận chuyển và tổng tiền
+      */
+    function updateFeeUI(feeAmount, feeText) {
+        const baseTotal = parseInt(document.getElementById('hidden-base-total').value) || 0;
+        const shippingFee = parseInt(feeAmount) || 0;
+        const finalTotal = baseTotal + shippingFee;
+
+        // Cập nhật các trường ẩn
+        document.getElementById('hidden-shipping-fee').value = shippingFee;
+
+        // Cập nhật văn bản
+        document.getElementById('shipping-fee-display').textContent = feeText;
+        document.getElementById('shipping-fee-text').textContent = feeText;
+        document.getElementById('total-payment-text').textContent = `₫${finalTotal.toLocaleString('vi-VN')}`;
+    }
+
+    /**
+      * Cập nhật UI thời gian giao hàng
+      */
+     function updateEstimatedTime(deliveryDate) {
+         const timeDisplay = document.getElementById('shipping-time-display');
+          if (deliveryDate) {
+             const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+             const formattedDate = deliveryDate.toLocaleDateString('vi-VN', options);
+             timeDisplay.textContent = `Dự kiến nhận hàng vào ${formattedDate}`;
+          } else {
+             timeDisplay.textContent = 'Dự kiến nhận hàng...';
+          }
+     }
+
+    /**
+      * Hàm alert tùy chỉnh (thay thế cho alert() mặc định)
+      */
+    function showCustomAlert(message) {
+        // Bạn có thể thay thế hàm này bằng thư viện modal/toast đẹp hơn
+        console.warn("ALERT:", message);
+        alert(message);
+    }
+
+    /**
+      * KHỞI CHẠY KHI TẢI TRANG
+      */
+    document.addEventListener('DOMContentLoaded', () => {
+        // Lấy thông tin địa chỉ mặc định
+        const defaultAddressDiv = document.getElementById('default-address');
+        const districtId = defaultAddressDiv.getAttribute('data-district-id');
+        const wardCode = defaultAddressDiv.getAttribute('data-ward-code');
+
+        console.log("Địa chỉ mặc định:", { districtId, wardCode });
+
+        // Bắt đầu tính phí vận chuyển cho địa chỉ mặc định
+        updateShippingFee(districtId, wardCode);
+    });
+
+</script>
