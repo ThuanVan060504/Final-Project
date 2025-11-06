@@ -26,9 +26,9 @@ namespace Final_Project.Controllers
         public string TenNguoiNhan { get; set; }
         public string SoDienThoai { get; set; }
         public string DiaChiChiTiet { get; set; }
-        public string ProvinceID { get; set; }
+        public int ProvinceID { get; set; } // <-- Sửa từ string
         public string ProvinceName { get; set; }
-        public string DistrictID { get; set; }
+        public int DistrictID { get; set; } // <-- Sửa từ string
         public string DistrictName { get; set; }
         public string WardCode { get; set; }
         public string WardName { get; set; }
@@ -116,11 +116,13 @@ namespace Final_Project.Controllers
                     TenNguoiNhan = model.TenNguoiNhan,
                     SoDienThoai = model.SoDienThoai,
                     DiaChiChiTiet = model.DiaChiChiTiet,
-                    TinhTP = model.ProvinceName,
-                    QuanHuyen = model.DistrictName,
-                    PhuongXa = model.WardName,
-                    ProvinceID = model.ProvinceID,
-                    DistrictID = model.DistrictID,
+                    TinhTP = model.ProvinceName,     // <-- Giờ sẽ có giá trị
+                    QuanHuyen = model.DistrictName, // <-- Giờ sẽ có giá trị
+                    PhuongXa = model.WardName,      // <-- Giờ sẽ có giá trị
+
+                    // ===== SỬA LỖI: Chuyển 'int' về 'string' khi lưu vào DB =====
+                    ProvinceID = model.ProvinceID.ToString(), // <-- Sửa: Thêm .ToString()
+                    DistrictID = model.DistrictID.ToString(), // <-- Sửa: Thêm .ToString()
                     WardCode = model.WardCode,
                     MacDinh = false // Không set mặc định khi thêm mới
                 };
