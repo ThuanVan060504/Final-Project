@@ -8,49 +8,53 @@ using Final_Project.Services.PayPal;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 
 var builder = WebApplication.CreateBuilder(args);
-// Đăng ký HttpClient và cấu hình SSL
-// Đây là MỘT chuỗi lệnh
+
+// ============================
+// 🔧 HTTP + SSL
+// ============================
 builder.Services.AddHttpClient("MyHttpClient", client => { })
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
         ServerCertificateCustomValidationCallback = (message, cert, chain, errors) =>
         {
-            // Bỏ qua lỗi (return true) khi ở môi trường Development
+            // Cho phép bỏ qua lỗi SSL khi dev
             if (builder.Environment.IsDevelopment())
-            {
                 return true;
-            }
-            // Ở môi trường Production, vẫn kiểm tra lỗi
+
+            // Ở môi trường production thì vẫn check SSL
             return errors == SslPolicyErrors.None;
         }
-    }); // <-- Dấu ; kết thúc toàn bộ chuỗi ở đây
+    });
 
-// ---------- Cấu hình dịch vụ ----------
-// Cấu hình paypal API
+// ============================
+// ⚙️ Services
+// ============================
 builder.Services.AddScoped<IPayPalService, PayPalService>();
-
 builder.Services.AddScoped<IEmailService, EmailService>();
-
-// Cấu hình Momo API
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 builder.Services.AddScoped<IMomoService, MomoService>();
-
-// Cấu hình VnPay
 builder.Services.AddScoped<IVnPayService, VnPayService>();
-
-// Dịch vụ dọn dẹp flash sale
 builder.Services.AddHostedService<FlashSaleCleanupService>();
-
-// HTTP Client
 builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
-// Authentication: Cookie + Google
+// ============================
+// 🔐 Auth + Google
+// ============================
+// Dùng DataProtection tạm để mỗi lần restart app → key mới → cookie cũ vô hiệu
+builder.Services.AddDataProtection()
+    .UseEphemeralDataProtectionProvider()
+    .SetApplicationName(Guid.NewGuid().ToString());
+
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = "MyCookie"; // Scheme dùng nội bộ
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme; // Khi Challenge() sẽ qua Google
+    options.DefaultScheme = "MyCookie";
+    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
 })
 .AddCookie("MyCookie", options =>
 {
@@ -59,7 +63,6 @@ builder.Services.AddAuthentication(options =>
     options.ExpireTimeSpan = TimeSpan.FromDays(7);
     options.SlidingExpiration = true;
 })
-
 .AddGoogle(options =>
 {
     // Ghép chuỗi để Git không nhận diện full key
@@ -71,8 +74,9 @@ builder.Services.AddAuthentication(options =>
     options.CallbackPath = "/signin-google";
 });
 
-
-// Session
+// ============================
+// 💾 Session
+// ============================
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
@@ -80,17 +84,19 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Đọc appsettings.json
+// ============================
+// 🧠 MVC + DbContext
+// ============================
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-
-// MVC + DbContext
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// ---------- Middleware pipeline ----------
+// ============================
+// 🚦 Middleware pipeline
+// ============================
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -108,12 +114,33 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Route cho Area Admin
+// ============================
+// 💥 Auto logout (xoá cookie/session)
+// ============================
+// Khi Admin truy cập "/", sẽ tự động clear session + cookie rồi về Home/Index
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLower();
+    var role = context.Session.GetString("UserRole");
+
+    if (role == "Admin" && path == "/")
+    {
+        context.Session.Clear();
+        await context.SignOutAsync("MyCookie");
+        context.Response.Redirect("/Home/Index");
+        return;
+    }
+
+    await next();
+});
+
+// ============================
+// 🧭 Route
+// ============================
 app.MapControllerRoute(
     name: "Adminboot",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
-// Route mặc định
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
