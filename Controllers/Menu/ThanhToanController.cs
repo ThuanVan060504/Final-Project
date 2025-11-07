@@ -14,21 +14,20 @@ using System.Linq;
 using System.Text;
 using Final_Project.Models.User;
 using System.Threading.Tasks; // Cần cho async Task
-using System.Collections.Generic; // Cần cho List<>
+using System.Collections.Generic; 
 using System; // Cần cho DateTime
 
 namespace Final_Project.Controllers
 {
-    // == MODEL DÙNG CHO VIỆC THÊM ĐỊA CHỈ MỚI TỪ GHN ==
-    // (Bạn có thể chuyển file này ra thư mục Models nếu muốn)
+    
     public class DiaChiMoiViewModel
     {
         public string TenNguoiNhan { get; set; }
         public string SoDienThoai { get; set; }
         public string DiaChiChiTiet { get; set; }
-        public int ProvinceID { get; set; } // <-- Sửa từ string
+        public int ProvinceID { get; set; } 
         public string ProvinceName { get; set; }
-        public int DistrictID { get; set; } // <-- Sửa từ string
+        public int DistrictID { get; set; } 
         public string DistrictName { get; set; }
         public string WardCode { get; set; }
         public string WardName { get; set; }
@@ -62,8 +61,7 @@ namespace Final_Project.Controllers
             }
         }
 
-        // [GET] /ThanhToan/LayDanhSachDiaChi
-        // CẬP NHẬT: Trả về cả ProvinceID, DistrictID, WardCode
+        
         [HttpGet]
         public IActionResult LayDanhSachDiaChi()
         {
@@ -73,8 +71,7 @@ namespace Final_Project.Controllers
                 return Json(new { success = false, message = "Chưa đăng nhập" });
             }
 
-            // TODO: Đảm bảo Model "DiaChiNguoiDung" của bạn đã có 3 cột:
-            // ProvinceID (int), DistrictID (int), WardCode (string)
+            
             var danhSach = _context.DiaChiNguoiDungs
                 .Where(d => d.MaTK == maTK)
                 .Select(d => new
@@ -85,8 +82,7 @@ namespace Final_Project.Controllers
                     d.DiaChiChiTiet,
                     d.PhuongXa,
                     d.QuanHuyen,
-                    d.TinhTP,
-                    // --- CẬP NHẬT BẮT BUỘC ---
+                    d.TinhTP,  
                     d.ProvinceID,
                     d.DistrictID,
                     d.WardCode
@@ -96,8 +92,7 @@ namespace Final_Project.Controllers
             return Json(new { success = true, data = danhSach });
         }
 
-        // [POST] /ThanhToan/ThemDiaChiMoi
-        // MỚI: Thêm Action để lưu địa chỉ mới (từ form GHN)
+        
         [HttpPost]
         public async Task<IActionResult> ThemDiaChiMoi([FromBody] DiaChiMoiViewModel model)
         {
@@ -116,15 +111,14 @@ namespace Final_Project.Controllers
                     TenNguoiNhan = model.TenNguoiNhan,
                     SoDienThoai = model.SoDienThoai,
                     DiaChiChiTiet = model.DiaChiChiTiet,
-                    TinhTP = model.ProvinceName,     // <-- Giờ sẽ có giá trị
-                    QuanHuyen = model.DistrictName, // <-- Giờ sẽ có giá trị
-                    PhuongXa = model.WardName,      // <-- Giờ sẽ có giá trị
+                    TinhTP = model.ProvinceName,   
+                    QuanHuyen = model.DistrictName, 
+                    PhuongXa = model.WardName,      
 
-                    // ===== SỬA LỖI: Chuyển 'int' về 'string' khi lưu vào DB =====
-                    ProvinceID = model.ProvinceID.ToString(), // <-- Sửa: Thêm .ToString()
-                    DistrictID = model.DistrictID.ToString(), // <-- Sửa: Thêm .ToString()
+                    ProvinceID = model.ProvinceID.ToString(), 
+                    DistrictID = model.DistrictID.ToString(), 
                     WardCode = model.WardCode,
-                    MacDinh = false // Không set mặc định khi thêm mới
+                    MacDinh = false 
                 };
 
                 _context.DiaChiNguoiDungs.Add(diaChiMoi);
@@ -139,24 +133,18 @@ namespace Final_Project.Controllers
             }
         }
 
-        // [GET] /ThanhToan/ChonDiaChi
-        // MỚI: Action để xử lý khi người dùng bấm "Chọn địa chỉ này"
+
         [HttpGet]
         public IActionResult ChonDiaChi(int maDiaChi)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
-
-            // Lấy danh sách địa chỉ của user
             var diaChiList = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK).ToList();
-
-            // Bỏ chọn tất cả địa chỉ cũ
             foreach (var dc in diaChiList)
             {
                 dc.MacDinh = false;
             }
 
-            // Chọn địa chỉ mới
             var diaChiMoi = diaChiList.FirstOrDefault(dc => dc.MaDiaChi == maDiaChi);
             if (diaChiMoi != null)
             {
@@ -164,14 +152,9 @@ namespace Final_Project.Controllers
                 _context.SaveChanges();
             }
 
-            // Tải lại trang thanh toán (Index GET)
-            // Trang sẽ tự động đọc lại địa chỉ mặc định MỚI
-            // và tự động tính lại phí vận chuyển.
             return RedirectToAction("Index");
         }
 
-        // [GET] /ThanhToan/Index
-        // MỚI: Tải trang thanh toán (sử dụng Session)
         [HttpGet]
         public IActionResult Index()
         {
@@ -179,7 +162,6 @@ namespace Final_Project.Controllers
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
-            // Lấy danh sách sản phẩm đã chọn từ Session
             var chonSPJson = HttpContext.Session.GetString("ChonSP");
             if (string.IsNullOrEmpty(chonSPJson))
             {
@@ -188,16 +170,12 @@ namespace Final_Project.Controllers
             }
             var chonSP = JsonConvert.DeserializeObject<List<int>>(chonSPJson);
 
-            // --- Lặp lại logic của XacNhanThanhToan ---
             var diaChiMacDinh = _context.DiaChiNguoiDungs
                 .FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
 
             if (diaChiMacDinh == null)
             {
                 TempData["Error"] = "⚠ Bạn chưa thiết lập địa chỉ mặc định. Vui lòng thêm hoặc chọn một địa chỉ.";
-                // Cho phép vào trang, nhưng view sẽ xử lý (JS sẽ báo lỗi không tính được phí)
-                // Hoặc bạn có thể redirect về giỏ hàng nếu muốn
-                // return RedirectToAction("Index", "GioHang");
             }
 
             var gioHang = (from gh in _context.GioHangs
@@ -218,17 +196,13 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
-            // TODO: Đảm bảo Model "DiaChiNguoiDung" đã có 3 cột:
-            // ProvinceID (int), DistrictID (int), WardCode (string)
             ViewBag.DiaChi = diaChiMacDinh;
             ViewBag.TongTien = gioHang.Sum(g => g.ThanhTien);
 
-            return View("Index", gioHang); // Trả về view Index.cshtml
+            return View("Index", gioHang); 
         }
 
 
-        // [POST] /ThanhToan/XacNhanThanhToan
-        // CẬP NHẬT: Lưu `chonSP` vào Session và gọi Action [GET] Index
         [HttpPost]
         public IActionResult XacNhanThanhToan(List<int> chonSP)
         {
@@ -241,17 +215,13 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
-            // Lưu danh sách SP vào Session
             var chonSPJson = JsonConvert.SerializeObject(chonSP);
             HttpContext.Session.SetString("ChonSP", chonSPJson);
 
-            // Chuyển đến Action [GET] Index để tải trang
             return RedirectToAction("Index");
         }
 
 
-        // [POST] /ThanhToan/ThanhToan
-        // CẬP NHẬT: Thêm `shippingFee` và thay thế phí gán cứng
         [HttpPost]
         public async Task<IActionResult> ThanhToan(List<int> chonSP, string paymentMethod, decimal shippingFee)
         {
@@ -259,9 +229,6 @@ namespace Final_Project.Controllers
             if (maTK == null)
                 return RedirectToAction("Login", "Auth");
 
-            // Không cần lấy TaiKhoan ở đây vì phương thức COD không dùng
-            // var TaiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK.Value);
-            // if (TaiKhoan == null) return RedirectToAction("Login", "Auth");
 
             if (chonSP == null || !chonSP.Any())
             {
@@ -299,9 +266,6 @@ namespace Final_Project.Controllers
 
             if (paymentMethod != "COD")
             {
-                // Các phương thức khác sẽ được xử lý riêng (Momo, VNPAY, Paypal)
-                // và không nên gọi Action này.
-                // Tuy nhiên, nếu có gọi, ta gán đúng tên.
                 phuongThuc = paymentMethod;
             }
 
@@ -311,8 +275,8 @@ namespace Final_Project.Controllers
                 MaDiaChi = diaChiMacDinh.MaDiaChi,
                 NgayDat = DateTime.Now,
                 NgayYeuCau = DateTime.Now.AddDays(3),
-                PhiVanChuyen = shippingFee, // <-- CẬP NHẬT
-                TongTien = tongTien + shippingFee, // <-- CẬP NHẬT
+                PhiVanChuyen = shippingFee,
+                TongTien = tongTien + shippingFee, 
                 GiamGia = 0,
                 PhuongThucThanhToan = phuongThuc,
                 TrangThaiThanhToan = trangThaiThanhToan,
@@ -321,7 +285,7 @@ namespace Final_Project.Controllers
             };
 
             _context.DonHangs.Add(donHang);
-            await _context.SaveChangesAsync(); // Dùng async
+            await _context.SaveChangesAsync(); 
 
             foreach (var item in gioHang)
             {
@@ -345,7 +309,7 @@ namespace Final_Project.Controllers
             }
 
             _context.GioHangs.RemoveRange(gioHang);
-            await _context.SaveChangesAsync(); // Dùng async
+            await _context.SaveChangesAsync(); 
 
             // Gửi email xác nhận đơn hàng
             await SendOrderConfirmationEmail(donHang.MaDonHang);
@@ -355,26 +319,19 @@ namespace Final_Project.Controllers
         }
 
 
-        // [GET] /ThanhToan/TaoMomoQRCode
-        // CẬP NHẬT: Nhận `tongTien` (đã bao gồm phí) và `shippingFee` từ view
         [HttpGet]
         public async Task<IActionResult> TaoMomoQRCode(List<int> chonSP, decimal tongTien, decimal shippingFee)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
-            // ================== FIX CS0103 START ==================
-            // Lỗi CS0103 xảy ra ở dưới vì biến 'TaiKhoan' chưa được khai báo.
-            // Cần lấy thông tin 'TaiKhoan' từ 'maTK' (lấy từ Session).
             var TaiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK.Value);
 
-            // Rất quan trọng: Kiểm tra xem có tìm thấy tài khoản không
             if (TaiKhoan == null)
             {
                 TempData["Error"] = "Không tìm thấy thông tin tài khoản. Vui lòng đăng nhập lại.";
                 return RedirectToAction("Login", "Auth");
             }
-            // =================== FIX CS0103 END ===================
 
             var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
             if (diaChi == null)
@@ -399,11 +356,11 @@ namespace Final_Project.Controllers
                 MaDiaChi = diaChi.MaDiaChi,
                 NgayDat = DateTime.Now,
                 NgayYeuCau = DateTime.Now.AddDays(3),
-                PhiVanChuyen = shippingFee, // <-- CẬP NHẬT
-                TongTien = tongTien, // <-- CẬP NHẬT (Lấy tổng tiền cuối cùng từ view)
+                PhiVanChuyen = shippingFee, 
+                TongTien = tongTien, 
                 GiamGia = 0,
                 PhuongThucThanhToan = "Ví MOMO",
-                TrangThaiThanhToan = "ChuaThanhToan", // <-- CẬP NHẬT (Callback sẽ đổi thành DaThanhToan)
+                TrangThaiThanhToan = "ChuaThanhToan",
                 TrangThaiDonHang = "DangXuLy"
             };
 

@@ -67,6 +67,60 @@
 -->
 
 <style>
+    /* === CSS CHO MODAL ĐỊA CHỈ === */
+
+    /* Lớp phủ nền mờ (Modal Overlay) */
+    #address-overlay {
+        position: fixed; /* Quan trọng: Đè lên trên trang */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); /* Nền mờ */
+        z-index: 1040; /* Đảm bảo nổi lên trên cùng */
+        /* Dùng flex để căn giữa nội dung modal */
+        display: none; /* Mặc định ẩn, JS sẽ đổi thành 'flex' */
+        justify-content: center;
+        align-items: center;
+        padding: 15px; /* Thêm padding cho màn hình nhỏ */
+    }
+
+    /* Ghi đè style cũ của #addressList để biến nó thành box nội dung */
+    #addressList {
+        max-width: 600px;
+        width: 100%; /* Chiếm 100% chiều rộng của max-width */
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        /* Thêm để cuộn nếu nội dung quá dài trên mobile */
+        max-height: 90vh; /* Tối đa 90% chiều cao màn hình */
+        overflow-y: auto; /* Tự động cuộn */
+
+        position: relative; /* Để chứa nút đóng 'X' */
+    }
+
+    /* Nút đóng 'X' cho modal */
+    .address-modal-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        color: #555;
+        opacity: 0.7;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+    }
+
+        .address-modal-close-btn:hover {
+            opacity: 1;
+            color: #000;
+        }
+    /* === HẾT CSS MODAL === */
     /* 🎨 Màu chủ đạo */
     :root {
         --main-orange: #ff9e4f;
@@ -82,7 +136,7 @@
         font-size: 25px;
         margin-top: 30px;
         margin-bottom: 15px;
-        border-bottom: 2px solid #000000);
+        border-bottom: 2px solid #000; /* Sửa lỗi CSS */
         padding-bottom: 6px;
         color: var(--text-dark);
     }
@@ -99,7 +153,7 @@
 
         #default-address p {
             margin-bottom: 6px;
-            font-size: 22p;
+            font-size: 22px; /* Sửa 'p' thành 'px' */
             color: var(--text-dark);
         }
 
@@ -219,6 +273,9 @@
     .product-image {
         border-radius: 6px;
         border: 1px solid #ddd;
+        width: 60px; /* Thêm style cho ảnh */
+        height: 60px; /* Thêm style cho ảnh */
+        object-fit: cover; /* Thêm style cho ảnh */
     }
 
     .col-md-5 p.mb-0 {
@@ -257,7 +314,41 @@
             color: var(--text-light);
             font-style: italic;
         }
+    /* Thêm hoặc cập nhật đoạn này trong thẻ <style> của bạn */
+    .shipping-option-box {
+        border: 2px solid #28a745; /* Viền xanh lá */
+        border-radius: 8px; /* Giữ bo góc */
+        padding: 15px; /* Điều chỉnh padding */
+        margin-bottom: 15px; /* Khoảng cách với phần tử dưới */
+        background-color: #f8fdf8; /* Nền hơi xanh nhạt */
+        /* Đảm bảo flexbox cho căn chỉnh nội dung */
+        display: flex;
+        align-items: center;
+        /* Để giảm khoảng trắng bên phải, chúng ta sẽ giới hạn chiều rộng */
+        /* Bạn có thể điều chỉnh max-width này theo ý muốn */
+        max-width: 600px; /* Ví dụ: Giới hạn chiều rộng tối đa */
+    }
 
+        /* Các style hiện có cho văn bản bên trong */
+        .shipping-option-box p {
+            font-size: 26px; /* Giữ kích thước chữ lớn */
+            margin-bottom: 0;
+            line-height: 1.2;
+        }
+
+        .shipping-option-box small {
+            font-size: 20px; /* Giữ kích thước chữ nhỏ */
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Kích thước ảnh */
+        .shipping-option-box .shipping-icon {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            margin-right: 15px; /* Giảm khoảng cách từ ảnh đến chữ */
+        }
     /* Voucher */
     .d-flex.justify-content-between.mb-3 p {
         font-weight: 500;
@@ -338,7 +429,7 @@
         background-color: var(--main-orange);
         border: none;
         margin: 10px;
-        D-color: white;
+        color: white; /* Sửa lỗi CSS */
         box-shadow: 0 3px 8px rgba(255,158,79,0.5);
         transition: background-color 0.3s ease, box-shadow 0.3s ease;
         cursor: pointer;
@@ -352,68 +443,78 @@
 </style>
 
 <!-- Địa chỉ -->
-<h4 class="section-title">📍 Địa Chỉ Nhận Hàng</h4>
+<h4 class="section-title">Địa Chỉ Nhận Hàng</h4>
 <!--
     CẬP NHẬT: Thêm data- attributes
     Bạn CẦN cập nhật Controller để @diaChi chứa DistrictID và WardCode
 -->
 <div id="default-address" class="mb-3"
-     data-district-id="@(diaChi?.GetType().GetProperty("DistrictID")?.GetValue(diaChi, null) ?? 0)"
+     data-district-id="@(diaChi?.GetType().GetProperty("DistrictID")?.GetValue(diaChi, null) ?? "0")"
      data-ward-code="@(diaChi?.GetType().GetProperty("WardCode")?.GetValue(diaChi, null) ?? "")">
-    <p>
-        <strong id="default-name">@diaChi?.TenNguoiNhan</strong>
-        (<span id="default-phone">@diaChi?.SoDienThoai</span>)
-    </p>
-    <p id="default-full-address">
-        @diaChi?.DiaChiChiTiet, @diaChi?.PhuongXa, @diaChi?.QuanHuyen, @diaChi?.TinhTP
-    </p>
+
+    @if (diaChi != null)
+    {
+        <p>
+            <strong id="default-name">@diaChi.TenNguoiNhan</strong>
+            (<span id="default-phone">@diaChi.SoDienThoai</span>)
+        </p>
+        <p id="default-full-address">
+            @diaChi.DiaChiChiTiet, @diaChi.PhuongXa, @diaChi.QuanHuyen, @diaChi.TinhTP
+        </p>
+    }
+    else
+    {
+        <p>
+            <strong id="default-name">Chưa có địa chỉ</strong>
+            (<span id="default-phone">---</span>)
+        </p>
+        <p id="default-full-address">
+            Vui lòng thêm địa chỉ nhận hàng để tiếp tục.
+        </p>
+    }
     <button class="btn btn-link" type="button" onclick="toggleAddressList()">Thay đổi</button>
 </div>
 
 
 <!-- Danh sách địa chỉ -->
-<div id="addressList" style="display: none;" class="mb-4">
-    <div id="addresses">
-        <!-- JS sẽ điền danh sách địa chỉ vào đây -->
-    </div>
+<div id="address-overlay">
+    <div id="addressList" class="mb-4">
 
-    <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
+        <button type="button" class="address-modal-close-btn" onclick="toggleAddressList()">&times;</button>
 
-    <!-- CẬP NHẬT: Thêm các <select> của GHN vào form -->
-    <div id="addForm" style="display: none;">
-        <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
-        <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
+        <h5 style="margin-bottom: 15px; font-weight: 600;">Chọn địa chỉ nhận hàng</h5>
 
-        <!-- GHN Tỉnh/Thành -->
-        <div class="mb-2">
-            <select id="ghnProvinceSelect" class="form-control">
-                <option value="">Vui lòng chọn Tỉnh/Thành</option>
-            </select>
+        <div id="addresses">
         </div>
 
-        <!-- GHN Quận/Huyện -->
-        <div class="mb-2">
-            <select id="ghnDistrictSelect" class="form-control" disabled>
-                <option value="">Vui lòng chọn Quận/Huyện</option>
-            </select>
+        <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
+
+        <div id="addForm" style="display: none;">
+            <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
+            <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
+            <div class="mb-2">
+                <select id="ghnProvinceSelect" class="form-control">
+                    <option value="">Vui lòng chọn Tỉnh/Thành</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <select id="ghnDistrictSelect" class="form-control" disabled>
+                    <option value="">Vui lòng chọn Quận/Huyện</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <select id="ghnWardSelect" class="form-control" disabled>
+                    <option value="">Vui lòng chọn Phường/Xã</option>
+                </select>
+            </div>
+            <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+            <button class="btn btn-primary btn-sm" type="button" onclick="saveNewAddress()">Lưu địa chỉ</button>
         </div>
-
-        <!-- GHN Phường/Xã -->
-        <div class="mb-2">
-            <select id="ghnWardSelect" class="form-control" disabled>
-                <option value="">Vui lòng chọn Phường/Xã</option>
-            </select>
-        </div>
-
-        <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
-
-        <!-- CẬP NHẬT: Đổi `addAddress()` thành `saveNewAddress()` -->
-        <button class="btn btn-primary btn-sm" type="button" onclick="saveNewAddress()">Lưu địa chỉ</button>
     </div>
 </div>
 
 <!-- Sản phẩm -->
-<h4 class="section-title">📦 Sản phẩm</h4>
+<h4 class="section-title">Sản phẩm</h4>
 @foreach (var sp in Model)
 {
     <div class="row align-items-center border p-3 mb-2">
@@ -431,33 +532,35 @@
 }
 
 <!-- Vận chuyển -->
-<h4 class="section-title">🚚 Phương thức vận chuyển</h4>
-<div class="border p-3 mb-3">
-    <!-- CẬP NHẬT: Phí vận chuyển sẽ được JS điền vào đây -->
-    <p><strong>Vận Chuyển Nhanh</strong> - <span id="shipping-fee-display">Đang tính...</span></p>
-    <small id="shipping-time-display">Dự kiến nhận hàng...</small>
+<h4 class="section-title">Phương thức vận chuyển</h4>
+<div class="shipping-option-box">
+    
+    <img src="~/images/G3TD_Ship.png" alt="Vận chuyển G3TD" class="shipping-icon">
+    
+    <div>
+        <p><strong>Vận Chuyển Nhanh</strong> - <span id="shipping-fee-display">Đang tính...</span></p>
+        <small id="shipping-time-display">Dự kiến nhận hàng...</small>
+    </div>
 </div>
 
 
 <!-- Voucher -->
-<h4 class="section-title">🎁 Voucher & Shopee Xu</h4>
+<h4 class="section-title">Voucher & Shopee Xu</h4>
 <div class="d-flex justify-content-between mb-3">
     <p>Không sử dụng Xu</p>
     <button class="btn btn-sm btn-outline-primary">Chọn Voucher</button>
 </div>
 
 <!-- Thanh toán -->
-<h4 class="section-title">💳 Phương thức thanh toán</h4>
+<h4 class="section-title">Phương thức thanh toán</h4>
 <form method="post" action="/ThanhToan/ThanhToan" id="checkoutForm">
     @foreach (var sp in Model)
     {
         <input type="hidden" name="chonSP" value="@sp.MaSP" />
     }
-    <input type="hidden" name="paymentMethod" id="paymentMethod" />
 
     <div class="d-flex gap-3 flex-wrap mb-3">
         <button type="button" class="btn btn-outline-secondary" id="btnCOD">Thanh toán khi nhận hàng</button>
-
         <button type="button" class="btn btn-outline-secondary" id="btnMomo">Ví MOMO</button>
         <button type="button" class="btn btn-outline-secondary" id="btnVnpay">Ví VNPAY</button>
         <button type="button" class="btn btn-outline-secondary" id="btnPaypal">Ví PAYPAL</button>
@@ -467,7 +570,7 @@
     <p class="text-muted">Phí thu hộ: ₫0 VND</p>
 
     <!-- Tổng tiền -->
-    <h4 class="section-title">🧾 Tổng thanh toán</h4>
+    <h4 class="section-title">Tổng thanh toán</h4>
     <div class="order-summary">
         <!-- CẬP NHẬT: Thêm ID để JS cập nhật -->
         <input type="hidden" id="hidden-base-total" value="@tongTien" />
@@ -530,6 +633,12 @@
         const shippingFee = parseInt(document.getElementById('hidden-shipping-fee').value) || 0;
         const finalTotal = baseTotal + shippingFee;
 
+        // Kiểm tra nếu phí vận chuyển chưa được tính (vẫn là 0)
+        if (shippingFee === 0) {
+            showCustomAlert("Chưa tính được phí vận chuyển. Vui lòng kiểm tra lại địa chỉ.");
+            return;
+        }
+
         if (finalTotal <= 0) {
              showCustomAlert("Tổng tiền không hợp lệ. Vui lòng tải lại trang.");
              return;
@@ -579,11 +688,16 @@
 
 <!-- ===== SCRIPT QUẢN LÝ ĐỊA CHỈ (ĐÃ CẬP NHẬT) ===== -->
 <script>
-    function toggleAddressList() {
-        const addressList = document.getElementById('addressList');
-        addressList.style.display = addressList.style.display === 'none' ? 'block' : 'none';
+        function toggleAddressList() {
+        // Đổi mục tiêu thành #address-overlay
+        const overlay = document.getElementById('address-overlay');
+        const isHidden = overlay.style.display === 'none' || overlay.style.display === '';
 
-        if (addressList.style.display === 'block') {
+        // Dùng 'flex' để kích hoạt (giúp căn giữa), 'none' để ẩn
+        overlay.style.display = isHidden ? 'flex' : 'none';
+
+        // Chỉ fetch data khi modal được MỞ
+        if (isHidden) {
             fetch('/ThanhToan/LayDanhSachDiaChi')
                 .then(res => res.json())
                 .then(data => {
@@ -591,17 +705,13 @@
                         const container = document.getElementById('addresses');
                         container.innerHTML = ''; // Xóa cũ
 
-                        // CẬP NHẬT: Đảm bảo JSON từ controller trả về
-                        // maDC, districtID, và wardCode
                         data.data.forEach(d => {
                             const div = document.createElement('div');
                             div.className = 'border rounded p-2 mb-2';
                             div.innerHTML =
                                 `<p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
                                  <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
-
-                                 <!-- CẬP NHẬT: Truyền mã DC vào hàm chonDiaChi -->
-                                 <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDC})">Chọn địa chỉ này</button>`;
+                                 <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDiaChi})">Chọn địa chỉ này</button>`;
                             container.appendChild(div);
                         });
                     } else {
@@ -614,6 +724,15 @@
                 });
         }
     }
+
+    // (TÙY CHỌN nhưng nên có) Thêm code để đóng modal khi click vào nền mờ
+    document.getElementById('address-overlay').addEventListener('click', function(e) {
+        // Nếu click vào chính overlay (lớp mờ) chứ không phải
+        // click vào nội dung bên trong (#addressList) thì đóng lại.
+        if (e.target.id === 'address-overlay') {
+            toggleAddressList();
+        }
+    });
 
     // CẬP NHẬT: Hàm chonDiaChi
     // Thay vì reload(), hàm này gọi 1 Action mới để set địa chỉ mặc định
@@ -641,12 +760,11 @@
 </script>
 
 
-<!-- ===== SCRIPT API GHN (MỚI) ===== -->
+<!-- ===== SCRIPT API GHN (ĐÃ HOÀN THIỆN) ===== -->
 <script>
     // --- CÀI ĐẶT API GHN ---
     const GHN_TOKEN = "c8dd5606-b8d8-11f0-b040-4e257d8388b4"; // Token của bạn
-    // ===== SỬA LỖI (1): Đổi "197908" (string) thành 197908 (number) =====
-    const GHN_SHOP_ID = 197908; // Shop ID của bạn (Đã sửa thành SỐ)
+    const GHN_SHOP_ID = 197908; // Shop ID của bạn (dạng SỐ)
     const GHN_API_MASTER_DATA = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data";
     const GHN_API_SERVICE = "https://dev-online-gateway.ghn.vn/shiip/public-api/v2/shipping-order";
 
@@ -673,60 +791,54 @@
     const ghnWardSelect = document.getElementById('ghnWardSelect');
 
     /**
-      * Hàm gọi API GHN (Chung)
-      */
-     async function ghnApiCall(endpoint, options = {}, apiBase = GHN_API_MASTER_DATA) {
-         try {
-             // === SỬA LỖI: Luôn gửi ShopId ===
-             // API master-data (sandbox) CŨNG yêu cầu ShopId
-             const defaultHeaders = {
-                 'Content-Type': 'application/json',
-                 'Token': GHN_TOKEN,
-                 'ShopId': GHN_SHOP_ID // <-- ĐÃ DI CHUYỂN ShopId LÊN ĐÂY (dùng dạng số)
-             };
+     * Hàm gọi API GHN (Chung) - ĐÃ SỬA LỖI
+     */
+    async function ghnApiCall(endpoint, options = {}, apiBase = GHN_API_MASTER_DATA) {
+        try {
+            // === SỬA LỖI: Luôn gửi ShopId và Token trong header ===
+            const defaultHeaders = {
+                'Content-Type': 'application/json',
+                'Token': GHN_TOKEN,
+                'ShopId': GHN_SHOP_ID // Luôn gửi ShopId (dạng số)
+            };
 
-             // API Dịch vụ (tính phí) yêu cầu ShopId (Giờ đã thừa)
-             // if (apiBase === GHN_API_SERVICE) {
-             //     defaultHeaders['ShopId'] = GHN_SHOP_ID;
-             // }
+            const config = {
+                method: 'GET', // Mặc định
+                ...options, // Ghi đè nếu có (ví dụ: method: 'POST', body: ...)
+                headers: {
+                    ...defaultHeaders,
+                    ...(options.headers || {})
+                }
+            };
 
-             const config = {
-                 method: 'GET', // Mặc định
-                 ...options, // Ghi đè nếu có (ví dụ: method: 'POST', body: ...)
-                 headers: {
-                     ...defaultHeaders,
-                     ...(options.headers || {})
-                 }
-             };
+            const response = await fetch(`${apiBase}${endpoint}`, config);
 
-             const response = await fetch(`${apiBase}${endpoint}`, config);
+            if (!response.ok) {
+                const errorData = await response.json();
+                // Bắt lỗi validation của GHN (như lỗi 'required' tag)
+                if (errorData && errorData.code_message_value) {
+                    throw new Error(errorData.code_message_value);
+                }
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+            }
 
-             if (!response.ok) {
-                 const errorData = await response.json();
-                 // Bắt lỗi validation của GHN (như lỗi 'required' tag)
-                 if (errorData && errorData.code_message_value) {
-                      throw new Error(errorData.code_message_value);
-                 }
-                 throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
-             }
+            const result = await response.json();
+            if (result.code !== 200) {
+                 throw new Error(result.message || 'Lỗi không xác định từ GHN');
+            }
+            return result.data;
 
-             const result = await response.json();
-             if (result.code !== 200) {
-                  throw new Error(result.message || 'Lỗi không xác định từ GHN');
-             }
-             return result.data;
-
-         } catch (error) {
-             console.error('Lỗi khi gọi API GHN:', error.message);
-             // Alert này sẽ hiển thị chính xác lỗi GHN trả về (ví dụ: "ShopID failed on 'required' tag")
-             showCustomAlert(`Lỗi API GHN: ${error.message}. Vui lòng kiểm tra lại Token/ShopID.`);
-             return null;
-         }
-     }
+        } catch (error) {
+            console.error('Lỗi khi gọi API GHN:', error.message);
+            // Alert này sẽ hiển thị chính xác lỗi GHN trả về
+            showCustomAlert(`Lỗi API GHN: ${error.message}. Vui lòng kiểm tra lại Token/ShopID.`);
+            return null;
+        }
+    }
 
     /**
-      * Khởi chạy form địa chỉ (tải Tỉnh/Thành)
-      */
+     * Khởi chạy form địa chỉ (tải Tỉnh/Thành)
+     */
     async function initGHNAddressForm() {
         const provinces = await ghnApiCall('/province');
         if (provinces) {
@@ -735,7 +847,7 @@
 
             provinces.forEach(province => {
                 const option = document.createElement('option');
-                option.value = province.ProvinceID;
+                option.value = province.ProvinceID; // Đây là SỐ
                 option.textContent = province.ProvinceName;
                 ghnProvinceSelect.appendChild(option);
             });
@@ -759,7 +871,7 @@
 
             districts.forEach(district => {
                 const option = document.createElement('option');
-                option.value = district.DistrictID;
+                option.value = district.DistrictID; // Đây là SỐ
                 option.textContent = district.DistrictName;
                 ghnDistrictSelect.appendChild(option);
             });
@@ -775,6 +887,7 @@
 
         if (!districtId) return;
 
+        // API này của GHN yêu cầu district_id là SỐ
         const wards = await ghnApiCall(`/ward?district_id=${districtId}`);
         if (wards) {
             ghnWardSelect.innerHTML = '<option value="">--- Chọn Phường/Xã ---</option>';
@@ -782,7 +895,7 @@
 
             wards.forEach(ward => {
                 const option = document.createElement('option');
-                option.value = ward.WardCode;
+                option.value = ward.WardCode; // Đây là CHUỖI
                 option.textContent = ward.WardName;
                 ghnWardSelect.appendChild(option);
             });
@@ -791,8 +904,8 @@
     });
 
     /**
-      * Lưu địa chỉ mới
-      */
+     * Lưu địa chỉ mới
+     */
     async function saveNewAddress() {
         // 1. Thu thập dữ liệu
         const tenNguoiNhan = document.getElementById('newName').value.trim();
@@ -808,6 +921,13 @@
         const wardCode = ghnWardSelect.value;
         const wardName = ghnWardSelect.options[ghnWardSelect.selectedIndex].text;
 
+        // Log để kiểm tra (giúp bạn tìm ID kho hàng)
+        console.log("Địa chỉ đã chọn:", {
+            ProvinceID: provinceID,
+            DistrictID: districtID,
+            WardCode: wardCode
+        });
+
         // 2. Kiểm tra dữ liệu
         if (!tenNguoiNhan || !soDienThoai || !diaChiChiTiet || !provinceID || !districtID || !wardCode) {
             showCustomAlert("Vui lòng điền đầy đủ thông tin địa chỉ.");
@@ -815,6 +935,7 @@
         }
 
         // 3. Chuẩn bị dữ liệu gửi đi
+        // Đảm bảo kiểu dữ liệu khớp với Model C# (DiaChiMoiViewModel)
         const data = {
             TenNguoiNhan: tenNguoiNhan,
             SoDienThoai: soDienThoai,
@@ -848,8 +969,9 @@
                 showCustomAlert("Thêm địa chỉ mới thành công!");
                 // Ẩn form và tải lại danh sách địa chỉ
                 document.getElementById('addForm').style.display = 'none';
-                toggleAddressList(); // Mở lại để xem danh sách
-                toggleAddressList(); // Đóng lại
+                // Tải lại danh sách địa chỉ (nhưng không mở)
+                toggleAddressList();
+                toggleAddressList();
             } else {
                 showCustomAlert(result.message || "Lưu địa chỉ thất bại.");
             }
@@ -860,10 +982,14 @@
     }
 
     /**
-      * TÍNH PHÍ VẬN CHUYỂN
-      */
+     * TÍNH PHÍ VẬN CHUYỂN (ĐÃ SỬA LỖI)
+     */
     async function updateShippingFee(toDistrictId, toWardCode) {
-        if (!toDistrictId || !toWardCode) {
+
+        // Chuyển đổi District ID (có thể là string từ data-attribute) sang SỐ
+        const toDistrictIdNum = parseInt(toDistrictId);
+
+        if (!toDistrictIdNum || !toWardCode || toDistrictIdNum === 0 || toWardCode === "") {
             console.warn("Thiếu DistrictID hoặc WardCode, không thể tính phí vận chuyển.");
             updateFeeUI(0, "Vui lòng chọn địa chỉ hợp lệ");
             updateEstimatedTime(null);
@@ -883,11 +1009,10 @@
         updateEstimatedTime(null);
 
         // 1. Lấy loại dịch vụ khả dụng
-        // ===== SỬA LỖI (2): Thêm "shop_id" vào body =====
         const servicePayload = {
-            "shop_id": GHN_SHOP_ID, // <-- ĐÃ SỬA: Thêm shop_id
             "from_district": SHOP_DISTRICT_ID,
-            "to_district": parseInt(toDistrictId)
+            "to_district": toDistrictIdNum,
+            "shop_id": GHN_SHOP_ID // <-- SỬA LỖI: Thêm shop_id vào BODY
         };
 
         const services = await ghnApiCall('/available-services', {
@@ -910,13 +1035,12 @@
         const service_type_id = service.service_type_id;
 
         // 2. Lấy phí vận chuyển
-        // ===== SỬA LỖI (3): Thêm "shop_id" vào body =====
         const feePayload = {
-            "shop_id": GHN_SHOP_ID, // <-- ĐÃ SỬA: Thêm shop_id
             "service_type_id": service_type_id,
+            "shop_id": GHN_SHOP_ID, // <-- SỬA LỖI: Thêm shop_id vào BODY
             "from_district_id": SHOP_DISTRICT_ID,
             "from_ward_code": SHOP_WARD_CODE,
-            "to_district_id": parseInt(toDistrictId),
+            "to_district_id": toDistrictIdNum,
             "to_ward_code": toWardCode,
             "height": DEFAULT_HEIGHT_CM,
             "length": DEFAULT_LENGTH_CM,
@@ -959,8 +1083,8 @@
     }
 
     /**
-      * Cập nhật UI phí vận chuyển và tổng tiền
-      */
+     * Cập nhật UI phí vận chuyển và tổng tiền
+     */
     function updateFeeUI(feeAmount, feeText) {
         const baseTotal = parseInt(document.getElementById('hidden-base-total').value) || 0;
         const shippingFee = parseInt(feeAmount) || 0;
@@ -976,8 +1100,8 @@
     }
 
     /**
-      * Cập nhật UI thời gian giao hàng
-      */
+     * Cập nhật UI thời gian giao hàng
+     */
      function updateEstimatedTime(deliveryDate) {
          const timeDisplay = document.getElementById('shipping-time-display');
           if (deliveryDate) {
@@ -990,8 +1114,8 @@
      }
 
     /**
-      * Hàm alert tùy chỉnh (thay thế cho alert() mặc định)
-      */
+     * Hàm alert tùy chỉnh (thay thế cho alert() mặc định)
+     */
     function showCustomAlert(message) {
         // Bạn có thể thay thế hàm này bằng thư viện modal/toast đẹp hơn
         console.warn("ALERT:", message);
@@ -999,8 +1123,8 @@
     }
 
     /**
-      * KHỞI CHẠY KHI TẢI TRANG
-      */
+     * KHỞI CHẠY KHI TẢI TRANG
+     */
     document.addEventListener('DOMContentLoaded', () => {
         // Lấy thông tin địa chỉ mặc định
         const defaultAddressDiv = document.getElementById('default-address');
