@@ -121,6 +121,59 @@
             color: #000;
         }
     /* === HẾT CSS MODAL === */
+    /* === CSS CHO MODAL THÊM ĐỊA CHỈ (MỚI) === */
+    #add-form-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        /* Nền mờ. Khi đè lên modal 1,
+          nền sẽ tối hơn, tạo cảm giác "stacked"
+        */
+        background-color: rgba(0, 0, 0, 0.5);
+        /* z-index cao hơn modal 1 (1040) */
+        z-index: 1050;
+        display: none; /* Mặc định ẩn */
+        justify-content: center;
+        align-items: center;
+        padding: 15px;
+    }
+
+    /* Style lại #addForm để nó là content box
+      (thay vì là 1 div con)
+    */
+    #addForm {
+        background: #fff;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative; /* Cho nút đóng */
+        width: 100%;
+        max-width: 600px; /* Giống modal chính */
+        /* Ghi đè style="display: none;"
+          vì giờ #add-form-overlay sẽ kiểm soát việc ẩn/hiện
+        */
+        display: block !important;
+    }
+
+    /* Nút hủy (thêm mới) */
+    .btn-cancel-add {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 6px 16px;
+        transition: background-color 0.3s ease;
+        margin-left: 10px;
+    }
+
+        .btn-cancel-add:hover {
+            background-color: #5a6268;
+        }
     /* 🎨 Màu chủ đạo */
     :root {
         --main-orange: #ff9e4f;
@@ -489,26 +542,39 @@
 
         <button class="btn btn-sm btn-outline-success mb-2" type="button" onclick="toggleAddForm()">➕ Thêm địa chỉ mới</button>
 
-        <div id="addForm" style="display: none;">
-            <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
-            <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
-            <div class="mb-2">
-                <select id="ghnProvinceSelect" class="form-control">
-                    <option value="">Vui lòng chọn Tỉnh/Thành</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <select id="ghnDistrictSelect" class="form-control" disabled>
-                    <option value="">Vui lòng chọn Quận/Huyện</option>
-                </select>
-            </div>
-            <div class="mb-2">
-                <select id="ghnWardSelect" class="form-control" disabled>
-                    <option value="">Vui lòng chọn Phường/Xã</option>
-                </select>
-            </div>
-            <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+    </div>
+</div>
+
+<div id="add-form-overlay">
+
+    <div id="addForm">
+        <button type="button" class="address-modal-close-btn" onclick="toggleAddForm()">&times;</button>
+        <h5 style="margin-bottom: 15px; font-weight: 600;">Thêm địa chỉ mới</h5>
+
+        <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
+        <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
+
+        <div class="mb-2">
+            <select id="ghnProvinceSelect" class="form-control">
+                <option value="">Vui lòng chọn Tỉnh/Thành</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <select id="ghnDistrictSelect" class="form-control" disabled>
+                <option value="">Vui lòng chọn Quận/Huyện</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <select id="ghnWardSelect" class="form-control" disabled>
+                <option value="">Vui lòng chọn Phường/Xã</option>
+            </select>
+        </div>
+
+        <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+
+        <div>
             <button class="btn btn-primary btn-sm" type="button" onclick="saveNewAddress()">Lưu địa chỉ</button>
+            <button class="btn btn-cancel-add btn-sm" type="button" onclick="toggleAddForm()">Hủy</button>
         </div>
     </div>
 </div>
@@ -688,75 +754,81 @@
 
 <!-- ===== SCRIPT QUẢN LÝ ĐỊA CHỈ (ĐÃ CẬP NHẬT) ===== -->
 <script>
-        function toggleAddressList() {
-        // Đổi mục tiêu thành #address-overlay
+
+    // --- TÁCH HÀM REFRESH RA ---
+    // Hàm này chỉ có nhiệm vụ tải và hiển thị danh sách địa chỉ
+    function refreshAddressList() {
+        fetch('/ThanhToan/LayDanhSachDiaChi')
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    const container = document.getElementById('addresses');
+                    container.innerHTML = ''; // Xóa cũ
+                    data.data.forEach(d => {
+                        const div = document.createElement('div');
+                        div.className = 'border rounded p-2 mb-2';
+                        div.innerHTML =
+                            `<p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
+                             <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
+                             <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDiaChi})">Chọn địa chỉ này</button>`;
+                        container.appendChild(div);
+                    });
+                } else {
+                    showCustomAlert(data.message || 'Không thể tải địa chỉ.');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                showCustomAlert('Có lỗi xảy ra khi tải địa chỉ.');
+            });
+    }
+
+    // --- HÀM ĐIỀU KHIỂN MODAL 1 (CHỌN ĐỊA CHỈ) ---
+    function toggleAddressList() {
         const overlay = document.getElementById('address-overlay');
         const isHidden = overlay.style.display === 'none' || overlay.style.display === '';
-
-        // Dùng 'flex' để kích hoạt (giúp căn giữa), 'none' để ẩn
         overlay.style.display = isHidden ? 'flex' : 'none';
 
-        // Chỉ fetch data khi modal được MỞ
+        // Khi modal 1 mở, gọi hàm refresh
         if (isHidden) {
-            fetch('/ThanhToan/LayDanhSachDiaChi')
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        const container = document.getElementById('addresses');
-                        container.innerHTML = ''; // Xóa cũ
-
-                        data.data.forEach(d => {
-                            const div = document.createElement('div');
-                            div.className = 'border rounded p-2 mb-2';
-                            div.innerHTML =
-                                `<p><strong>${d.tenNguoiNhan}</strong> (${d.soDienThoai})</p>
-                                 <p>${d.diaChiChiTiet}, ${d.phuongXa}, ${d.quanHuyen}, ${d.tinhTP}</p>
-                                 <button class="btn btn-sm btn-outline-secondary" onclick="chonDiaChi(${d.maDiaChi})">Chọn địa chỉ này</button>`;
-                            container.appendChild(div);
-                        });
-                    } else {
-                        showCustomAlert(data.message || 'Không thể tải địa chỉ.');
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    showCustomAlert('Có lỗi xảy ra khi tải địa chỉ.');
-                });
+            refreshAddressList();
         }
     }
 
-    // (TÙY CHỌN nhưng nên có) Thêm code để đóng modal khi click vào nền mờ
+    // Click ngoài để đóng Modal 1
     document.getElementById('address-overlay').addEventListener('click', function(e) {
-        // Nếu click vào chính overlay (lớp mờ) chứ không phải
-        // click vào nội dung bên trong (#addressList) thì đóng lại.
         if (e.target.id === 'address-overlay') {
             toggleAddressList();
         }
     });
 
-    // CẬP NHẬT: Hàm chonDiaChi
-    // Thay vì reload(), hàm này gọi 1 Action mới để set địa chỉ mặc định
-    // và sau đó Action đó sẽ redirect về trang này (để tự động tính lại phí ship)
+    // CẬP NHẬT: Hàm chonDiaChi (Giữ nguyên)
     function chonDiaChi(maDiaChi) {
         console.log("Đang đổi địa chỉ mặc định thành:", maDiaChi);
-        // TODO: Bạn CẦN TẠO Action [HttpGet] /ThanhToan/ChonDiaChi?maDiaChi=...
-        // Action này phải set địa chỉ mặc định MỚI và sau đó RedirectToAction("Index")
         location.href = `/ThanhToan/ChonDiaChi?maDiaChi=${maDiaChi}`;
     }
 
-    // CẬP NHẬT: Hàm toggleAddForm
-    // Sẽ gọi hàm initGHNAddressForm() khi mở form
+    // --- HÀM ĐIỀU KHIỂN MODAL 2 (THÊM ĐỊA CHỈ) ---
     let ghnProvincesLoaded = false;
     function toggleAddForm() {
-        const addForm = document.getElementById('addForm');
-        addForm.style.display = addForm.style.display === 'none' ? 'block' : 'none';
+        // Đổi mục tiêu thành #add-form-overlay
+        const overlay = document.getElementById('add-form-overlay');
+        const isHidden = overlay.style.display === 'none' || overlay.style.display === '';
+        overlay.style.display = isHidden ? 'flex' : 'none';
 
-        // Chỉ tải danh sách Tỉnh/Thành lần đầu tiên
-        if (addForm.style.display === 'block' && !ghnProvincesLoaded) {
+        // Chỉ tải danh sách Tỉnh/Thành lần đầu tiên khi modal 2 mở
+        if (isHidden && !ghnProvincesLoaded) {
             initGHNAddressForm();
             ghnProvincesLoaded = true;
         }
     }
+
+    // Click ngoài để đóng Modal 2 (MỚI)
+    document.getElementById('add-form-overlay').addEventListener('click', function(e) {
+        if (e.target.id === 'add-form-overlay') {
+            toggleAddForm();
+        }
+    });
 </script>
 
 
@@ -965,13 +1037,15 @@
 
             const result = await response.json();
 
-            if (result.success) {
+          if (result.success) {
                 showCustomAlert("Thêm địa chỉ mới thành công!");
-                // Ẩn form và tải lại danh sách địa chỉ
-                document.getElementById('addForm').style.display = 'none';
-                // Tải lại danh sách địa chỉ (nhưng không mở)
-                toggleAddressList();
-                toggleAddressList();
+
+                // 1. Đóng modal "Thêm địa chỉ" (Modal 2)
+                toggleAddForm();
+
+                // 2. Tải lại danh sách ở modal "Chọn địa chỉ" (Modal 1)
+                refreshAddressList();
+
             } else {
                 showCustomAlert(result.message || "Lưu địa chỉ thất bại.");
             }
