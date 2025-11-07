@@ -178,15 +178,15 @@ namespace Final_Project.Controllers
                           </tr>
                         </table>";
 
-                                    await _emailService.SendEmailAsync(
-                                        user.Email,
-                                        "🎉 Chào mừng bạn đến với Shop Nội Thất G3TD!",
-                                        htmlContent
-                                    );
-                                }
-                                else
-                                {
-                                    string htmlContentLogin = $@"
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "🎉 Chào mừng bạn đến với Shop Nội Thất G3TD!",
+                    htmlContent
+                );
+            }
+            else
+            {
+                string htmlContentLogin = $@"
                         <table style='width:100%; max-width:600px; margin:auto; font-family:Arial, sans-serif; border:1px solid #ddd; border-radius:8px;'>
                           <tr style='background-color:#f4f4f4;'>
                             <td style='padding:20px; text-align:center;'>
@@ -224,10 +224,12 @@ namespace Final_Project.Controllers
         [HttpGet("Auth/Logout")]
         public async Task<IActionResult> Logout()
         {
-            // Sign out local cookie
+            // Xoá cookie + session
             await HttpContext.SignOutAsync("MyCookie");
             HttpContext.Session.Clear();
-            return RedirectToAction("Login", "Auth");
+
+            // Redirect về trang Home chính
+            return RedirectToAction("Index", "Home");
         }
 
         // Đăng ký

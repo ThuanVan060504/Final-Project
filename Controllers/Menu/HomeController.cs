@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Final_Project.Controllers.Menu
 {
@@ -15,7 +17,6 @@ namespace Final_Project.Controllers.Menu
             _context = context;
         }
 
-    
         private void LoadCommonData()
         {
             var danhMucs = _context.DanhMucs
@@ -25,8 +26,40 @@ namespace Final_Project.Controllers.Menu
             ViewBag.DanhMucs = danhMucs;
         }
 
-        public IActionResult Index()
+        // ===============================
+        // 🏠 Trang chủ
+        // ===============================
+        public async Task<IActionResult> Index()
         {
+            // ===============================
+            // Nếu đang là Admin mà quay về /Home → auto logout + clear cookie
+            // ===============================
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role == "Admin")
+            {
+                // Xóa toàn bộ session
+                HttpContext.Session.Clear();
+
+                // Đăng xuất khỏi cookie authentication (xoá MyCookie & Google cookie)
+                await HttpContext.SignOutAsync("MyCookie");
+                await HttpContext.SignOutAsync();
+
+                // Xóa luôn cookie cũ (phòng trường hợp còn cookie trình duyệt)
+                if (Request.Cookies != null)
+                {
+                    foreach (var cookie in Request.Cookies.Keys)
+                    {
+                        Response.Cookies.Delete(cookie);
+                    }
+                }
+
+                // Redirect về Home gốc
+                return RedirectToAction("Index", "Home");
+            }
+
+            // ===============================
+            // Load dữ liệu chung cho trang Home
+            // ===============================
             LoadCommonData();
 
             // Thông tin tài khoản đăng nhập
@@ -38,9 +71,9 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
 
-            // ==============================
+            // ===============================
             // Top sản phẩm yêu thích
-            // ==============================
+            // ===============================
             var spYeuThichOrdered = _context.SanPhamYeuThichs
                 .GroupBy(y => y.MaSP)
                 .OrderByDescending(g => g.Count())
@@ -53,9 +86,9 @@ namespace Final_Project.Controllers.Menu
                 .ToList();
             ViewBag.SanPhamYeuThich = spYeuThichOrdered;
 
-            // ==============================
+            // ===============================
             // Top sản phẩm bán chạy
-            // ==============================
+            // ===============================
             var spBanChayOrdered = _context.ChiTietDonHangs
                 .GroupBy(c => c.MaSP)
                 .OrderByDescending(g => g.Sum(x => x.SoLuong))
@@ -68,11 +101,9 @@ namespace Final_Project.Controllers.Menu
                 .ToList();
             ViewBag.SanPhamBanChay = spBanChayOrdered;
 
-
-
-            // ==============================
+            // ===============================
             // Sản phẩm mới nhất
-            // ==============================
+            // ===============================
             var sanPhamsMoi = _context.SanPhams
                 .Include(sp => sp.DanhMuc)
                 .Include(sp => sp.ThuongHieu)
@@ -83,6 +114,9 @@ namespace Final_Project.Controllers.Menu
             return View(sanPhamsMoi);
         }
 
+        // ===============================
+        // 📦 Chi tiết sản phẩm
+        // ===============================
         public IActionResult Details(int id)
         {
             LoadCommonData();
