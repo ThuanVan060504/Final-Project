@@ -3,13 +3,110 @@
     ViewData["Title"] = "Thông tin tài khoản";
     var taiKhoan = ViewBag.TaiKhoan as Final_Project.Models.User.TaiKhoan;
     var donHangs = Model as List<DonHang>;
+    // Lấy danh sách yêu thích từ ViewBag (đã sửa)
+    var yeuThichList = ViewBag.SanPhamYeuThich as List<SanPham> ?? new List<SanPham>();
 }
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
 <link rel="stylesheet" href="~/css/canhan.css">
 
+<style>
+    :root {
+        --main-orange: #ff9e4f;
+        --main-orange-dark: #e88738;
+    }
+    /* Form thêm địa chỉ */
+    #addForm input,
+    #addForm select,
+    #editAddressModal input,
+    #editAddressModal select {
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        padding: 8px 12px;
+        font-size: 0.95rem;
+        width: 100%;
+        transition: border-color 0.3s ease;
+        margin-bottom: 10px; /* Thêm khoảng cách */
+    }
 
+        #addForm input:focus,
+        #addForm select:focus,
+        #editAddressModal input:focus,
+        #editAddressModal select:focus {
+            border-color: var(--main-orange);
+            outline: none;
+            box-shadow: 0 0 5px rgba(255,158,79,0.5);
+        }
+
+    #addForm button.btn-save-ghn,
+    #editAddressModal button.btn-save-ghn {
+        background-color: var(--main-orange);
+        border-color: var(--main-orange);
+        color: white;
+        font-weight: 600;
+        border-radius: 6px;
+        padding: 6px 16px;
+        transition: background-color 0.3s ease;
+    }
+
+    #editAddressModalBackdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 1040;
+    }
+        #addForm button.btn-save-ghn:hover {
+            background-color: var(--main-orange-dark);
+        }
+    /* ===== 1. CSS CHO MODAL "THÊM ĐỊA CHỈ" ===== */
+
+    /* Lớp mờ nền (Backdrop) */
+    #addAddressModalBackdrop {
+        display: none; /* Ẩn ban đầu */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6); /* Lớp mờ */
+        z-index: 1040; /* Dưới modal */
+    }
+
+    /* Sửa #addForm để thành Modal */
+    #addForm, #editAddressModal {
+        /* display: none; (đã có) */
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh; /* Cho phép cuộn */
+        overflow-y: auto; /* Thêm cuộn */
+        z-index: 1050; /* Trên lớp mờ */
+        background: #fff;
+        padding: 25px; /* Thêm padding */
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    .address-buttons .address-btn.red {
+        background-color: #dc3545; /* Màu đỏ */
+        border-color: #dc3545;
+        color: white;
+    }
+
+        .address-buttons .address-btn.red:hover {
+            background-color: #c82333;
+            border-color: #bd2130;
+        }
+</style>
+
+
+<div id="addAddressModalBackdrop" onclick="toggleNewAddress()"></div>
 
 
 <div class="container mt-4">
@@ -28,17 +125,17 @@
             <div id="profileSection" class="content-section active">
                 <h4 class="mb-3 text-success">👤 Thông tin tài khoản</h4>
                 <div class="text-center mb-4">
-    <img src="@(string.IsNullOrEmpty(taiKhoan?.Avatar) ? "imagesdefault-avatar.png" : taiKhoan.Avatar)"
-         alt="Avatar"
-         class="rounded-circle shadow"
-         style="width: 120px; height: 120px; object-fit: cover;" />
-</div>
+                    <img src="@(string.IsNullOrEmpty(taiKhoan?.Avatar) ? "/images/default-avatar.png" : taiKhoan.Avatar)"
+                         alt="Avatar"
+                         class="rounded-circle shadow"
+                         style="width: 120px; height: 120px; object-fit: cover;" />
+                </div>
 
-<form asp-action="UploadAvatar" asp-controller="User" method="post" enctype="multipart/form-data" class="text-center mb-4">
-    <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
-    <input type="file" name="avatarFile" class="form-control w-50 d-inline-block mb-2" accept="image/*" required />
-    <button type="submit" class="btn btn-outline-primary btn-sm">📤 Đổi ảnh đại diện</button>
-</form>
+                <form asp-action="UploadAvatar" asp-controller="User" method="post" enctype="multipart/form-data" class="text-center mb-4">
+                    <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
+                    <input type="file" name="avatarFile" class="form-control w-50 d-inline-block mb-2" accept="image/*" required />
+                    <button type="submit" class="btn btn-outline-primary btn-sm">📤 Đổi ảnh đại diện</button>
+                </form>
 
                 <div id="viewInfo">
                     <div class="border p-3 rounded shadow-sm mb-3">
@@ -46,7 +143,7 @@
                         <p><strong>Email:</strong> @taiKhoan?.Email</p>
                         <p><strong>SĐT:</strong> @taiKhoan?.SDT</p>
                     </div>
-                    <button class="btn btn-outline-success" onclick="toggleEdit(true)">✏️ Chỉnh sửa</button>
+                    <button class="btn btn-outline-success" onclick="toggleEdit(true)"> Chỉnh sửa</button>
                 </div>
 
                 <div id="editInfo" style="display:none;">
@@ -82,13 +179,13 @@
                                 <div>
                                     <span class="fw-semibold">Đơn hàng #@don.MaDonHang</span> -
                                     <span class="text-muted">@don.NgayDat.ToString("dd/MM/yyyy")</span>
-                                     <span class="text-muted">
-    <strong>📍 Giao đến:</strong>
-    @don.DiaChiNguoiDung.DiaChiChiTiet,
-    @don.DiaChiNguoiDung.PhuongXa,
-    @don.DiaChiNguoiDung.QuanHuyen,
-    @don.DiaChiNguoiDung.TinhTP
-</span>
+                                    <span class="text-muted">
+                                        <strong>📍 Giao đến:</strong>
+                                        @don.DiaChiNguoiDung.DiaChiChiTiet,
+                                        @don.DiaChiNguoiDung.PhuongXa,
+                                        @don.DiaChiNguoiDung.QuanHuyen,
+                                        @don.DiaChiNguoiDung.TinhTP
+                                    </span>
                                 </div>
                                 <div class="text-success fw-bold">🟢 @don.TrangThaiDonHang</div>
                             </div>
@@ -132,7 +229,7 @@
                                     <div class="flex-grow-1">
                                         <div class="fw-semibold">@firstProduct.SanPham.TenSP</div>
                                         <div class="text-muted">@firstProduct.SoLuong</div>
-                                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@firstProduct.SanPham.MaSP"class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
+                                        <a asp-controller="SanPham" asp-action="Details" asp-route-id="@firstProduct.SanPham.MaSP" class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
                                     </div>
                                     <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
                                         @firstProduct.DonGia.ToString("N0") ₫
@@ -151,7 +248,7 @@
                                             <div class="flex-grow-1">
                                                 <div class="fw-semibold">@ct.SanPham.TenSP</div>
                                                 <div class="text-muted">@ct.SoLuong</div>
-                                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@ct.SanPham.MaSP"class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
+                                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@ct.SanPham.MaSP" class="btn btn-sm btn-outline-primary mt-1"> Xem chi tiết</a>
                                             </div>
                                             <div class="text-end fw-semibold text-danger" style="white-space: nowrap;">
                                                 @ct.DonGia.ToString("N0") ₫
@@ -170,12 +267,12 @@
                                 <div class="text-muted">Thanh toán: @don.TrangThaiThanhToan</div>
                                 <div class="fw-bold">Tổng tiền: <span class="text-danger">@don.TongTien.ToString("N0") ₫</span></div>
                                 @if (don.TrangThaiDonHang == "ChoXacNhan" || don.TrangThaiDonHang == "DangXuLy")
-                {
-                    <form asp-controller="DonHang" asp-action="HuyDon" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
-                        <input type="hidden" name="maDonHang" value="@don.MaDonHang" />
-                        <button type="submit" class="btn btn-outline-danger mt-2">❌ Hủy đơn hàng</button>
-                    </form>
-                }
+                                {
+                                    <form asp-controller="DonHang" asp-action="HuyDon" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
+                                        <input type="hidden" name="maDonHang" value="@don.MaDonHang" />
+                                        <button type="submit" class="btn btn-outline-danger mt-2">❌ Hủy đơn hàng</button>
+                                    </form>
+                                }
 
                             </div>
                         </div>
@@ -194,36 +291,33 @@
                 {
                     foreach (var diaChi in taiKhoan.DiaChiNguoiDungs)
                     {
-                       
+
                         <div class="border rounded p-3 mb-3 @(diaChi.MacDinh ? "border-success" : "")">
-    <div><strong>Họ tên:</strong> @diaChi.TenNguoiNhan</div>
-    <div><strong>Số điện thoại:</strong> @diaChi.SoDienThoai</div>
-    <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
-    <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
-    <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
-    <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
+                            <div><strong>Họ tên:</strong> @diaChi.TenNguoiNhan</div>
+                            <div><strong>Số điện thoại:</strong> @diaChi.SoDienThoai</div>
+                            <div><strong>Địa chỉ:</strong> @diaChi.DiaChiChiTiet</div>
+                            <div><strong>Phường/Xã:</strong> @diaChi.PhuongXa</div>
+                            <div><strong>Quận/Huyện:</strong> @diaChi.QuanHuyen</div>
+                            <div><strong>Tỉnh/TP:</strong> @diaChi.TinhTP</div>
 
-    @if (diaChi.MacDinh)
-    {
-        <div class="badge bg-success mt-2">✅ Địa chỉ mặc định</div>
-    }
-    else
-    {
-        <div class="address-buttons mt-3">
-            <form asp-controller="DiaChi" asp-action="SetDefault" method="post">
-                <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
-                <button type="submit" class="address-btn blue">Chọn làm mặc định</button>
-            </form>
-
-            <form asp-controller="DiaChi" asp-action="Edit" method="get">
-                <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
-                <button type="submit" class="address-btn orange">✏️ Sửa</button>
-            </form>
-        </div>
-    }
-</div>
+                            @if (diaChi.MacDinh)
+                            {
+                                <div class="badge bg-success mt-2">Địa chỉ mặc định</div>
+                            }
+                            else
+                            {
+                                <div class="address-buttons mt-3">
+                                    <form asp-controller="DiaChi" asp-action="SetDefault" method="post">
+                                        <input type="hidden" name="id" value="@diaChi.MaDiaChi" />
+                                        <button type="submit" class="address-btn blue">Chọn làm mặc định</button>
+                                    </form>
 
 
+                                    <button type="button" class="address-btn orange" onclick="openEditModal(@diaChi.MaDiaChi)"> Sửa</button>
+                                    <button type="button" class="address-btn red" onclick="deleteAddress(@diaChi.MaDiaChi)">Xóa</button>
+                                </div>
+                            }
+                        </div>
                     }
                 }
                 else
@@ -234,123 +328,147 @@
                 <button class="btn btn-outline-warning" type="button" onclick="toggleNewAddress()">➕ Thêm địa chỉ mới</button>
                 <hr />
 
-                <form id="newAddressForm" method="post" asp-action="ThemDiaChi" asp-controller="User" class="row g-3 mt-2" style="display: none;">
-                    <div class="col-md-6">
-                        <label class="form-label">Họ tên người nhận</label>
-                        <input type="text" name="TenNguoiNhan" class="form-control" required />
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Số điện thoại</label>
-                        <input type="text" name="SoDienThoai" class="form-control" required />
+                <div id="editAddressModalBackdrop" onclick="toggleEditAddress()"></div>
+                <div id="addForm" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h5 style="margin: 0; font-weight: 600;">Thêm địa chỉ mới</h5>
+                        <button type="button" class="btn-close" onclick="toggleNewAddress()"></button>
                     </div>
 
-                    <div class="col-md-12">
-                        <label class="form-label">Địa chỉ chi tiết</label>
-                        <input type="text" name="DiaChiChiTiet" class="form-control" placeholder="Số nhà, tên đường..." required />
+                    <div class="mb-2"><input type="text" class="form-control" id="newName" placeholder="Họ tên"></div>
+                    <div class="mb-2"><input type="text" class="form-control" id="newPhone" placeholder="Số điện thoại"></div>
+
+                    <div class="mb-2">
+                        <select id="ghnProvinceSelect" class="form-control">
+                            <option value="">Vui lòng chọn Tỉnh/Thành</option>
+                        </select>
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label">Tỉnh/Thành phố</label>
-                        <select id="provinceDropdown" class="form-control" required>
-                            <option value="">-- Chọn Tỉnh/Thành --</option>
+                    <div class="mb-2">
+                        <select id="ghnDistrictSelect" class="form-control" disabled>
+                            <option value="">Vui lòng chọn Quận/Huyện</option>
                         </select>
-                        <input type="hidden" name="TinhTP" id="provinceNameHidden" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Quận/Huyện</label>
-                        <select id="districtDropdown" class="form-control" required>
-                            <option value="">-- Chọn Quận/Huyện --</option>
-                        </select>
-                        <input type="hidden" name="QuanHuyen" id="districtNameHidden" />
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label">Phường/Xã</label>
-                        <select id="wardDropdown" class="form-control" required>
-                            <option value="">-- Chọn Phường/Xã --</option>
-                        </select>
-                        <input type="hidden" name="PhuongXa" id="wardNameHidden" />
                     </div>
 
-                    <div class="col-md-12 form-check">
-                        <input type="checkbox" class="form-check-input" name="MacDinh" id="macDinhCheckbox" />
-                        <label class="form-check-label" for="macDinhCheckbox">Đặt làm địa chỉ mặc định</label>
+                    <div class="mb-2">
+                        <select id="ghnWardSelect" class="form-control" disabled>
+                            <option value="">Vui lòng chọn Phường/Xã</option>
+                        </select>
                     </div>
-                    <div class="col-md-12">
-                        <button type="submit" class="btn btn-success">📍 Lưu địa chỉ</button>
+
+                    <div class="mb-2"><input type="text" class="form-control" id="newAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-save-ghn" type="button" onclick="saveNewAddress()">Lưu địa chỉ</button>
+                        <button class="btn btn-secondary" type="button" onclick="toggleNewAddress()" style="margin-left: 10px;">Hủy</button>
                     </div>
-                </form>
                 </div>
+                <div id="editAddressModal" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h5 style="margin: 0; font-weight: 600;">Chỉnh sửa địa chỉ</h5>
+                        <button type="button" class="btn-close" onclick="toggleEditAddress()"></button>
+                    </div>
 
-        <div id="favoritesSection" class="content-section">
-    <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
+                    <input type="hidden" id="editMaDiaChi" />
 
-    @if (ViewBag.SanPhamYeuThich == null || !((List<SanPham>)ViewBag.SanPhamYeuThich).Any())
-    {
-        <div class="alert alert-info">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích.</div>
-    }
-    else
-    {
-        var yeuThichList = (List<SanPham>)ViewBag.SanPhamYeuThich;
-        <div class="row justify-content-center row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
-            @foreach (var sp in yeuThichList)
-            {
-                <div class="col-auto">
-                    <div class="card h-100 product-card">
-                        <div class="position-relative">
-                            <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
-                            <span class="favorite-icon">❤️</span>
-                        </div>
-                        <div class="card-body d-flex flex-column">
-                            <h6 class="fw-semibold">@sp.TenSP</h6>
-                            <p class="product-price">@sp.DonGia.ToString("N0") đ</p>
+                    <div class="mb-2"><input type="text" class="form-control" id="editName" placeholder="Họ tên"></div>
+                    <div class="mb-2"><input type="text" class="form-control" id="editPhone" placeholder="Số điện thoại"></div>
 
-                            <div class="button-group mt-auto">
-                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="custom-btn green">Xem chi tiết</a>
+                    <div class="mb-2">
+                        <select id="editProvinceSelect" class="form-control" disabled>
+                            <option value="">Đang tải Tỉnh/Thành...</option>
+                        </select>
+                    </div>
 
-                                <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
-                                    <input type="hidden" name="maSP" value="@sp.MaSP" />
-                                    <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
-                                </form>
+                    <div class="mb-2">
+                        <select id="editDistrictSelect" class="form-control" disabled>
+                            <option value="">Vui lòng chọn Tỉnh/Thành</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2">
+                        <select id="editWardSelect" class="form-control" disabled>
+                            <option value="">Vui lòng chọn Quận/Huyện</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-2"><input type="text" class="form-control" id="editAddr" placeholder="Địa chỉ chi tiết (Số nhà, tên đường...)"></div>
+
+                    <div class="mt-3">
+                        <button class="btn btn-save-ghn" type="button" onclick="saveEditAddress()">Lưu thay đổi</button>
+                        <button class="btn btn-secondary" type="button" onclick="toggleEditAddress()" style="margin-left: 10px;">Hủy</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="favoritesSection" class="content-section">
+                <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
+
+                @if (yeuThichList == null || !yeuThichList.Any())
+                {
+                    <div class="alert alert-info">Bạn chưa thêm sản phẩm nào vào danh sách yêu thích.</div>
+                }
+                else
+                {
+                    <div class="row justify-content-center row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                        @foreach (var sp in yeuThichList)
+                        {
+                            <div class="col-auto">
+                                <div class="card h-100 product-card">
+                                    <div class="position-relative">
+                                        <img src="@sp.ImageURL" class="card-img-top" style="height: 180px; object-fit: cover;" />
+                                        <span class="favorite-icon">❤️</span>
+                                    </div>
+                                    <div class="card-body d-flex flex-column">
+                                        <h6 class="fw-semibold">@sp.TenSP</h6>
+                                        <p class="product-price">@sp.DonGia.ToString("N0") đ</p>
+
+                                        <div class="button-group mt-auto">
+                                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="custom-btn green">Xem chi tiết</a>
+
+                                            <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
+                                                <input type="hidden" name="maSP" value="@sp.MaSP" />
+                                                <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
-                </div>
-            }
+                }
+            </div>
+
+            <div id="changePasswordSection" class="content-section" style="display: none;">
+                <h4 class="mb-3 fw-bold text-orange">🔐 Đổi mật khẩu</h4>
+
+                <form asp-controller="User" asp-action="DoiMatKhau" method="post" class="password-form">
+                    <div class="form-group mb-3">
+                        <label for="OldPassword">Mật khẩu hiện tại</label>
+                        <input type="password" class="form-control" name="OldPassword" placeholder="Nhập mật khẩu hiện tại" required />
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="NewPassword">Mật khẩu mới</label>
+                        <input type="password" class="form-control" name="NewPassword" placeholder="Nhập mật khẩu mới" required />
+                    </div>
+                    <div class="form-group mb-4">
+                        <label for="ConfirmPassword">Xác nhận mật khẩu mới</label>
+                        <input type="password" class="form-control" name="ConfirmPassword" placeholder="Xác nhận mật khẩu mới" required />
+                    </div>
+                    <button type="submit" class="custom-btn orange w-100">Đổi mật khẩu</button>
+                </form>
+
+                @if (TempData["PasswordChangeMessage"] != null)
+                {
+                    <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
+                }
+            </div>
+
         </div>
-    }
+    </div>
 </div>
 
-
-
-<div id="changePasswordSection" class="content-section" style="display: none;">
-    <h4 class="mb-3 fw-bold text-orange">🔐 Đổi mật khẩu</h4>
-
-    <form asp-controller="User" asp-action="DoiMatKhau" method="post" class="password-form">
-        <div class="form-group mb-3">
-            <label for="OldPassword">Mật khẩu hiện tại</label>
-            <input type="password" class="form-control" name="OldPassword" placeholder="Nhập mật khẩu hiện tại" required />
-        </div>
-        <div class="form-group mb-3">
-            <label for="NewPassword">Mật khẩu mới</label>
-            <input type="password" class="form-control" name="NewPassword" placeholder="Nhập mật khẩu mới" required />
-        </div>
-        <div class="form-group mb-4">
-            <label for="ConfirmPassword">Xác nhận mật khẩu mới</label>
-            <input type="password" class="form-control" name="ConfirmPassword" placeholder="Xác nhận mật khẩu mới" required />
-        </div>
-        <button type="submit" class="custom-btn orange w-100">Đổi mật khẩu</button>
-    </form>
-
-    @if (TempData["PasswordChangeMessage"] != null)
-    {
-        <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
-    }
-</div>
-         @section Scripts {
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+@section Scripts {
     <script>
         // === HÀM VỪA DI CHUYỂN TỪ TRÊN XUỐNG ===
         function toggleEdit(showEdit) {
@@ -366,12 +484,34 @@
             btn.innerText = isHidden ? "Ẩn bớt" : "+ Xem thêm";
         }
 
-        function toggleNewAddress() {
-            const form = document.getElementById("newAddressForm");
+        // === SCRIPT ĐIỀU KHIỂN MODAL (ĐÃ SỬA) ===
+        let ghnProvincesLoaded = false;
+        async function toggleNewAddress() { // <-- Sửa: Thêm async
+            const form = document.getElementById("addForm");
+            const backdrop = document.getElementById("addAddressModalBackdrop");
             const isHidden = getComputedStyle(form).display === "none";
-            form.style.display = isHidden ? "block" : "none";
-        }
 
+            form.style.display = isHidden ? "block" : "none";
+            backdrop.style.display = isHidden ? "block" : "none";
+            document.body.style.overflow = isHidden ? "hidden" : "auto";
+
+            if (form.style.display === 'block' && !ghnProvincesLoaded) {
+                // Sửa: Gọi hàm loadProvinces tái sử dụng
+                await loadProvinces(ghnProvinceSelect);
+                ghnProvincesLoaded = true;
+            }
+        }
+        // === BẮT ĐẦU THÊM MỚI: HÀM CHO MODAL SỬA ===
+        function toggleEditAddress() {
+            const form = document.getElementById("editAddressModal");
+            const backdrop = document.getElementById("editAddressModalBackdrop");
+            const isHidden = getComputedStyle(form).display === "none";
+
+            form.style.display = isHidden ? "block" : "none";
+            backdrop.style.display = isHidden ? "block" : "none";
+            document.body.style.overflow = isHidden ? "hidden" : "auto";
+        }
+        // === KẾT THÚC THÊM MỚI ===
         // Đây là hàm showSection DUY NHẤT VÀ CHÍNH XÁC
         function showSection(id, el) {
             document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
@@ -384,152 +524,373 @@
         }
 
         window.addEventListener("DOMContentLoaded", function () {
-            const hash = window.location.hash;
+            const urlParams = new URLSearchParams(window.location.search);
+            const fragment = urlParams.get('fragment') || "profileSection"; // Mặc định là profile
 
-            if (hash === "#historySection") {
-                showSection("historySection", document.querySelector('li[onclick*="historySection"]'));
-            }
-            else if (hash === "#favoritesSection") {
-                showSection("favoritesSection", document.querySelector('li[onclick*="favoritesSection"]'));
-            }
-            else if (hash === "#addressSection") { // Thêm để xử lý khi F5
-                showSection("addressSection", document.querySelector('li[onclick*="addressSection"]'));
-            }
-            else if (hash === "#changePasswordSection") { // Thêm để xử lý khi F5
-                showSection("changePasswordSection", document.querySelector('li[onclick*="changePasswordSection"]'));
-            }
-            // Kích hoạt tab đầu tiên nếu không có hash
-            else if (!hash) {
-                 showSection("profileSection", document.querySelector('li[onclick*="profileSection"]'));
-            }
+            let targetElement = document.querySelector(`li[onclick*="${fragment}"]`);
+            showSection(fragment, targetElement);
         });
 
-        // === SCRIPT MỚI TỪ API GHN (Đã tích hợp Select2) ===
-        $(document).ready(function () {
-            
-            // THÊM MỚI: Cấu hình Select2 dùng theme Bootstrap 5
-            $.fn.select2.defaults.set("theme", "bootstrap-5");
+    </script>
 
-            // Hàm gọi API trung gian (trong DiaChiController)
-            function callApi(url, targetDropdown) {
-                return $.ajax({
-                    url: url,
-                    type: "GET",
-                    success: function (response) {
-                        if (response && response.data) {
-                            // SỬA ĐỔI: Không clear dropdown ở đây, để hàm .done() tự xử lý
-                            return response.data; 
-                        } else {
-                            console.error("Không nhận được dữ liệu từ API: ", response);
-                            return null;
-                        }
-                    },
-                    error: function (err) {
-                        console.error("Lỗi khi gọi API trung gian!", err);
-                        alert("Lỗi tải dữ liệu. Vui lòng kiểm tra Token trong DiaChiController và F12 Console.");
+    <script>
+        // --- CÀI ĐẶT API GHN ---
+        const GHN_TOKEN = "c8dd5606-b8d8-11f0-b040-4e257d8388b4"; // Token của bạn
+        const GHN_SHOP_ID = 197908; // Shop ID của bạn (dạng SỐ)
+        const GHN_API_MASTER_DATA = "https://dev-online-gateway.ghn.vn/shiip/public-api/master-data";
+
+        // --- LẤY DOM ELEMENTS CHO FORM THÊM ĐỊA CHỈ ---
+        const ghnProvinceSelect = document.getElementById('ghnProvinceSelect');
+        const ghnDistrictSelect = document.getElementById('ghnDistrictSelect');
+        const ghnWardSelect = document.getElementById('ghnWardSelect');
+        // Form Sửa (Edit)
+        const editProvinceSelect = document.getElementById('editProvinceSelect');
+        const editDistrictSelect = document.getElementById('editDistrictSelect');
+        const editWardSelect = document.getElementById('editWardSelect');
+        /**
+         * Hàm gọi API GHN (Chung)
+         */
+        async function ghnApiCall(endpoint, options = {}, apiBase = GHN_API_MASTER_DATA) {
+            try {
+                const defaultHeaders = {
+                    'Content-Type': 'application/json',
+                    'Token': GHN_TOKEN,
+                    'ShopId': GHN_SHOP_ID
+                };
+
+                const config = {
+                    method: 'GET', ...options,
+                    headers: { ...defaultHeaders, ...(options.headers || {}) }
+                };
+
+                const response = await fetch(`${apiBase}${endpoint}`, config);
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    if (errorData && errorData.code_message_value) {
+                        throw new Error(errorData.code_message_value);
                     }
+                    throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                if (result.code !== 200) {
+                     throw new Error(result.message || 'Lỗi không xác định từ GHN');
+                }
+                return result.data;
+
+            } catch (error) {
+                console.error('Lỗi khi gọi API GHN:', error.message);
+                alert(`Lỗi API GHN: ${error.message}. Vui lòng kiểm tra lại Token/ShopID.`);
+                return null;
+            }
+        }
+
+        /**
+         * HÀM TÁI SỬ DỤNG: Tải Tỉnh/Thành
+         * selectEl: Element <select> của tỉnh
+         * selectedId: ID của tỉnh cần được chọn (dùng cho form Sửa)
+         */
+        async function loadProvinces(selectEl, selectedId = null) {
+            selectEl.innerHTML = '<option value="">Đang tải Tỉnh/Thành...</option>';
+            selectEl.disabled = true;
+            const provinces = await ghnApiCall('/province');
+            if (provinces) {
+                selectEl.innerHTML = '<option value="">--- Chọn Tỉnh/Thành ---</option>';
+                provinces.sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
+                provinces.forEach(province => {
+                    const option = document.createElement('option');
+                    option.value = province.ProvinceID;
+                    option.textContent = province.ProvinceName;
+                    selectEl.appendChild(option);
                 });
+
+                if (selectedId) {
+                    selectEl.value = selectedId; // Chọn Tỉnh đã lưu
+                }
+                selectEl.disabled = false;
+            } else {
+                 selectEl.innerHTML = '<option value="">Lỗi tải Tỉnh/Thành</option>';
+            }
+        }
+
+        /**
+         * HÀM TÁI SỬ DỤNG: Tải Quận/Huyện
+         * provinceId: ID của tỉnh đã chọn
+         * selectEl: Element <select> của quận
+         * selectedId: ID của quận cần được chọn (dùng cho form Sửa)
+         */
+        async function loadDistricts(provinceId, selectEl, selectedId = null) {
+            if (!provinceId) {
+                selectEl.innerHTML = '<option value="">Vui lòng chọn Tỉnh/Thành</option>';
+                selectEl.disabled = true;
+                return;
+            }
+            selectEl.innerHTML = '<option value="">Đang tải Quận/Huyện...</option>';
+            selectEl.disabled = true;
+
+            const districts = await ghnApiCall(`/district?province_id=${provinceId}`);
+            if (districts) {
+                selectEl.innerHTML = '<option value="">--- Chọn Quận/Huyện ---</option>';
+                districts.sort((a, b) => a.DistrictName.localeCompare(b.DistrictName));
+                districts.forEach(district => {
+                    const option = document.createElement('option');
+                    option.value = district.DistrictID;
+                    option.textContent = district.DistrictName;
+                    selectEl.appendChild(option);
+                });
+
+                if (selectedId) {
+                    selectEl.value = selectedId; // Chọn Quận đã lưu
+                }
+                selectEl.disabled = false;
+            } else {
+                 selectEl.innerHTML = '<option value="">Lỗi tải Quận/Huyện</option>';
+            }
+        }
+
+        /**
+         * HÀM TÁI SỬ DỤNG: Tải Phường/Xã
+         * districtId: ID của quận đã chọn
+         * selectEl: Element <select> của phường
+         * selectedCode: Code của phường cần được chọn (dùng cho form Sửa)
+         */
+        async function loadWards(districtId, selectEl, selectedCode = null) {
+             if (!districtId) {
+                selectEl.innerHTML = '<option value="">Vui lòng chọn Quận/Huyện</option>';
+                selectEl.disabled = true;
+                return;
+            }
+            selectEl.innerHTML = '<option value="">Đang tải Phường/Xã...</option>';
+            selectEl.disabled = true;
+
+            const wards = await ghnApiCall(`/ward?district_id=${districtId}`);
+            if (wards) {
+                selectEl.innerHTML = '<option value="">--- Chọn Phường/Xã ---</option>';
+                wards.sort((a, b) => a.WardName.localeCompare(b.WardName));
+                wards.forEach(ward => {
+                    const option = document.createElement('option');
+                    option.value = ward.WardCode;
+                    option.textContent = ward.WardName;
+                    selectEl.appendChild(option);
+                });
+
+                if (selectedCode) {
+                    selectEl.value = selectedCode; // Chọn Phường đã lưu
+                }
+                selectEl.disabled = false;
+            } else {
+                 selectEl.innerHTML = '<option value="">Lỗi tải Phường/Xã</option>';
+            }
+        }
+
+        // --- Gắn sự kiện cho FORM THÊM MỚI ---
+        ghnProvinceSelect.addEventListener('change', async (e) => {
+            const provinceId = e.target.value;
+            ghnWardSelect.innerHTML = '<option value="">Vui lòng chọn Quận/Huyện</option>';
+            ghnWardSelect.disabled = true;
+            await loadDistricts(provinceId, ghnDistrictSelect); // Tải quận cho form Thêm
+        });
+
+        ghnDistrictSelect.addEventListener('change', async (e) => {
+            const districtId = e.target.value;
+            await loadWards(districtId, ghnWardSelect); // Tải phường cho form Thêm
+        });
+
+        // --- Gắn sự kiện cho FORM SỬA ---
+        editProvinceSelect.addEventListener('change', async (e) => {
+            const provinceId = e.target.value;
+            editWardSelect.innerHTML = '<option value="">Vui lòng chọn Quận/Huyện</option>';
+            editWardSelect.disabled = true;
+            await loadDistricts(provinceId, editDistrictSelect); // Tải quận cho form Sửa
+        });
+
+        editDistrictSelect.addEventListener('change', async (e) => {
+            const districtId = e.target.value;
+            await loadWards(districtId, editWardSelect); // Tải phường cho form Sửa
+        });
+
+        /**
+         * Lưu địa chỉ mới
+         */
+        async function saveNewAddress() {
+            // 1. Thu thập dữ liệu
+            const tenNguoiNhan = document.getElementById('newName').value.trim();
+            const soDienThoai = document.getElementById('newPhone').value.trim();
+            const diaChiChiTiet = document.getElementById('newAddr').value.trim();
+            const provinceID = ghnProvinceSelect.value;
+            const provinceName = ghnProvinceSelect.options[ghnProvinceSelect.selectedIndex].text;
+            const districtID = ghnDistrictSelect.value;
+            const districtName = ghnDistrictSelect.options[ghnDistrictSelect.selectedIndex].text;
+            const wardCode = ghnWardSelect.value;
+            const wardName = ghnWardSelect.options[ghnWardSelect.selectedIndex].text;
+
+            // 2. Kiểm tra dữ liệu
+            if (!tenNguoiNhan || !soDienThoai || !diaChiChiTiet || !provinceID || !districtID || !wardCode) {
+                alert("Vui lòng điền đầy đủ thông tin địa chỉ.");
+                return;
             }
 
-            // 1. Tải Tỉnh/Thành
-            callApi("@Url.Action("GetProvinces", "DiaChi")", $("#provinceDropdown")).done(function(response) {
-                // SỬA ĐỔI: Thêm clear dropdown ở đây
-                $("#provinceDropdown").empty().append('<option value="">-- Chọn Tỉnh/Thành --</option>');
-                if (response && response.data) {
-                    $.each(response.data, function (i, province) {
-                        $("#provinceDropdown").append($('<option>', {
-                            value: province.ProvinceID,
-                            text: province.ProvinceName
-                        }));
-                    });
+            // 3. Chuẩn bị dữ liệu gửi đi (khớp với DiaChiMoiViewModel)
+            const data = {
+                TenNguoiNhan: tenNguoiNhan,
+                SoDienThoai: soDienThoai,
+                DiaChiChiTiet: diaChiChiTiet,
+                ProvinceID: parseInt(provinceID),
+                ProvinceName: provinceName,
+                DistrictID: parseInt(districtID),
+                DistrictName: districtName,
+                WardCode: wardCode,
+                WardName: wardName
+            };
+
+            // 4. Gửi lên server
+            try {
+                // SỬA LỖI: Gọi đến /User/ThemDiaChiMoi
+                const response = await fetch('/User/ThemDiaChiMoi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert("Thêm địa chỉ mới thành công!");
+                    // SỬA LỖI: Tải lại trang và trỏ về đúng tab
+                    location.href = '/User/Profile?fragment=addressSection';
+                } else {
+                    alert(result.message || "Lưu địa chỉ thất bại.");
                 }
-                // THÊM MỚI: Khởi tạo Select2 sau khi có dữ liệu
-                $('#provinceDropdown').select2();
-            });
+            } catch (error) {
+                console.error("Lỗi khi lưu địa chỉ:", error);
+                alert("Lỗi kết nối khi lưu địa chỉ.");
+            }
+        }
+        // === BẮT ĐẦU THÊM MỚI: HÀM MỞ MODAL SỬA ===
+        async function openEditModal(id) {
+            // 1. Hiển thị modal
+            toggleEditAddress();
 
-            // THÊM MỚI: Khởi tạo Select2 cho 2 dropdown rỗng ban đầu
-            $('#districtDropdown').select2();
-            $('#wardDropdown').select2();
+            // 2. Reset và vô hiệu hóa form
+            document.getElementById('editName').value = 'Đang tải...';
+            document.getElementById('editPhone').value = 'Đang tải...';
+            document.getElementById('editAddr').value = 'Đang tải...';
+            editProvinceSelect.innerHTML = '<option value="">Đang tải...</option>';
+            editDistrictSelect.innerHTML = '<option value="">Đang tải...</option>';
+            editWardSelect.innerHTML = '<option value="">Đang tải...</option>';
+            editProvinceSelect.disabled = true;
+            editDistrictSelect.disabled = true;
+            editWardSelect.disabled = true;
 
-
-            // 2. Tải Quận/Huyện khi Tỉnh/Thành thay đổi
-            $("#provinceDropdown").change(function () {
-                var provinceId = $(this).val();
-                var provinceName = $(this).find("option:selected").text();
-                $("#provinceNameHidden").val(provinceName); 
-
-                // SỬA ĐỔI: Hủy Select2 cũ trước khi làm rỗng
-                $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
-                $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
-
-                // THÊM MỚI: Khởi tạo lại Select2 rỗng
-                $('#districtDropdown').select2();
-                $('#wardDropdown').select2();
-
-                $("#districtNameHidden").val("");
-                $("#wardNameHidden").val("");
-
-                if (provinceId) {
-                    var url = "@Url.Action("GetDistricts", "DiaChi")" + "?provinceId=" + provinceId;
-                    callApi(url, $("#districtDropdown")).done(function(response) {
-                        // SỬA ĐỔI: Hủy Select2 cũ trước khi thêm data
-                        $('#districtDropdown').select2('destroy').empty().append('<option value="">-- Chọn Quận/Huyện --</option>');
-                        if (response && response.data) {
-                            $.each(response.data, function (i, district) {
-                                $("#districtDropdown").append($('<option>', {
-                                    value: district.DistrictID,
-                                    text: district.DistrictName
-                                }));
-                            });
-                        }
-                        // THÊM MỚI: Khởi tạo lại Select2 với data mới
-                        $('#districtDropdown').select2();
-                    });
+            // 3. Gọi API lấy chi tiết địa chỉ
+            try {
+                const response = await fetch(`/User/GetDiaChiDetails?id=${id}`);
+                if (!response.ok) {
+                    throw new Error('Không thể tải thông tin địa chỉ.');
                 }
-            });
+                const data = await response.json();
 
-            // 3. Tải Phường/Xã khi Quận/Huyện thay đổi
-            $("#districtDropdown").change(function () {
-                var districtId = $(this).val();
-                var districtName = $(this).find("option:selected").text();
-                $("#districtNameHidden").val(districtName); 
+                // 4. Điền thông tin vào form
+                document.getElementById('editMaDiaChi').value = data.maDiaChi;
+                document.getElementById('editName').value = data.tenNguoiNhan;
+                document.getElementById('editPhone').value = data.soDienThoai;
+                document.getElementById('editAddr').value = data.diaChiChiTiet;
 
-                // SỬA ĐỔI: Hủy Select2 cũ trước khi làm rỗng
-                $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
-                // THÊM MỚI: Khởi tạo lại Select2 rỗng
-                $('#wardDropdown').select2();
-                
-                $("#wardNameHidden").val("");
+                // 5. Tải đồng bộ Tỉnh -> Quận -> Huyện (Đây là phần quan trọng)
+                // Phải 'await' từng bước để đảm bảo thứ tự
+                await loadProvinces(editProvinceSelect, data.provinceID);
+                await loadDistricts(data.provinceID, editDistrictSelect, data.districtID);
+                await loadWards(data.districtID, editWardSelect, data.wardCode);
 
-                if (districtId) {
-                    var url = "@Url.Action("GetWards", "DiaChi")" + "?districtId=" + districtId;
-                    callApi(url, $("#wardDropdown")).done(function(response) {
-                        // SỬA ĐỔI: Hủy Select2 cũ trước khi thêm data
-                        $('#wardDropdown').select2('destroy').empty().append('<option value="">-- Chọn Phường/Xã --</option>');
-                        
-                        if (response && response.data) {
-                            var wardsData = response.data;
-                            if (!Array.isArray(wardsData)) {
-                                wardsData = [wardsData]; 
-                            }
-                            $.each(wardsData, function (i, ward) {
-                                $("#wardDropdown").append($('<option>', {
-                                    value: ward.WardCode, 
-                                    text: ward.WardName
-                                }));
-                            });
-                        }
-                        // THÊM MỚI: Khởi tạo lại Select2 với data mới
-                        $('#wardDropdown').select2();
-                    });
+            } catch (error) {
+                console.error("Lỗi khi mở modal sửa:", error);
+                alert(error.message);
+                toggleEditAddress(); // Ẩn modal nếu lỗi
+            }
+        }
+
+        // === BẮT ĐẦU THÊM MỚI: HÀM LƯU THAY ĐỔI ĐỊA CHỈ ===
+        async function saveEditAddress() {
+             // 1. Thu thập dữ liệu từ form Sửa
+            const maDiaChi = document.getElementById('editMaDiaChi').value;
+            const tenNguoiNhan = document.getElementById('editName').value.trim();
+            const soDienThoai = document.getElementById('editPhone').value.trim();
+            const diaChiChiTiet = document.getElementById('editAddr').value.trim();
+            const provinceID = editProvinceSelect.value;
+            const provinceName = editProvinceSelect.options[editProvinceSelect.selectedIndex].text;
+            const districtID = editDistrictSelect.value;
+            const districtName = editDistrictSelect.options[editDistrictSelect.selectedIndex].text;
+            const wardCode = editWardSelect.value;
+            const wardName = editWardSelect.options[editWardSelect.selectedIndex].text;
+
+            // 2. Kiểm tra
+            if (!tenNguoiNhan || !soDienThoai || !diaChiChiTiet || !provinceID || !districtID || !wardCode) {
+                alert("Vui lòng điền đầy đủ thông tin địa chỉ.");
+                return;
+            }
+
+             // 3. Chuẩn bị dữ liệu (khớp với DiaChiEditViewModel)
+            const data = {
+                MaDiaChi: parseInt(maDiaChi),
+                TenNguoiNhan: tenNguoiNhan,
+                SoDienThoai: soDienThoai,
+                DiaChiChiTiet: diaChiChiTiet,
+                ProvinceID: parseInt(provinceID),
+                ProvinceName: provinceName,
+                DistrictID: parseInt(districtID),
+                DistrictName: districtName,
+                WardCode: wardCode,
+                WardName: wardName
+            };
+
+            // 4. Gửi lên server
+            try {
+                // Gọi action UpdateDiaChi
+                const response = await fetch('/User/UpdateDiaChi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert("Cập nhật địa chỉ thành công!");
+                    location.href = '/User/Profile?fragment=addressSection';
+                } else {
+                    alert(result.message || "Cập nhật địa chỉ thất bại.");
                 }
-            });
+            } catch (error) {
+                console.error("Lỗi khi cập nhật địa chỉ:", error);
+                alert("Lỗi kết nối khi cập nhật địa chỉ.");
+            }
+        }
+                async function deleteAddress(id) {
+            // 1. Hiển thị xác nhận
+            if (!confirm('Bạn có chắc chắn muốn xóa địa chỉ này không?')) {
+                return;
+            }
 
-            // 4. Cập nhật tên Phường/Xã khi chọn (Giữ nguyên)
-            $("#wardDropdown").change(function () {
-                var wardName = $(this).find("option:selected").text();
-                $("#wardNameHidden").val(wardName);
-            });
-        });
+            // 2. Gửi yêu cầu xóa lên server
+            try {
+                // Lưu ý: Dùng POST và gửi ID qua query string
+                const response = await fetch(`/User/DeleteDiaChi?id=${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(result.message);
+                    // Tải lại trang và trỏ về đúng tab địa chỉ
+                    location.href = '/User/Profile?fragment=addressSection';
+                } else {
+                    alert(result.message || "Xóa địa chỉ thất bại.");
+                }
+            } catch (error) {
+                console.error("Lỗi khi xóa địa chỉ:", error);
+                alert("Lỗi kết nối khi xóa địa chỉ.");
+            }
+        }
     </script>
 }

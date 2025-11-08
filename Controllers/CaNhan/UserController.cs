@@ -5,8 +5,30 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http; // Đảm bảo bạn đã using
 using System.IO; // Đảm bảo bạn đã using
 using System.Threading.Tasks; // Đảm bảo bạn đã using
+using System.Linq; // Thêm
+using System; // Thêm
+using System.Collections.Generic; // Thêm
 
-namespace Final_Project.Models.Helpers;
+namespace Final_Project.Models.Helpers; // (Lưu ý: Namespace này có vẻ lạ, nhưng tôi giữ nguyên theo file của bạn)
+
+// === THÊM VIEWMODEL MỚI (Copy từ ThanhToanController) ===
+// Model này khớp với data mà script GHN gửi lên
+public class DiaChiMoiViewModel
+{
+    public string TenNguoiNhan { get; set; }
+    public string SoDienThoai { get; set; }
+    public string DiaChiChiTiet { get; set; }
+    public int ProvinceID { get; set; } // Nhận INT từ JS
+    public string ProvinceName { get; set; }
+    public int DistrictID { get; set; } // Nhận INT từ JS
+    public string DistrictName { get; set; }
+    public string WardCode { get; set; }
+    public string WardName { get; set; }
+}
+public class DiaChiEditViewModel : DiaChiMoiViewModel
+{
+    public int MaDiaChi { get; set; }
+}
 
 public class UserController : Controller
 {
@@ -16,7 +38,110 @@ public class UserController : Controller
     {
         _context = context;
     }
+    // === BẮT ĐẦU THÊM MỚI (Action lấy chi tiết địa chỉ) ===
+    [HttpGet]
+    public async Task<IActionResult> GetDiaChiDetails(int id)
+    {
+        int? maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null)
+            return Unauthorized(new { message = "Vui lòng đăng nhập lại." });
 
+        var diaChi = await _context.DiaChiNguoiDungs
+                            .FirstOrDefaultAsync(d => d.MaDiaChi == id && d.MaTK == maTK.Value);
+
+        if (diaChi == null)
+            return NotFound(new { message = "Không tìm thấy địa chỉ." });
+
+        // Trả về dữ liệu JSON, bao gồm cả các ID
+        return Json(new
+        {
+            maDiaChi = diaChi.MaDiaChi,
+            tenNguoiNhan = diaChi.TenNguoiNhan,
+            soDienThoai = diaChi.SoDienThoai,
+            diaChiChiTiet = diaChi.DiaChiChiTiet,
+            tinhTP = diaChi.TinhTP,
+            quanHuyen = diaChi.QuanHuyen,
+            phuongXa = diaChi.PhuongXa,
+            provinceID = diaChi.ProvinceID, // ID Tỉnh (dạng string)
+            districtID = diaChi.DistrictID, // ID Quận (dạng string)
+            wardCode = diaChi.WardCode     // Code Phường (dạng string)
+        });
+    }
+    
+    // === (Action cập nhật địa chỉ) ===
+    [HttpPost]
+    public async Task<IActionResult> UpdateDiaChi([FromBody] DiaChiEditViewModel model)
+    {
+        int? maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null)
+            return Json(new { success = false, message = "Vui lòng đăng nhập lại." });
+
+        if (model == null)
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
+
+        try
+        {
+            var diaChi = await _context.DiaChiNguoiDungs
+                                .FirstOrDefaultAsync(d => d.MaDiaChi == model.MaDiaChi && d.MaTK == maTK.Value);
+
+            if (diaChi == null)
+                return Json(new { success = false, message = "Không tìm thấy địa chỉ để cập nhật." });
+
+            // Cập nhật thông tin
+            diaChi.TenNguoiNhan = model.TenNguoiNhan;
+            diaChi.SoDienThoai = model.SoDienThoai;
+            diaChi.DiaChiChiTiet = model.DiaChiChiTiet;
+            diaChi.TinhTP = model.ProvinceName;
+            diaChi.QuanHuyen = model.DistrictName;
+            diaChi.PhuongXa = model.WardName;
+            diaChi.ProvinceID = model.ProvinceID.ToString();
+            diaChi.DistrictID = model.DistrictID.ToString();
+            diaChi.WardCode = model.WardCode;
+
+            _context.DiaChiNguoiDungs.Update(diaChi);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Cập nhật địa chỉ thành công." });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Json(new { success = false, message = "Lỗi khi cập nhật địa chỉ." });
+        }
+    }
+    
+    // ===  ACTION XÓA ===
+    [HttpPost]
+    public async Task<IActionResult> DeleteDiaChi(int id)
+    {
+        int? maTK = HttpContext.Session.GetInt32("MaTK");
+        if (maTK == null)
+            return Json(new { success = false, message = "Vui lòng đăng nhập lại." });
+
+        try
+        {
+            var diaChi = await _context.DiaChiNguoiDungs
+                                .FirstOrDefaultAsync(d => d.MaDiaChi == id && d.MaTK == maTK.Value);
+
+            if (diaChi == null)
+                return Json(new { success = false, message = "Không tìm thấy địa chỉ." });
+
+            // Kiểm tra quan trọng: Không cho xóa địa chỉ mặc định
+            if (diaChi.MacDinh)
+                return Json(new { success = false, message = "Không thể xóa địa chỉ mặc định. Vui lòng chọn địa chỉ khác làm mặc định trước." });
+
+            _context.DiaChiNguoiDungs.Remove(diaChi);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Xóa địa chỉ thành công." });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return Json(new { success = false, message = "Lỗi khi xóa địa chỉ." });
+        }
+    }
+    // === KẾT THÚC BỔ SUNG ACTION XÓA ===
     public IActionResult Profile()
     {
         int? maTK = HttpContext.Session.GetInt32("MaTK");
@@ -29,9 +154,6 @@ public class UserController : Controller
         var taiKhoan = _context.TaiKhoans
             .Include(t => t.DiaChiNguoiDungs) // Dùng Include để tải địa chỉ
             .FirstOrDefault(t => t.MaTK == maTK);
-
-        // Không cần .Load() riêng nếu đã dùng Include
-        // _context.Entry(taiKhoan).Collection(t => t.DiaChiNguoiDungs).Load(); 
 
         ViewBag.Avatar = taiKhoan?.Avatar;
         ViewBag.HoTen = taiKhoan?.HoTen;
@@ -80,48 +202,51 @@ public class UserController : Controller
         return RedirectToAction("Profile", new { fragment = "profileSection" });
     }
 
-    // === ĐÃ SỬA ĐỂ ĐỒNG BỘ VỚI FORM VÀ MODEL DiaChiNguoiDung ===
+    // === SỬA LỖI: THAY THẾ ACTION [HttpPost] ThemDiaChi CŨ ===
+    // [HttpPost]
+    // public IActionResult ThemDiaChi(DiaChiNguoiDung model) // <= XÓA ACTION CŨ NÀY
+
+    // === THÊM MỚI: ACTION NÀY NHẬN DiaChiMoiViewModel (Giống ThanhToanController) ===
     [HttpPost]
-    public IActionResult ThemDiaChi(DiaChiNguoiDung model) // Đổi từ ViewModel sang Model chính
+    public async Task<IActionResult> ThemDiaChiMoi([FromBody] DiaChiMoiViewModel model)
     {
         int? maTK = HttpContext.Session.GetInt32("MaTK");
-        if (maTK == null) return RedirectToAction("DangNhap", "Auth");
+        if (maTK == null)
+            return Json(new { success = false, message = "Vui lòng đăng nhập lại." });
 
-        // Gán MaTK cho địa chỉ mới
-        model.MaTK = maTK.Value;
+        if (model == null)
+            return Json(new { success = false, message = "Dữ liệu không hợp lệ." });
 
-        // Bỏ qua kiểm tra ModelState cho TaiKhoan (nếu nó là [Required])
-        ModelState.Remove("TaiKhoan");
-
-        if (ModelState.IsValid)
+        try
         {
-            // Nếu người dùng chọn "Đặt làm mặc định"
-            if (model.MacDinh)
+            var diaChiMoi = new DiaChiNguoiDung
             {
-                // Bỏ tất cả mặc định cũ của tài khoản này
-                var diaChiCu = _context.DiaChiNguoiDungs.Where(d => d.MaTK == maTK && d.MacDinh).ToList();
-                foreach (var d in diaChiCu)
-                {
-                    d.MacDinh = false;
-                }
-            }
+                MaTK = maTK.Value,
+                TenNguoiNhan = model.TenNguoiNhan,
+                SoDienThoai = model.SoDienThoai,
+                DiaChiChiTiet = model.DiaChiChiTiet,
+                TinhTP = model.ProvinceName,
+                QuanHuyen = model.DistrictName,
+                PhuongXa = model.WardName,
+                // Chuyển int (từ ViewModel) sang string (cho Model DB)
+                ProvinceID = model.ProvinceID.ToString(),
+                DistrictID = model.DistrictID.ToString(),
+                WardCode = model.WardCode,
+                MacDinh = false // Form này không set mặc định
+            };
 
-            _context.DiaChiNguoiDungs.Add(model); // Thêm model đã được binding
-            _context.SaveChanges();
+            _context.DiaChiNguoiDungs.Add(diaChiMoi);
+            await _context.SaveChangesAsync();
 
-            TempData["Success"] = "Thêm địa chỉ thành công!";
+            // Trả về JSON để script xử lý
+            return Json(new { success = true, message = "Thêm địa chỉ mới thành công." });
         }
-        else
+        catch (Exception ex)
         {
-            // Lấy lỗi
-            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            TempData["Error"] = "Dữ liệu không hợp lệ: " + string.Join(", ", errors);
+            Console.WriteLine(ex.Message);
+            return Json(new { success = false, message = "Lỗi khi lưu địa chỉ." });
         }
-
-        // Chuyển hướng về tab địa chỉ
-        return RedirectToAction("Profile", new { fragment = "addressSection" });
     }
-    // === KẾT THÚC SỬA ĐỔI ===
 
 
     [HttpPost]
@@ -133,7 +258,6 @@ public class UserController : Controller
             if (taiKhoan == null) return NotFound();
 
             var fileName = $"{Guid.NewGuid()}{Path.GetExtension(avatarFile.FileName)}";
-            // Đảm bảo thư mục "avatars" nằm trong "uploads"
             var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "avatars");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
@@ -144,13 +268,11 @@ public class UserController : Controller
                 await avatarFile.CopyToAsync(stream);
             }
 
-            // Lưu đường dẫn tương đối
             taiKhoan.Avatar = $"/uploads/avatars/{fileName}";
             _context.Update(taiKhoan);
             await _context.SaveChangesAsync();
         }
 
-        // Chuyển hướng về tab thông tin cá nhân
         return RedirectToAction("Profile", "User", new { fragment = "profileSection" });
     }
 
@@ -163,9 +285,6 @@ public class UserController : Controller
         var user = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
         if (user == null) return NotFound();
 
-        // CẢNH BÁO BẢO MẬT: Không nên so sánh mật khẩu plain-text.
-        // Đây là cách làm tạm thời theo logic code của bạn.
-        // Bạn nên sử dụng Hashing (ví dụ: BCrypt) cho mật khẩu.
         if (OldPassword != user.MatKhau)
         {
             TempData["PasswordChangeMessage"] = "❌ Mật khẩu hiện tại không đúng.";
@@ -176,12 +295,11 @@ public class UserController : Controller
         }
         else
         {
-            user.MatKhau = NewPassword; // Cũng không nên lưu plain-text
+            user.MatKhau = NewPassword;
             _context.SaveChanges();
             TempData["PasswordChangeMessage"] = "✅ Đổi mật khẩu thành công!";
         }
 
-        // Chuyển hướng về tab đổi mật khẩu
         return RedirectToAction("Profile", "User", new { fragment = "changePasswordSection" });
     }
 }
