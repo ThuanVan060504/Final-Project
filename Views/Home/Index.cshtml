@@ -9,35 +9,100 @@
 
 
 <style>
-	.container .ps-section__content {
-    min-height: 340px;
-}
-.ps-site-features {
-    margin-top: 10px;
-}
-.col-md-3 {
-    margin-bottom: 10px;
-}
-	.suggestion-card {
-     border: 1px solid #dee2e6 !important; 
-    margin-bottom: 1.5rem !important;
-    text-align: center !important;
-    border: 1px solid #dee2e6 !important;
-	height: 48%;
-}
-img.suggestion-img {
-    max-width: 182px;
-}
-.ps-deal-of-day {
-    margin-top: 20px;
-}
+    .container .ps-section__content {
+        min-height: 340px;
+    }
+
+    .ps-site-features {
+        margin-top: 10px;
+    }
+
+    .col-md-3 {
+        margin-bottom: 10px;
+    }
+
+    .suggestion-card {
+        border: 1px solid #dee2e6 !important;
+        margin-bottom: 1.5rem !important;
+        text-align: center !important;
+        border: 1px solid #dee2e6 !important;
+        height: 48%;
+    }
+
+    img.suggestion-img {
+        max-width: 182px;
+    }
+
+    .ps-deal-of-day {
+        margin-top: 20px;
+    }
+
+    /* Thêm style cho voucher nếu cần */
+    .voucher-item {
+        display: inline-flex; 
+        align-items: center;
+        margin-bottom: 15px;
+        margin-right: 15px;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #fff4eb;
+        border: 2px solid #ff9933;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .voucher-image {
+        flex-shrink: 0;
+        margin-right: 15px; /* Khoảng cách sau ảnh */
+    }
+
+        .voucher-image img {
+            width: 50px; /* size ảnh */
+            height: 50px;
+            border-radius: 4px;
+        }
+
+    /* === THAY ĐỔI LAYOUT === */
+    .voucher-content {
+        flex-grow: 0; 
+        margin-right: 15px; 
+    }
+
+        .voucher-content p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .voucher-content .voucher-code {
+            font-size: 1.1em;
+            font-weight: 700; 
+            color: #d9534f; /* Màu ĐỎ CAM cho mã */
+        }
+
+        .voucher-content .voucher-desc {
+            font-size: 0.9em;
+            color: #555; /* Chữ xám đậm */
+        }
+
+    .voucher-action {
+        margin-left: 0; 
+    }
+
+    /* Đổi màu nút "Đã lưu" cho phù hợp */
+    .btn-save-voucher.btn-success {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+
+    .btn-save-voucher.btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
 
 </style>
 
 
 <div class="container mt-4">
     <div class="row">
-        <!-- Sidebar -->
         <div class="col-md-3">
             <ul class="list-group">
                 <li class="list-group-item"><a href="/products/sofa" class="text-decoration-none text-dark">Sofa & Ghế</a></li>
@@ -53,57 +118,54 @@ img.suggestion-img {
                 <li class="list-group-item"><a href="/products/phu-kien" class="text-decoration-none text-dark">Phụ Kiện Trang Trí</a></li>
             </ul>
         </div>
-        <!-- CSS riêng cho carousel -->
-<style>
-.custom-carousel .carousel-item img {
-    transition: transform 1s ease, opacity 1s ease; /* chuyển sang 3s */
-}
+        <style>
+            .custom-carousel .carousel-item img {
+                transition: transform 1s ease, opacity 1s ease; /* chuyển sang 3s */
+            }
 
-.custom-carousel .carousel-item {
-    height: 300px; /* Chiều cao cố định nếu muốn */
-    overflow: hidden;
-}
+            .custom-carousel .carousel-item {
+                height: 300px; /* Chiều cao cố định nếu muốn */
+                overflow: hidden;
+            }
 
-.custom-carousel .carousel-item img {
-    object-fit: cover; /* Đảm bảo ảnh đầy đủ và không bị biến dạng */
-    width: 100%;
-    height: 100%;
-}
+                .custom-carousel .carousel-item img {
+                    object-fit: cover; /* Đảm bảo ảnh đầy đủ và không bị biến dạng */
+                    width: 100%;
+                    height: 100%;
+                }
 
-.custom-prev, .custom-next {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: rgba(0,0,0,0.5);
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-}
+            .custom-prev, .custom-next {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                background-color: rgba(0,0,0,0.5);
+                border: none;
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 10;
+            }
 
-.custom-prev {
-    left: 10px;
-}
+            .custom-prev {
+                left: 10px;
+            }
 
-.custom-next {
-    right: 10px;
-}
+            .custom-next {
+                right: 10px;
+            }
 
-.custom-prev-icon, .custom-next-icon {
-    color: #fff;
-    font-size: 24px;
-    line-height: 1;
-}
+            .custom-prev-icon, .custom-next-icon {
+                color: #fff;
+                font-size: 24px;
+                line-height: 1;
+            }
 
-</style>
-<!-- Bootstrap JS riêng -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Banner & Ads (Carousel) -->
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <div class="col-md-6">
             <div id="mainCarousel" class="carousel slide mb-3" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -120,7 +182,7 @@ img.suggestion-img {
                         <img src="https://noithatzear.vn/wp-content/uploads/2023/09/Banner-noi-that.png" class="d-block w-100 rounded" alt="Slide 4">
                     </div>
                 </div>
-               <button class="custom-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+                <button class="custom-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
                     <span class="custom-prev-icon" aria-hidden="true">&#10094;</span>
                     <span class="visually-hidden"></span>
                 </button>
@@ -131,7 +193,6 @@ img.suggestion-img {
 
             </div>
 
-            <!-- 3 Banner nhỏ -->
             <div class="row">
                 <div class="col-4">
                     <div class="bg-white border text-center p-2 mb-2">
@@ -157,91 +218,122 @@ img.suggestion-img {
             </div>
         </div>
 
-		<!-- Right Suggestions -->
-<div class="sidebar-suggestions col-md-3">
-    <div class="suggestion-card">
-        <small class="suggestion-title">Recently Viewed</small><br />
-        <img src="https://i.pinimg.com/1200x/ee/16/29/ee1629f6518a827c1dbc88e1d4315118.jpg" 
-             alt="Recently Viewed" 
-             class="suggestion-img" />
-        <p class="suggestion-link">
-            <a href="#">See your browsing history</a>
-        </p>
-    </div>
+        <div class="sidebar-suggestions col-md-3">
+            <div class="suggestion-card">
+                <small class="suggestion-title">Recently Viewed</small><br />
+                <img src="https://i.pinimg.com/1200x/ee/16/29/ee1629f6518a827c1dbc88e1d4315118.jpg"
+                     alt="Recently Viewed"
+                     class="suggestion-img" />
+                <p class="suggestion-link">
+                    <a href="#">See your browsing history</a>
+                </p>
+            </div>
 
-    <div class="suggestion-card">
-        <small class="suggestion-title">Suggestions for You</small><br />
-        <img src="https://i.pinimg.com/1200x/05/ac/d3/05acd3cdde303e1e9b0f60fd73dcab40.jpg" 
-             alt="Suggestions" 
-             class="suggestion-img" />
-        <p class="suggestion-link">
-            <a href="#">Watch more</a>
-        </p>
+            <div class="suggestion-card">
+                <small class="suggestion-title">Suggestions for You</small><br />
+                <img src="https://i.pinimg.com/1200x/05/ac/d3/05acd3cdde303e1e9b0f60fd73dcab40.jpg"
+                     alt="Suggestions"
+                     class="suggestion-img" />
+                <p class="suggestion-link">
+                    <a href="#">Watch more</a>
+                </p>
+            </div>
+        </div>
+
     </div>
 </div>
 
+<div class="container mt-4">
+    @if (ViewBag.AvailableVouchers != null)
+    {
+        <h3>🎁 Voucher ưu đãi 🎁</h3>
+        <div class="voucher-list">
+            @foreach (var voucher in (List<Voucher>)ViewBag.AvailableVouchers)
+            {
+                <div class="voucher-item">
+
+                    <div class="voucher-image">
+                        <img src="~/images/G3TD_Voucher.png" alt="Voucher">
+                    </div>
+
+                    <div class="voucher-content">
+                        <p class="voucher-code">@voucher.MaCode</p>
+                        <p class="voucher-desc">
+                            @voucher.MoTa - HSD: @voucher.NgayKetThuc.ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+
+                    <div class="voucher-action">
+                        <button class="btn btn-danger btn-save-voucher" data-id="@voucher.MaVoucherID">Lưu</button>
+                    </div>
+
+                </div>
+            }
+        </div>
+    }
 </div>
+<hr />
 <div class="ps-site-features">
-		<div class="ps-container">
-			<div class="ps-block--site-features">
-				<div class='ps-block__item'>
-					<div class='ps-block__left'>
-						<i class='icon-rocket'></i>
-					</div>
-					<div class='ps-block__right'>
-						<h4> Miễn phí vận chuyển</h4>
-						<p>
-							  cho đơn hàng từ 10.000.000 Vnđ
-						</p>
-					</div>
-				</div>
-				<div class='ps-block__item'>
-					<div class='ps-block__left'>
-						<i class='icon-sync'></i>
-					</div>
-					<div class='ps-block__right'>
-						<h4>Lịch sử đơn hàng</h4>
-						<p>
-							 Trạng thái Đơn Hàng
-						</p>
-					</div>
-				</div>
-				<div class='ps-block__item'>
-					<div class='ps-block__left'>
-						<i class='icon-credit-card'></i>
-					</div>
-					<div class='ps-block__right'>
-						<h4> Thanh toán an toàn</h4>
-						<p>
-							Thanh toán 100% an toàn
-						</p>
-					</div>
-				</div>
-				<div class='ps-block__item'>
-					<div class='ps-block__left'>
-						<i class='icon-bubbles'></i>
-					</div>
-					<div class='ps-block__right'>
-						<h4> Hỗ trợ 24/7</h4>
-						<p>
-							 Hỗ trợ riêng dành cho bạn
-						</p>
-					</div>
-				</div>
-				<div class='ps-block__item'>
-					<div class='ps-block__left'>
-						<i class='icon-gift'></i>
-					</div>
-					<div class='ps-block__right'>
-						<h4>Dịch vụ quà tặng</h4>
-						<p>
-							 Hỗ trợ dịch vụ quà tặng
-						</p>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="ps-container">
+        <div class="ps-block--site-features">
+            <div class='ps-block__item'>
+                <div class='ps-block__left'>
+                    <i class='icon-rocket'></i>
+                </div>
+                <div class='ps-block__right'>
+                    <h4> Miễn phí vận chuyển</h4>
+                    <p>
+                        cho đơn hàng từ 10.000.000 Vnđ
+                    </p>
+                </div>
+            </div>
+            <div class='ps-block__item'>
+                <div class='ps-block__left'>
+                    <i class='icon-sync'></i>
+                </div>
+                <div class='ps-block__right'>
+                    <h4>Lịch sử đơn hàng</h4>
+                    <p>
+                        Trạng thái Đơn Hàng
+                    </p>
+                </div>
+            </div>
+            <div class='ps-block__item'>
+                <div class='ps-block__left'>
+                    <i class='icon-credit-card'></i>
+                </div>
+                <div class='ps-block__right'>
+                    <h4> Thanh toán an toàn</h4>
+                    <p>
+                        Thanh toán 100% an toàn
+                    </p>
+                </div>
+            </div>
+            <div class='ps-block__item'>
+                <div class='ps-block__left'>
+                    <i class='icon-bubbles'></i>
+                </div>
+                <div class='ps-block__right'>
+                    <h4> Hỗ trợ 24/7</h4>
+                    <p>
+                        Hỗ trợ riêng dành cho bạn
+                    </p>
+                </div>
+            </div>
+            <div class='ps-block__item'>
+                <div class='ps-block__left'>
+                    <i class='icon-gift'></i>
+                </div>
+                <div class='ps-block__right'>
+                    <h4>Dịch vụ quà tặng</h4>
+                    <p>
+                        Hỗ trợ dịch vụ quà tặng
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -255,7 +347,7 @@ img.suggestion-img {
                 <div class="ps-block__right">
                     <figure>
                         <figcaption></figcaption>
-                      <span style="display:none" id="berakhir">0:12:40:44</span>
+                        <span style="display:none" id="berakhir">0:12:40:44</span>
                         <ul class="ps-countdown d-none d-sm-block" data-time="">
                             <li><span class="days"></span> Ngày</li>
                             <li><span class="hours"></span> Giờ</li>
@@ -311,7 +403,7 @@ img.suggestion-img {
                         </div>
                         <div class="ps-product__container">
                             <p class="ps-product__price sale">
-                                 @String.Format("{0:N0}", sp.DonGia) đ
+                                @String.Format("{0:N0}", sp.DonGia) đ
                             </p>
                             <div class="ps-product__content">
                                 <a class="ps-product__title" href="/SanPham/Details/@sp.MaSP">@sp.TenSP</a>
@@ -324,7 +416,6 @@ img.suggestion-img {
     </div>
 </div>
 
-<!-- Gọi JS Owl Carousel và Tooltip nếu cần -->
 <script src="~/js/owl.carousel.min.js"></script>
 <script>
     $(document).ready(function () {
@@ -332,41 +423,110 @@ img.suggestion-img {
     });
 </script>
 
+<script>
+    $(document).ready(function() {
+        $('.btn-save-voucher').on('click', function(e) {
+            e.preventDefault();
+            var voucherId = $(this).data('id');
+            var button = $(this);
 
+            $.ajax({
+                url: '/api/voucher/save',
+                type: 'POST',
+                data: { voucherId: voucherId },
+                success: function(response) {
+                    alert(response.message);
+                    button.text('Đã lưu').prop('disabled', true).removeClass('btn-primary').addClass('btn-success');
+                },
+                error: function(xhr) {
+                    var errorMsg = "Đã xảy ra lỗi. Vui lòng thử lại.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    alert(errorMsg);
 
-    
-	<div class="ps-home-ads">
-		<div class="ps-container">
-			<div class="row">
-				<div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
-					<a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//3.jpg' alt='Home - Iklan Home No 3'/></a>
-				</div>
-				<div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
-					<a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//2.jpg' alt='Home - Iklan Home No 2'/></a>
-				</div>
-				<div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
-					<a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//1.jpg' alt='Home - Iklan Home No 1'/></a>
-				</div>
-			</div>
-		</div>
-	</div>
-
-    <!-- ==== SẢN PHẨM MỚI NHẤT ==== -->
-    <div class="ps-product-list ps-clothings">
-        <div class="ps-container">
-            <div class="ps-section__header">
-                <h3>Sản phẩm mới nhất</h3>
+                    if(xhr.status == 409) { // 409 = Conflict (Đã lưu rồi)
+                         button.text('Đã lưu').prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+                    }
+                }
+            });
+        });
+    });
+</script>
+<div class="ps-home-ads">
+    <div class="ps-container">
+        <div class="row">
+            <div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
+                <a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//3.jpg' alt='Home - Iklan Home No 3' /></a>
             </div>
-            <div class="ps-section__content">
-                <div class="ps-carousel--nav owl-slider"
-                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
-                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
-                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
-                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
-                     data-owl-duration="1000" data-owl-mousedrag="on">
+            <div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
+                <a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//2.jpg' alt='Home - Iklan Home No 2' /></a>
+            </div>
+            <div class='col-xl-4 col-lg-4 col-md-12 col-sm-12 col-12 '>
+                <a class='ps-collection' href='#' target='_blank'><img src='~/Users/img//1.jpg' alt='Home - Iklan Home No 1' /></a>
+            </div>
+        </div>
+    </div>
+</div>
 
-                    @foreach (var sp in Model)
+<div class="ps-product-list ps-clothings">
+    <div class="ps-container">
+        <div class="ps-section__header">
+            <h3>Sản phẩm mới nhất</h3>
+        </div>
+        <div class="ps-section__content">
+            <div class="ps-carousel--nav owl-slider"
+                 data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                 data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                 data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                 data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                 data-owl-duration="1000" data-owl-mousedrag="on">
+
+                @foreach (var sp in Model)
+                {
+                    <div class="ps-product">
+                        <div class="ps-product__thumbnail">
+                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
+                                <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                            </a>
+                            <ul class="ps-product__actions">
+                                <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+                                <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                            </ul>
+                        </div>
+                        <div class="ps-product__container">
+                            <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                            <div class="ps-product__content">
+                                <a class="ps-product__title" href="#">@sp.TenSP</a>
+                                <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ps-product-list ps-clothings">
+    <div class="ps-container">
+        <div class="ps-section__header">
+            <h3>Sản phẩm được yêu thích</h3>
+        </div>
+        <div class="ps-section__content">
+            <div class="ps-carousel--nav owl-slider"
+                 data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                 data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                 data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                 data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                 data-owl-duration="1000" data-owl-mousedrag="on">
+
+                @if (ViewBag.SanPhamYeuThich != null)
+                {
+                    foreach (var item in ViewBag.SanPhamYeuThich)
                     {
+                        var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                        int yeuThich = item.SoLuongYeuThich;
                         <div class="ps-product">
                             <div class="ps-product__thumbnail">
                                 <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
@@ -383,109 +543,65 @@ img.suggestion-img {
                                 <div class="ps-product__content">
                                     <a class="ps-product__title" href="#">@sp.TenSP</a>
                                     <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                    <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
                                 </div>
                             </div>
                         </div>
                     }
-                </div>
+                }
             </div>
         </div>
     </div>
-    <!-- ==== SẢN PHẨM YÊU THÍCH ==== -->
-    <div class="ps-product-list ps-clothings">
-        <div class="ps-container">
-            <div class="ps-section__header">
-                <h3>Sản phẩm được yêu thích</h3>
-            </div>
-            <div class="ps-section__content">
-                <div class="ps-carousel--nav owl-slider"
-                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
-                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
-                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
-                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
-                     data-owl-duration="1000" data-owl-mousedrag="on">
+</div>
 
-                    @if (ViewBag.SanPhamYeuThich != null)
+<div class="ps-product-list ps-clothings">
+    <div class="ps-container">
+        <div class="ps-section__header">
+            <h3>Sản phẩm bán chạy</h3>
+        </div>
+        <div class="ps-section__content">
+            <div class="ps-carousel--nav owl-slider"
+                 data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                 data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                 data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                 data-owl-item-md="3" data-owl-item-lg="4"
+                 data-owl-item-xl="6"
+                 data-owl-duration="1000" data-owl-mousedrag="on">
+
+                @if (ViewBag.SanPhamBanChay != null)
+                {
+                    foreach (var item in ViewBag.SanPhamBanChay)
                     {
-                        foreach (var item in ViewBag.SanPhamYeuThich)
-                        {
-                            var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
-                            int yeuThich = item.SoLuongYeuThich;
-                            <div class="ps-product">
-                                <div class="ps-product__thumbnail">
-                                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                                        <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
-                                    </a>
-                                    <ul class="ps-product__actions">
-                                        <li><a href="#"><i class="icon-bag2"></i></a></li>
-                                        <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                        <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div class="ps-product__container">
-                                    <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="#">@sp.TenSP</a>
-                                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                                        <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
-                                    </div>
+                        var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
+                        int daBan = item.SoLuongDaBan;
+                        <div class="ps-product">
+                            <div class="ps-product__thumbnail">
+                                <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
+                                    <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                                </a>
+                                <ul class="ps-product__actions">
+                                    <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                    <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+                                    <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                </ul>
+                            </div>
+                            <div class="ps-product__container">
+                                <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                                <div class="ps-product__content">
+                                    <a class="ps-product__title" href="#">@sp.TenSP</a>
+                                    <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                    <p><i class="fa fa-shopping-cart text-primary"></i> Đã bán: @daBan</p>
                                 </div>
                             </div>
-                        }
+                        </div>
                     }
-                </div>
+                }
             </div>
         </div>
     </div>
+</div>
 
-    <!-- ==== SẢN PHẨM BÁN CHẠY ==== -->
-    <div class="ps-product-list ps-clothings">
-        <div class="ps-container">
-            <div class="ps-section__header">
-                <h3>Sản phẩm bán chạy</h3>
-            </div>
-            <div class="ps-section__content">
-                <div class="ps-carousel--nav owl-slider"
-                     data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
-                     data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
-                     data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
-                     data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
-                     data-owl-duration="1000" data-owl-mousedrag="on">
 
-                    @if (ViewBag.SanPhamBanChay != null)
-                    {
-                        foreach (var item in ViewBag.SanPhamBanChay)
-                        {
-                            var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
-                            int daBan = item.SoLuongDaBan;
-                            <div class="ps-product">
-                                <div class="ps-product__thumbnail">
-                                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                                        <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
-                                    </a>
-                                    <ul class="ps-product__actions">
-                                        <li><a href="#"><i class="icon-bag2"></i></a></li>
-                                        <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                        <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
-                                    </ul>
-                                </div>
-                                <div class="ps-product__container">
-                                    <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
-                                    <div class="ps-product__content">
-                                        <a class="ps-product__title" href="#">@sp.TenSP</a>
-                                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
-                                        <p><i class="fa fa-shopping-cart text-primary"></i> Đã bán: @daBan</p>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
-
-   
 
 <div class="ps-popup" id="subscribe" data-time="500">
     <div class="ps-popup__content bg--cover" style="background-image: url('/Users/img/subscribe.png');">
@@ -510,15 +626,4 @@ img.suggestion-img {
         </form>
     </div>
 </div>
-	
-				</div>
-			</div>
-		</div>
-	</div>
-	</div>	
-		</div>
-			</div>
-				</div>
-					</div>
-						</div>
-	</div>
+

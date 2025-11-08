@@ -35,5 +35,9 @@ namespace Final_Project.Models.Shop
         public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; }
         [ForeignKey("MaDiaChi")]
         public DiaChiNguoiDung DiaChiNguoiDung { get; set; }
+        public int? MaVoucherID { get; set; }
+
+        [ForeignKey("MaVoucherID")]
+        public Voucher Voucher { get; set; }
     }
 }

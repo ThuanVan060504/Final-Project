@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Authentication;
 using System.Linq;
 using System.Threading.Tasks;
-
+using System.Security.Claims;
 namespace Final_Project.Controllers.Menu
 {
     public class HomeController : Controller
@@ -70,7 +70,16 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.Avatar = taiKhoan?.Avatar;
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
+            var now = DateTime.Now;
+            var availableVouchers = await _context.Vouchers
+                .Where(v => v.IsActive == true &&
+                            v.NgayBatDau <= now &&
+                            v.NgayKetThuc >= now &&
+                            (v.SoLuongToiDa == null || v.SoLuongDaDung < v.SoLuongToiDa))
+                .OrderBy(v => v.NgayKetThuc) // Ưu tiên cái sắp hết hạn
+                .ToListAsync();
 
+            ViewBag.AvailableVouchers = availableVouchers;
             // ===============================
             // Top sản phẩm yêu thích
             // ===============================

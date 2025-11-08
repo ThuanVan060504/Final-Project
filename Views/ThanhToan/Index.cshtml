@@ -12,66 +12,13 @@
     var tongThanhToan = tongTien + phiVanChuyen;
 }
 
-<!--
-    GHI CHÚ QUAN TRỌNG CHO BẠN (DEVELOPER):
 
-    Để code này hoạt động, bạn CẦN THAY ĐỔI 3 ĐIỀU ở backend (Controller):
-
-    1.  Model `DiaChiNguoiDung`:
-        Model này BẮT BUỘC phải có thêm các trường để lưu mã GHN:
-        -   public int ProvinceID { get; set; }
-        -   public int DistrictID { get; set; }
-        -   public string WardCode { get; set; }
-
-    2.  Controller (Action `Index` - tải trang này):
-        Khi bạn `ViewBag.DiaChi`, hãy đảm bảo bạn truyền cả 3 mã ID ở trên.
-        Code JS sẽ đọc các mã này từ `data-` attributes của div#default-address.
-
-    3.  Controller (Action `LayDanhSachDiaChi`):
-        Khi trả về JSON danh sách địa chỉ, hãy đảm bảo mỗi địa chỉ trong danh sách
-        cũng bao gồm `provinceID`, `districtID`, và `wardCode`.
-        Code JS sẽ dùng các mã này để gọi hàm `chonDiaChi`.
-
-    4.  Controller (Tạo Action `ThemDiaChiMoi` [HttpPost]):
-        Bạn cần tạo một Action mới để xử lý việc thêm địa chỉ:
-        [HttpPost]
-        public async Task<IActionResult> ThemDiaChiMoi([FromBody] DiaChiMoiViewModel model)
-        {
-            // model DiaChiMoiViewModel sẽ chứa:
-            // string TenNguoiNhan, string SoDienThoai, string DiaChiChiTiet,
-            // int ProvinceID, string ProvinceName,
-            // int DistrictID, string DistrictName,
-            // string WardCode, string WardName
-
-            // Lưu địa chỉ mới này vào DB cho user...
-            // ...
-            // Sau khi lưu, trả về JSON
-            return Json(new { success = true, message = "Thêm địa chỉ thành công." });
-        }
-
-    5.  Controller (Tạo Action `ChonDiaChi` [HttpGet]):
-        Hàm `chonDiaChi` cũ của bạn dùng `location.reload()`.
-        Tôi đã đổi nó thành `location.href` để gọi 1 Action mới,
-        Action này sẽ set địa chỉ mặc định MỚI cho user, SAU ĐÓ redirect
-        về trang thanh toán.
-
-        [HttpGet]
-        public IActionResult ChonDiaChi(int maDiaChi)
-        {
-            // 1. Lấy user ID hiện tại
-            // 2. Cập nhật DB, set `maDiaChi` này làm địa chỉ mặc định MỚI
-            // ...
-            // 3. Redirect về trang thanh toán (trang này)
-            return RedirectToAction("Index", "ThanhToan");
-        }
--->
 
 <style>
-    /* === CSS CHO MODAL ĐỊA CHỈ === */
+    
 
-    /* Lớp phủ nền mờ (Modal Overlay) */
     #address-overlay {
-        position: fixed; /* Quan trọng: Đè lên trên trang */
+        position: fixed; 
         top: 0;
         left: 0;
         width: 100%;
@@ -85,7 +32,7 @@
         padding: 15px; /* Thêm padding cho màn hình nhỏ */
     }
 
-    /* Ghi đè style cũ của #addressList để biến nó thành box nội dung */
+    
     #addressList {
         max-width: 600px;
         width: 100%; /* Chiếm 100% chiều rộng của max-width */
@@ -100,7 +47,7 @@
         position: relative; /* Để chứa nút đóng 'X' */
     }
 
-    /* Nút đóng 'X' cho modal */
+    
     .address-modal-close-btn {
         position: absolute;
         top: 10px;
@@ -120,29 +67,24 @@
             opacity: 1;
             color: #000;
         }
-    /* === HẾT CSS MODAL === */
-    /* === CSS CHO MODAL THÊM ĐỊA CHỈ (MỚI) === */
+   
     #add-form-overlay {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        /* Nền mờ. Khi đè lên modal 1,
-          nền sẽ tối hơn, tạo cảm giác "stacked"
-        */
+       
         background-color: rgba(0, 0, 0, 0.5);
-        /* z-index cao hơn modal 1 (1040) */
+        
         z-index: 1050;
-        display: none; /* Mặc định ẩn */
+        display: none; 
         justify-content: center;
         align-items: center;
         padding: 15px;
     }
 
-    /* Style lại #addForm để nó là content box
-      (thay vì là 1 div con)
-    */
+    
     #addForm {
         background: #fff;
         border-radius: 8px;
@@ -150,16 +92,13 @@
         box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         max-height: 90vh;
         overflow-y: auto;
-        position: relative; /* Cho nút đóng */
+        position: relative; 
         width: 100%;
-        max-width: 600px; /* Giống modal chính */
-        /* Ghi đè style="display: none;"
-          vì giờ #add-form-overlay sẽ kiểm soát việc ẩn/hiện
-        */
+        max-width: 600px; 
         display: block !important;
     }
 
-    /* Nút hủy (thêm mới) */
+    
     .btn-cancel-add {
         background-color: #6c757d;
         border-color: #6c757d;
@@ -174,7 +113,7 @@
         .btn-cancel-add:hover {
             background-color: #5a6268;
         }
-    /* 🎨 Màu chủ đạo */
+    /*  Màu chủ đạo */
     :root {
         --main-orange: #ff9e4f;
         --main-orange-dark: #e88738;

@@ -32,7 +32,8 @@ namespace Final_Project.Models.Shop
 
         public DbSet<NhapKho> NhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
-
+        public DbSet<Voucher> Vouchers { get; set; }
+        public DbSet<TaiKhoanVoucher> TaiKhoanVouchers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -51,6 +52,29 @@ namespace Final_Project.Models.Shop
             modelBuilder.Entity<ChiTietDonHang>()
                 .Property(c => c.DonGia)
                 .HasPrecision(18, 2);
+
+            // Cấu hình Precision cho Voucher
+            modelBuilder.Entity<Voucher>(e =>
+            {
+                e.HasIndex(v => v.MaCode).IsUnique(); // Đảm bảo MaCode là duy nhất
+                e.Property(v => v.GiaTriGiam).HasPrecision(18, 2);
+                e.Property(v => v.GiamGiaToiDa).HasPrecision(18, 2);
+                e.Property(v => v.DonHangToiThieu).HasPrecision(18, 2);
+            });
+
+            // Cấu hình Unique Key cho TaiKhoanVoucher (mỗi user chỉ lưu 1 voucher 1 lần)
+            modelBuilder.Entity<TaiKhoanVoucher>(e =>
+            {
+                e.HasIndex(tv => new { tv.MaTK, tv.MaVoucherID }).IsUnique();
+            });
+            // Cấu hình quan hệ DonHang - Voucher
+            modelBuilder.Entity<DonHang>(e =>
+            {
+                e.HasOne(d => d.Voucher)
+                 .WithMany(v => v.DonHangs)
+                 .HasForeignKey(d => d.MaVoucherID)
+                 .OnDelete(DeleteBehavior.SetNull); // Khi xóa voucher, giữ lại đơn hàng (set MaVoucherID = null)
+            });
 
             modelBuilder.Entity<DonHang>()
                 .Property(d => d.GiamGia)
