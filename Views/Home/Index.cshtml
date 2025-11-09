@@ -5,6 +5,8 @@
 @{
 
     ViewData["Title"] = "Sản phẩm nổi bật";
+    var savedVoucherIds = (ViewBag.SavedVoucherIds as HashSet<int>) ?? new HashSet<int>();
+    var usedVoucherIds = (ViewBag.UsedVoucherIds as HashSet<int>) ?? new HashSet<int>(); 
 }
 
 
@@ -250,10 +252,10 @@
         <div class="voucher-list">
             @foreach (var voucher in (List<Voucher>)ViewBag.AvailableVouchers)
             {
-                <div class="voucher-item">
+                <div class="voucher-item" style="margin-right: 15px;">
 
                     <div class="voucher-image">
-                        <img src="~/images/G3TD_Voucher.png" alt="Voucher">
+                        <img src="~/images/G3TD_Ship.png" alt="Voucher">
                     </div>
 
                     <div class="voucher-content">
@@ -264,9 +266,19 @@
                     </div>
 
                     <div class="voucher-action">
-                        <button class="btn btn-danger btn-save-voucher" data-id="@voucher.MaVoucherID">Lưu</button>
+                        @if (usedVoucherIds.Contains(voucher.MaVoucherID))
+                        {
+                            <button class="btn btn-dark btn-sm" disabled>Đã sử dụng</button>
+                        }
+                        else if (savedVoucherIds.Contains(voucher.MaVoucherID))
+                        {
+                            <button class="btn btn-secondary btn-sm" disabled>Đã lưu</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-danger btn-sm btn-save-voucher" data-id="@voucher.MaVoucherID">Lưu</button>
+                        }
                     </div>
-
                 </div>
             }
         </div>

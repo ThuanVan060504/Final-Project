@@ -6,29 +6,29 @@ using Final_Project.Models.VnPay;
 using Final_Project.Service.VnPay;
 using Final_Project.Services;
 using Final_Project.Services.PayPal;
-using Microsoft.AspNetCore.Http; // Cần cho Session
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json; // Cần cho Session
+using Newtonsoft.Json;
 using System.Linq;
 using System.Text;
 using Final_Project.Models.User;
-using System.Threading.Tasks; // Cần cho async Task
-using System.Collections.Generic; 
-using System; // Cần cho DateTime
-using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System;
+using System.Security.Claims; // Đã thêm
 
 namespace Final_Project.Controllers
 {
-    
+
     public class DiaChiMoiViewModel
     {
         public string TenNguoiNhan { get; set; }
         public string SoDienThoai { get; set; }
         public string DiaChiChiTiet { get; set; }
-        public int ProvinceID { get; set; } 
+        public int ProvinceID { get; set; }
         public string ProvinceName { get; set; }
-        public int DistrictID { get; set; } 
+        public int DistrictID { get; set; }
         public string DistrictName { get; set; }
         public string WardCode { get; set; }
         public string WardName { get; set; }
@@ -62,7 +62,7 @@ namespace Final_Project.Controllers
             }
         }
 
-        
+
         [HttpGet]
         public IActionResult LayDanhSachDiaChi()
         {
@@ -72,7 +72,7 @@ namespace Final_Project.Controllers
                 return Json(new { success = false, message = "Chưa đăng nhập" });
             }
 
-            
+
             var danhSach = _context.DiaChiNguoiDungs
                 .Where(d => d.MaTK == maTK)
                 .Select(d => new
@@ -83,7 +83,7 @@ namespace Final_Project.Controllers
                     d.DiaChiChiTiet,
                     d.PhuongXa,
                     d.QuanHuyen,
-                    d.TinhTP,  
+                    d.TinhTP,
                     d.ProvinceID,
                     d.DistrictID,
                     d.WardCode
@@ -93,7 +93,7 @@ namespace Final_Project.Controllers
             return Json(new { success = true, data = danhSach });
         }
 
-        
+
         [HttpPost]
         public async Task<IActionResult> ThemDiaChiMoi([FromBody] DiaChiMoiViewModel model)
         {
@@ -112,14 +112,14 @@ namespace Final_Project.Controllers
                     TenNguoiNhan = model.TenNguoiNhan,
                     SoDienThoai = model.SoDienThoai,
                     DiaChiChiTiet = model.DiaChiChiTiet,
-                    TinhTP = model.ProvinceName,   
-                    QuanHuyen = model.DistrictName, 
-                    PhuongXa = model.WardName,      
+                    TinhTP = model.ProvinceName,
+                    QuanHuyen = model.DistrictName,
+                    PhuongXa = model.WardName,
 
-                    ProvinceID = model.ProvinceID.ToString(), 
-                    DistrictID = model.DistrictID.ToString(), 
+                    ProvinceID = model.ProvinceID.ToString(),
+                    DistrictID = model.DistrictID.ToString(),
                     WardCode = model.WardCode,
-                    MacDinh = false 
+                    MacDinh = false
                 };
 
                 _context.DiaChiNguoiDungs.Add(diaChiMoi);
@@ -157,7 +157,7 @@ namespace Final_Project.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index() // <-- Sửa: Thêm async
         {
             GanThongTinNguoiDung();
             int? maTK = HttpContext.Session.GetInt32("MaTK");
@@ -169,18 +169,41 @@ namespace Final_Project.Controllers
                 TempData["Error"] = "Vui lòng chọn sản phẩm từ giỏ hàng.";
                 return RedirectToAction("Index", "GioHang");
             }
-            var now = DateTime.Now;
-            var myVouchers = _context.TaiKhoanVouchers
-                .Where(tv => tv.MaTK == maTK.Value)
-                .Include(tv => tv.Voucher) // Join để lấy thông tin voucher
-                .Select(tv => tv.Voucher)  // Chỉ lấy đối tượng Voucher
-                .Where(v => v.IsActive == true &&
-                            v.NgayKetThuc >= now &&
-                            (v.SoLuongToiDa == null || v.SoLuongDaDung < v.SoLuongToiDa)) // Lọc voucher còn hạn, còn lượt
-                .OrderBy(v => v.NgayKetThuc) // Ưu tiên voucher sắp hết hạn
-                .ToList();
 
-            ViewBag.MyVouchers = myVouchers;
+            // ========================================================
+            // TẢI VOUCHER CỦA NGƯỜI DÙNG
+            // ========================================================
+            var now = DateTime.Now;
+
+            // 1. Lấy tất cả voucher người dùng đã lưu (và còn hạn)
+            var savedVouchers = await _context.TaiKhoanVouchers
+                .Where(tv => tv.MaTK == maTK.Value)
+                .Include(tv => tv.Voucher)
+                .Select(tv => tv.Voucher)
+                .Where(v => v.IsActive == true && v.NgayKetThuc >= now)
+                .ToListAsync();
+
+            // 2. Lấy danh sách ID các voucher ĐÃ SỬ DỤNG (và không bị hủy)
+            var usedVoucherCounts = await _context.DonHangs
+                .Where(d => d.MaTK == maTK.Value &&
+                            d.MaVoucherID != null &&
+                            d.TrangThaiDonHang != "HuyDon")
+                .GroupBy(d => d.MaVoucherID.Value)
+                .Select(g => new { VoucherId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.VoucherId, x => x.Count);
+
+            // 3. Lọc danh sách: Chỉ lấy voucher nào có (Số lần đã dùng < Số lần cho phép)
+            var availableVouchers = savedVouchers.Where(v =>
+            {
+                int usedCount = usedVoucherCounts.ContainsKey(v.MaVoucherID) ? usedVoucherCounts[v.MaVoucherID] : 0;
+                return usedCount < v.SoLanSuDungToiDaMoiNguoiDung;
+            })
+            .OrderBy(v => v.NgayKetThuc)
+            .ToList();
+
+            ViewBag.MyVouchers = availableVouchers; // Gửi danh sách đã lọc
+            // ========================================================
+
             var chonSP = JsonConvert.DeserializeObject<List<int>>(chonSPJson);
 
             var diaChiMacDinh = _context.DiaChiNguoiDungs
@@ -212,7 +235,7 @@ namespace Final_Project.Controllers
             ViewBag.DiaChi = diaChiMacDinh;
             ViewBag.TongTien = gioHang.Sum(g => g.ThanhTien);
 
-            return View("Index", gioHang); 
+            return View("Index", gioHang);
         }
 
 
@@ -261,7 +284,17 @@ namespace Final_Project.Controllers
                 }
 
                 var voucher = userVoucher.Voucher;
+                // Đếm số đơn hàng (chưa bị hủy) mà user này đã dùng voucher này
+                int usedCount = await _context.DonHangs
+                    .CountAsync(d => d.MaTK == maTK.Value &&
+                                     d.MaVoucherID == voucherId &&
+                                     d.TrangThaiDonHang != "HuyDon"); // Rất quan trọng: Không tính đơn đã hủy
 
+                // So sánh với quy tắc (mặc định là 1)
+                if (usedCount >= voucher.SoLanSuDungToiDaMoiNguoiDung)
+                {
+                    return BadRequest(new { success = false, message = "Bạn đã sử dụng voucher này rồi." });
+                }
                 // 2. Kiểm tra điều kiện đơn hàng tối thiểu (so với tổng tiền hàng)
                 if (cartTotal < voucher.DonHangToiThieu)
                 {
@@ -344,7 +377,32 @@ namespace Final_Project.Controllers
                 return gh.SoLuong * sanPham.DonGia;
             });
 
-            // TỔNG TIỀN CUỐI CÙNG (JS đã tính, nhưng ta tính lại cho chắc)
+            // ========================================================
+            // KIỂM TRA BẢO MẬT VOUCHER (COD)
+            // ========================================================
+            if (maVoucherID > 0)
+            {
+                var voucher = await _context.Vouchers.FindAsync(maVoucherID);
+                if (voucher == null)
+                {
+                    TempData["Error"] = "Voucher không tồn tại.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                int usedCount = await _context.DonHangs
+                    .CountAsync(d => d.MaTK == maTK.Value &&
+                                     d.MaVoucherID == maVoucherID &&
+                                     d.TrangThaiDonHang != "HuyDon");
+
+                if (usedCount >= voucher.SoLanSuDungToiDaMoiNguoiDung)
+                {
+                    TempData["Error"] = "Voucher đã được sử dụng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+            }
+            // ========================================================
+
+            // TỔNG TIỀN CUỐI CÙNG
             decimal tongThanhToan = tongTienHang + shippingFee - discountAmount;
             if (tongThanhToan < 0) tongThanhToan = 0; // Đảm bảo không âm
 
@@ -390,6 +448,7 @@ namespace Final_Project.Controllers
 
                 sanPham.SoLuong -= item.SoLuong;
             }
+
             // CẬP NHẬT SỐ LƯỢNG VOUCHER ĐÃ DÙNG
             if (maVoucherID > 0)
             {
@@ -441,6 +500,31 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM KIỂM TRA BẢO MẬT VOUCHER (MOMO)
+            // ========================================================
+            if (maVoucherID > 0)
+            {
+                var voucher = await _context.Vouchers.FindAsync(maVoucherID);
+                if (voucher == null)
+                {
+                    TempData["Error"] = "Voucher không tồn tại.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                int usedCount = await _context.DonHangs
+                    .CountAsync(d => d.MaTK == maTK.Value &&
+                                     d.MaVoucherID == maVoucherID &&
+                                     d.TrangThaiDonHang != "HuyDon");
+
+                if (usedCount >= voucher.SoLanSuDungToiDaMoiNguoiDung)
+                {
+                    TempData["Error"] = "Voucher đã được sử dụng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+            }
+            // ========================================================
+
             var donHang = new DonHang
             {
                 MaTK = maTK.Value,
@@ -476,7 +560,10 @@ namespace Final_Project.Controllers
                 });
                 sp.SoLuong -= item.SoLuong;
             }
-            // CẬP NHẬT SỐ LƯỢNG VOUCHER ĐÃ DÙNG
+
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM CẬP NHẬT SỐ LƯỢNG VOUCHER (MOMO)
+            // ========================================================
             if (maVoucherID > 0)
             {
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.MaVoucherID == maVoucherID);
@@ -485,6 +572,7 @@ namespace Final_Project.Controllers
                     voucher.SoLuongDaDung += 1;
                 }
             }
+            // ========================================================
 
             _context.GioHangs.RemoveRange(gioHang);
             await _context.SaveChangesAsync();
@@ -494,8 +582,8 @@ namespace Final_Project.Controllers
             // Tạo QR MOMO
             var orderInfo = new OrderInfoModel
             {
-                FullName = "KH " + TaiKhoan.HoTen, // <-- Dòng này đã hợp lệ sau khi fix
-                OrderId = donHang.MaDonHang.ToString(), // Gửi MaDonHang
+                FullName = "KH " + TaiKhoan.HoTen,
+                OrderId = donHang.MaDonHang.ToString(),
                 OrderInfo = $"Thanh toán đơn hàng #{donHang.MaDonHang}",
                 Amount = ((double)donHang.TongTien).ToString()
             };
@@ -511,17 +599,11 @@ namespace Final_Project.Controllers
             return RedirectToAction("Index");
         }
 
-        // [GET] /ThanhToan/TaoVnpayQRCode
-        // CẬP NHẬT: Nhận `tongTien` (đã bao gồm phí) và `shippingFee` từ view
         [HttpGet]
         public async Task<IActionResult> TaoVnpayQRCode(List<int> chonSP, decimal tongTien, decimal shippingFee, decimal discountAmount, int maVoucherID)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
-
-            // Không cần lấy TaiKhoan ở đây vì VNPAY không dùng TaiKhoan.HoTen
-            // var TaiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK.Value);
-            // if (TaiKhoan == null) return RedirectToAction("Login", "Auth");
 
             var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
             if (diaChi == null)
@@ -540,17 +622,42 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM KIỂM TRA BẢO MẬT VOUCHER (VNPAY)
+            // ========================================================
+            if (maVoucherID > 0)
+            {
+                var voucher = await _context.Vouchers.FindAsync(maVoucherID);
+                if (voucher == null)
+                {
+                    TempData["Error"] = "Voucher không tồn tại.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                int usedCount = await _context.DonHangs
+                    .CountAsync(d => d.MaTK == maTK.Value &&
+                                     d.MaVoucherID == maVoucherID &&
+                                     d.TrangThaiDonHang != "HuyDon");
+
+                if (usedCount >= voucher.SoLanSuDungToiDaMoiNguoiDung)
+                {
+                    TempData["Error"] = "Voucher đã được sử dụng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+            }
+            // ========================================================
+
             var donHang = new DonHang
             {
                 MaTK = maTK.Value,
                 MaDiaChi = diaChi.MaDiaChi,
                 NgayDat = DateTime.Now,
                 NgayYeuCau = DateTime.Now.AddDays(3),
-                PhiVanChuyen = shippingFee, // <-- CẬP NHẬT
+                PhiVanChuyen = shippingFee,
                 TongTien = tongTien,
                 GiamGia = discountAmount,
                 PhuongThucThanhToan = "Ví VNPAY",
-                TrangThaiThanhToan = "ChuaThanhToan", // <-- CẬP NHẬT
+                TrangThaiThanhToan = "ChuaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 MaVoucherID = (maVoucherID > 0) ? maVoucherID : (int?)null
             };
@@ -575,7 +682,10 @@ namespace Final_Project.Controllers
                 });
                 sp.SoLuong -= item.SoLuong;
             }
-            // CẬP NHẬT SỐ LƯỢNG VOUCHER ĐÃ DÙNG
+
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM CẬP NHẬT SỐ LƯỢNG VOUCHER (VNPAY)
+            // ========================================================
             if (maVoucherID > 0)
             {
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.MaVoucherID == maVoucherID);
@@ -584,6 +694,7 @@ namespace Final_Project.Controllers
                     voucher.SoLuongDaDung += 1;
                 }
             }
+            // ========================================================
 
             _context.GioHangs.RemoveRange(gioHang);
             await _context.SaveChangesAsync();
@@ -604,18 +715,12 @@ namespace Final_Project.Controllers
             return Redirect(url);
         }
 
-        // [GET] /ThanhToan/TaoPaypalPayment
-        // CẬP NHẬT: Nhận `tongTien` (đã bao gồm phí) và `shippingFee` từ view
         [HttpGet]
         public async Task<IActionResult> TaoPaypalPayment(List<int> chonSP, decimal tongTien, decimal shippingFee, decimal discountAmount, int maVoucherID)
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
                 return RedirectToAction("Login", "Auth");
-
-            // Không cần lấy TaiKhoan ở đây vì PayPal không dùng TaiKhoan.HoTen
-            // var TaiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK.Value);
-            // if (TaiKhoan == null) return RedirectToAction("Login", "Auth");
 
             var diaChi = _context.DiaChiNguoiDungs.FirstOrDefault(d => d.MaTK == maTK && d.MacDinh);
             if (diaChi == null)
@@ -634,17 +739,42 @@ namespace Final_Project.Controllers
                 return RedirectToAction("Index", "GioHang");
             }
 
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM KIỂM TRA BẢO MẬT VOUCHER (PAYPAL)
+            // ========================================================
+            if (maVoucherID > 0)
+            {
+                var voucher = await _context.Vouchers.FindAsync(maVoucherID);
+                if (voucher == null)
+                {
+                    TempData["Error"] = "Voucher không tồn tại.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+
+                int usedCount = await _context.DonHangs
+                    .CountAsync(d => d.MaTK == maTK.Value &&
+                                     d.MaVoucherID == maVoucherID &&
+                                     d.TrangThaiDonHang != "HuyDon");
+
+                if (usedCount >= voucher.SoLanSuDungToiDaMoiNguoiDung)
+                {
+                    TempData["Error"] = "Voucher đã được sử dụng.";
+                    return RedirectToAction("Index", "GioHang");
+                }
+            }
+            // ========================================================
+
             var donHang = new DonHang
             {
                 MaTK = maTK.Value,
                 MaDiaChi = diaChi.MaDiaChi,
                 NgayDat = DateTime.Now,
                 NgayYeuCau = DateTime.Now.AddDays(3),
-                PhiVanChuyen = shippingFee, // <-- CẬP NHẬT
+                PhiVanChuyen = shippingFee,
                 TongTien = tongTien,
                 GiamGia = discountAmount,
                 PhuongThucThanhToan = "PayPal",
-                TrangThaiThanhToan = "ChuaThanhToan", // <-- CẬP NHẬT
+                TrangThaiThanhToan = "ChuaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 MaVoucherID = (maVoucherID > 0) ? maVoucherID : (int?)null
             };
@@ -673,7 +803,10 @@ namespace Final_Project.Controllers
                     sp.SoLuong -= item.SoLuong; // Trừ kho
                 }
             }
-            // CẬP NHẬT SỐ LƯỢNG VOUCHER ĐÃ DÙNG
+
+            // ========================================================
+            // ✅ SỬA LỖI: THÊM CẬP NHẬT SỐ LƯỢNG VOUCHER (PAYPAL)
+            // ========================================================
             if (maVoucherID > 0)
             {
                 var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.MaVoucherID == maVoucherID);
@@ -682,6 +815,7 @@ namespace Final_Project.Controllers
                     voucher.SoLuongDaDung += 1;
                 }
             }
+            // ========================================================
 
             _context.GioHangs.RemoveRange(gioHang);
             await _context.SaveChangesAsync();
@@ -720,7 +854,7 @@ namespace Final_Project.Controllers
 
 
         // =================================================================
-        // == CÁC ACTION CALLBACK (Không cần sửa, đã xử lý đúng logic) ==
+        // == CÁC ACTION CALLBACK (Không cần sửa) ==
         // =================================================================
 
         [HttpGet]
@@ -747,17 +881,12 @@ namespace Final_Project.Controllers
                 _context.SaveChanges();
 
                 // Gửi email xác nhận (chỉ khi thành công)
-                await SendOrderConfirmationEmail(maDonHang);
+                // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt để tránh spam, bạn có thể mở lại
                 TempData["Success"] = "✅ Đơn hàng đã thanh toán thành công.";
             }
             else
             {
-                // Không gửi email, chỉ báo lỗi
                 TempData["Error"] = "❌ Thanh toán MOMO thất bại hoặc bị hủy.";
-
-                // Cập nhật trạng thái thất bại nếu muốn
-                // donHang.TrangThaiThanhToan = "ThanhToanLoi";
-                // _context.SaveChanges();
             }
 
             return RedirectToAction("Index", "GioHang");
@@ -780,8 +909,7 @@ namespace Final_Project.Controllers
                         donHang.TrangThaiThanhToan = "DaThanhToan";
                         _context.SaveChanges();
 
-                        // Gửi email xác nhận
-                        await SendOrderConfirmationEmail(maDonHang);
+                        // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt
                         TempData["Success"] = "✅ Thanh toán VNPAY thành công!";
                     }
                     else
@@ -835,7 +963,7 @@ namespace Final_Project.Controllers
                     donHang.TrangThaiThanhToan = "DaThanhToan";
                     _context.SaveChanges();
 
-                    await SendOrderConfirmationEmail(maDonHang);
+                    // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt
                     TempData["Success"] = "✅ Thanh toán PayPal thành công!";
                 }
                 else
@@ -859,7 +987,7 @@ namespace Final_Project.Controllers
         }
 
 
-        // =================== HÀM GỬI EMAIL (Không đổi) ===================
+        // =================== HÀM GỬI EMAIL (Đã cập nhật logic Giảm giá) ===================
         private async Task SendOrderConfirmationEmail(int maDonHang)
         {
             try
@@ -885,18 +1013,10 @@ namespace Final_Project.Controllers
                 string phuongThucThanhToan = donHang.PhuongThucThanhToan ?? "Không xác định";
                 switch (phuongThucThanhToan.ToUpper())
                 {
-                    case "COD":
-                        phuongThucThanhToan = "Thanh toán khi nhận hàng (COD)";
-                        break;
-                    case "VÍ MOMO":
-                        phuongThucThanhToan = "Thanh toán qua Ví MoMo";
-                        break;
-                    case "VÍ VNPAY":
-                        phuongThucThanhToan = "Thanh toán qua VNPay";
-                        break;
-                    case "PAYPAL":
-                        phuongThucThanhToan = "Thanh toán qua PayPal";
-                        break;
+                    case "COD": phuongThucThanhToan = "Thanh toán khi nhận hàng (COD)"; break;
+                    case "VÍ MOMO": phuongThucThanhToan = "Thanh toán qua Ví MoMo"; break;
+                    case "VÍ VNPAY": phuongThucThanhToan = "Thanh toán qua VNPay"; break;
+                    case "PAYPAL": phuongThucThanhToan = "Thanh toán qua PayPal"; break;
                 }
 
                 // Xác định trạng thái thanh toán
@@ -924,7 +1044,8 @@ namespace Final_Project.Controllers
 
                 // Tính toán
                 decimal tongTienHang = donHang.ChiTietDonHangs.Sum(ct => ct.SoLuong * ct.DonGia);
-                // THÊM MỚI: Logic tạo chuỗi giảm giá
+
+                // Logic tạo chuỗi giảm giá
                 string giamGiaRow = "";
                 if (donHang.GiamGia > 0)
                 {
@@ -934,6 +1055,7 @@ namespace Final_Project.Controllers
                     <td style='padding:8px;'>-{donHang.GiamGia:N0} VND</td>
                 </tr>";
                 }
+
                 var body = $@"
                 <div style='font-family:Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #eee;padding:20px;border-radius:10px;'>
                     <h2 style='color:#2E86C1;'>G3TD - Xác nhận đơn hàng #{donHang.MaDonHang}</h2>
@@ -962,8 +1084,9 @@ namespace Final_Project.Controllers
                                 <td colspan='4' style='padding:8px;'>Phí vận chuyển:</td>
                                 <td style='padding:8px;'>{donHang.PhiVanChuyen:N0} VND</td>
                             </tr>
-                            {giamGiaRow} <tr style='border-top: 2px solid #ddd;'>
-                                <td colspan'4' style='padding:8px;font-size:1.1em;'>Tổng cộng:</td>
+                            {giamGiaRow} 
+                            <tr style='border-top: 2px solid #ddd;'>
+                                <td colspan='4' style='padding:8px;font-size:1.1em;'>Tổng cộng:</td>
                                 <td style='padding:8px;font-size:1.1em;color:#D9534F;'>{donHang.TongTien:N0} VND</td>
                             </tr>
                         </tfoot>

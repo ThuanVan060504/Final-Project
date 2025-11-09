@@ -143,7 +143,7 @@ public class UserController : Controller
         }
     }
     // === KẾT THÚC BỔ SUNG ACTION XÓA ===
-    public IActionResult Profile()
+    public async Task<IActionResult> Profile()
     {
         int? maTK = HttpContext.Session.GetInt32("MaTK");
         if (maTK == null)
@@ -180,15 +180,37 @@ public class UserController : Controller
             .Select(y => y.SanPham)
             .ToList();
         var now = DateTime.Now;
-        var myVouchers = _context.TaiKhoanVouchers
-            .Where(tv => tv.MaTK == maTK.Value)
-            .Include(tv => tv.Voucher) 
-            .Select(tv => tv.Voucher)  
-            .Where(v => v.IsActive == true && v.NgayKetThuc >= now) 
-            .OrderBy(v => v.NgayKetThuc) 
-            .ToList();
 
-        ViewBag.MyVouchers = myVouchers;
+        // 1. Lấy tất cả voucher người dùng đã lưu (và còn hạn)
+        var savedVouchers = await _context.TaiKhoanVouchers
+            .Where(tv => tv.MaTK == maTK.Value)
+            .Include(tv => tv.Voucher)
+            .Select(tv => tv.Voucher)
+            .Where(v => v.IsActive == true && v.NgayKetThuc >= now)
+            .ToListAsync();
+
+        // 2. Lấy danh sách ID các voucher ĐÃ SỬ DỤNG (và không bị hủy)
+        var usedVoucherCounts = await _context.DonHangs
+            .Where(d => d.MaTK == maTK.Value &&
+                        d.MaVoucherID != null &&
+                        d.TrangThaiDonHang != "HuyDon")
+            .GroupBy(d => d.MaVoucherID.Value)
+            .Select(g => new { VoucherId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.VoucherId, x => x.Count);
+
+        // 3. Lọc danh sách: Chỉ lấy voucher nào có (Số lần đã dùng < Số lần cho phép)
+        var availableVouchers = savedVouchers.Where(v =>
+        {
+            // Lấy số lần đã dùng (mặc định là 0)
+            int usedCount = usedVoucherCounts.ContainsKey(v.MaVoucherID) ? usedVoucherCounts[v.MaVoucherID] : 0;
+
+            // Trả về true NẾU số lần dùng < số lần cho phép
+            return usedCount < v.SoLanSuDungToiDaMoiNguoiDung;
+        })
+        .OrderBy(v => v.NgayKetThuc)
+        .ToList();
+
+        ViewBag.MyVouchers = availableVouchers;
         ViewBag.SanPhamYeuThich = yeuThich;
         ViewBag.TaiKhoan = taiKhoan; 
 
