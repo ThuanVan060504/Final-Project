@@ -2,14 +2,15 @@
 using Final_Project.Models.User;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http; // Đảm bảo bạn đã using
-using System.IO; // Đảm bảo bạn đã using
-using System.Threading.Tasks; // Đảm bảo bạn đã using
-using System.Linq; // Thêm
-using System; // Thêm
-using System.Collections.Generic; // Thêm
+using Microsoft.AspNetCore.Http; 
+using System.IO; 
+using System.Threading.Tasks; 
+using System.Linq; 
+using System; 
+using System.Collections.Generic; 
+using System.Security.Claims;
 
-namespace Final_Project.Models.Helpers; // (Lưu ý: Namespace này có vẻ lạ, nhưng tôi giữ nguyên theo file của bạn)
+namespace Final_Project.Models.Helpers; 
 
 // === THÊM VIEWMODEL MỚI (Copy từ ThanhToanController) ===
 // Model này khớp với data mà script GHN gửi lên
@@ -178,11 +179,20 @@ public class UserController : Controller
             .Include(y => y.SanPham)
             .Select(y => y.SanPham)
             .ToList();
+        var now = DateTime.Now;
+        var myVouchers = _context.TaiKhoanVouchers
+            .Where(tv => tv.MaTK == maTK.Value)
+            .Include(tv => tv.Voucher) 
+            .Select(tv => tv.Voucher)  
+            .Where(v => v.IsActive == true && v.NgayKetThuc >= now) 
+            .OrderBy(v => v.NgayKetThuc) 
+            .ToList();
 
+        ViewBag.MyVouchers = myVouchers;
         ViewBag.SanPhamYeuThich = yeuThich;
-        ViewBag.TaiKhoan = taiKhoan; // Gửi toàn bộ tài khoản (bao gồm danh sách địa chỉ)
+        ViewBag.TaiKhoan = taiKhoan; 
 
-        return View(donHangs); // Model chính là danh sách đơn hàng
+        return View(donHangs); 
     }
 
     [HttpPost]

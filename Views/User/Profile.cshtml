@@ -3,8 +3,9 @@
     ViewData["Title"] = "Thông tin tài khoản";
     var taiKhoan = ViewBag.TaiKhoan as Final_Project.Models.User.TaiKhoan;
     var donHangs = Model as List<DonHang>;
-    // Lấy danh sách yêu thích từ ViewBag (đã sửa)
     var yeuThichList = ViewBag.SanPhamYeuThich as List<SanPham> ?? new List<SanPham>();
+    var myVouchers = ViewBag.MyVouchers as List<Voucher> ?? new List<Voucher>();
+}
 }
 
 <link rel="stylesheet" href="~/css/canhan.css">
@@ -103,6 +104,54 @@
             background-color: #c82333;
             border-color: #bd2130;
         }
+
+    .my-voucher-list .voucher-item {
+        display: flex; /* Dùng flex (dạng block) */
+        width: 100%; /* Chiếm 100% chiều rộng */
+        align-items: center;
+        margin-bottom: 15px; /* Khoảng cách dọc */
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #fff4eb; /* Nền cam nhạt */
+        border: 2px solid #ff9933; /* Viền cam đậm */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .my-voucher-list .voucher-image {
+        flex-shrink: 0;
+        margin-right: 15px;
+    }
+
+        .my-voucher-list .voucher-image img {
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
+        }
+
+    .my-voucher-list .voucher-content {
+        flex-grow: 1; /* Cho phép text giãn ra */
+        margin-right: 15px;
+    }
+
+        .my-voucher-list .voucher-content p {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .my-voucher-list .voucher-content .voucher-code {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #d9534f; /* Màu đỏ cam */
+        }
+
+        .my-voucher-list .voucher-content .voucher-desc {
+            font-size: 0.9em;
+            color: #555;
+        }
+
+    .my-voucher-list .voucher-action {
+        margin-left: auto; /* Đẩy nút "Dùng ngay" về sát lề phải */
+    }
 </style>
 
 
@@ -117,6 +166,7 @@
                 <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
                 <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
                 <li onclick="showSection('favoritesSection', this)">❤️ Sản phẩm yêu thích</li>
+                <li onclick="showSection('vouchersSection', this)">🎁 Voucher của tôi</li>
                 <li onclick="showSection('changePasswordSection', this)">🔐 Đổi mật khẩu</li>
             </ul>
         </div>
@@ -463,7 +513,38 @@
                     <div class="alert alert-info mt-3">@TempData["PasswordChangeMessage"]</div>
                 }
             </div>
+            <div id="vouchersSection" class="content-section" style="display: none;">
+                <h4 class="mb-3 fw-bold text-orange">🎁 Voucher của tôi</h4>
 
+                @if (!myVouchers.Any())
+                {
+                    <div class="alert alert-info">Bạn chưa lưu voucher nào. Hãy quay lại trang chủ để săn thêm voucher nhé!</div>
+                }
+                else
+                {
+                    <div class="my-voucher-list">
+                        @foreach (var voucher in myVouchers)
+                        {
+                            <div class="voucher-item">
+                                <div class="voucher-image">
+                                    <img src="~/images/G3TD_Ship.png" alt="Voucher">
+                                </div>
+                                <div class="voucher-content">
+                                    <p class="voucher-code">@voucher.MaCode</p>
+                                    <p class="voucher-desc">
+                                        @voucher.MoTa - HSD: @voucher.NgayKetThuc.ToString("dd/MM/yyyy")
+                                    </p>
+                                </div>
+                                <div class="voucher-action">
+                                    <a asp-controller="Home" asp-action="Index" class="btn btn-danger btn-sm">Dùng ngay</a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+            <div id="changePasswordSection" class="content-section" style="display: none;">
+            </div>
         </div>
     </div>
 </div>
