@@ -1,0 +1,159 @@
+﻿@model Final_Project.Models.Shop.Voucher
+
+@{
+    ViewData["Title"] = "Tạo Voucher mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Tạo Voucher mới</h4>
+                <h6>Thêm mã giảm giá cho cửa hàng</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                @* SỬ DỤNG 'name' VÀ 'value' THAY VÌ 'asp-for' *@
+                <form asp-action="Create" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mã Code</label>
+                                <input name="MaCode" class="form-control" value="@Model.MaCode" required>
+                                @* Hiển thị lỗi validation thủ công (giống DanhmucSP) *@
+                                @if (ViewData.ModelState["MaCode"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["MaCode"].Errors[0].ErrorMessage</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Mô tả</label>
+                                <input name="MoTa" class="form-control" value="@Model.MoTa" required>
+                                @if (ViewData.ModelState["MoTa"]?.Errors.Count > 0)
+                                {
+                                    <span class="text-danger">@ViewData.ModelState["MoTa"].Errors[0].ErrorMessage</span>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Loại Giảm Giá</label>
+                                @* Đặt 'selected' thủ công *@
+                                <select name="LoaiGiamGia" class="form-select" id="loaiGiamGiaSelect">
+                                    <option value="SoTien" selected="@(Model.LoaiGiamGia == "SoTien")">Giảm theo Số Tiền</option>
+                                    <option value="PhanTram" selected="@(Model.LoaiGiamGia == "PhanTram")">Giảm theo Phần Trăm</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Giá Trị Giảm</label>
+                                <input name="GiaTriGiam" class="form-control" type="number" step="0.01" value="@Model.GiaTriGiam" required>
+                                <small class="form-text text-muted">Nhập 50000 (nếu là 50.000đ) hoặc 10 (nếu là 10%)</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" id="giamGiaToiDaGroup" style="@(Model.LoaiGiamGia == "PhanTram" ? "display:block" : "display:none")">
+                            <div class="form-group">
+                                <label>Giảm Giá Tối Đa (cho loại Phần Trăm)</label>
+                                <input name="GiamGiaToiDa" class="form-control" type="number" step="0.01" value="@Model.GiamGiaToiDa">
+                                <small class="form-text text-muted">Bỏ trống nếu không giới hạn</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Đơn Hàng Tối Thiểu</label>
+                                <input name="DonHangToiThieu" class="form-control" type="number" step="0.01" value="@Model.DonHangToiThieu" required>
+                                <small class="form-text text-muted">Nhập 0 nếu không yêu cầu</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ngày Bắt Đầu</label>
+                                @* Định dạng giá trị 'datetime-local' *@
+                                <input name="NgayBatDau" class="form-control" type="datetime-local" value="@Model.NgayBatDau.ToString("yyyy-MM-ddTHH:mm")" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Ngày Kết Thúc</label>
+                                <input name="NgayKetThuc" class="form-control" type="datetime-local" value="@Model.NgayKetThuc.ToString("yyyy-MM-ddTHH:mm")" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Số Lượng Tối Đa</label>
+                                <input name="SoLuongToiDa" class="form-control" type="number" value="@Model.SoLuongToiDa">
+                                <small class="form-text text-muted">Bỏ trống nếu không giới hạn số lượng</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Số Lần Dùng / 1 User</label>
+                                <input name="SoLanSuDungToiDaMoiNguoiDung" class="form-control" type="number" value="@Model.SoLanSuDungToiDaMoiNguoiDung" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="d-block">Trạng thái</label>
+                                <div class="form-check form-check-inline">
+                                    @* Checkbox cần 2 input để hoạt động chính xác *@
+                                    <input name="IsActive" class="form-check-input" type="checkbox" value="true" @(Model.IsActive ? "checked" : "")>
+                                    <label class="form-check-label">Kích hoạt</label>
+                                    <input type="hidden" name="IsActive" value="false" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12">
+                            <button type="submit" class="btn btn-submit me-2">Tạo Voucher</button>
+                            <a asp-action="Index" class="btn btn-cancel">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
+@* KHÔNG CẦN VALIDATION SCRIPT NỮA *@
+@section Scripts {
+    <script>
+        document.getElementById('loaiGiamGiaSelect').addEventListener('change', function () {
+            var selectedValue = this.value;
+            var giamGiaToiDaGroup = document.getElementById('giamGiaToiDaGroup');
+            if (selectedValue === 'PhanTram') {
+                giamGiaToiDaGroup.style.display = 'block';
+            } else {
+                giamGiaToiDaGroup.style.display = 'none';
+            }
+        });
+        // Kích hoạt khi tải trang (phòng trường hợp load lại)
+        document.getElementById('loaiGiamGiaSelect').dispatchEvent(new Event('change'));
+    </script>
+}

@@ -11,10 +11,10 @@ namespace Final_Project.Models.Shop
         [Key]
         public int MaVoucherID { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Vui lòng nhập Mã Code.")]
         [StringLength(50)]
         public string MaCode { get; set; }
-
+        [Required(ErrorMessage = "Vui lòng nhập Mô tả.")]
         [StringLength(500)]
         public string MoTa { get; set; }
 
