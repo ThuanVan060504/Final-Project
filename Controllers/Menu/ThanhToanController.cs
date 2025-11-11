@@ -826,7 +826,7 @@ namespace Final_Project.Controllers
             HttpContext.Session.SetInt32("CurrentOrderId", donHang.MaDonHang);
 
             // Quy đổi VNĐ → USD (Bạn nên lấy tỷ giá động, đây là ví dụ)
-            decimal tyGia = 25000m;
+            decimal tyGia = 26315m;
             decimal amountUsd = Math.Round(donHang.TongTien / tyGia, 2, MidpointRounding.AwayFromZero);
 
             var returnUrl = Url.Action("PayPalSuccess", "ThanhToan", new { orderId = donHang.MaDonHang }, Request.Scheme);

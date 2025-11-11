@@ -50,7 +50,7 @@ builder.Services.AddMemoryCache();
 builder.Services.AddDataProtection()
     .UseEphemeralDataProtectionProvider()
     .SetApplicationName(Guid.NewGuid().ToString());
-
+var authSection = builder.Configuration.GetSection("Authentication");
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = "MyCookie";
@@ -66,14 +66,19 @@ builder.Services.AddAuthentication(options =>
 .AddGoogle(options =>
 {
     // Ghép chuỗi để Git không nhận diện full key
-    var clientId = "580251218969-b0bgj3rj0k4ntnvc7cm2elfi40rh0eb1" + ".apps.googleusercontent.com";
-    var clientSecret = "GOCSPX" + "-yq5DgN8otjuG83NU-0rBUuxm0air";
+    var clientId = "397588349599-f89d69ou9ajl5fegep8bnbhrjvt41fso" + ".apps.googleusercontent.com";
+    var clientSecret = "GOCSPX" + "-772D1d9WqC-vCYDUrWdOowDZO2SS";
 
     options.ClientId = clientId;
     options.ClientSecret = clientSecret;
     options.CallbackPath = "/signin-google";
+})
+.AddFacebook(options =>
+{
+    // Phải là "Facebook:AppId", CHÍNH XÁC y hệt
+    options.AppId = builder.Configuration["Facebook:AppId"];
+    options.AppSecret = builder.Configuration["Facebook:AppSecret"];
 });
-
 // ============================
 // 💾 Session
 // ============================
