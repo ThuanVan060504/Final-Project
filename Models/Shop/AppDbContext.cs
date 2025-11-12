@@ -28,13 +28,11 @@ namespace Final_Project.Models.Shop
         public DbSet<TinTuc> TinTucs { get; set; }
         public DbSet<NhaCungCap> NhaCungCaps { get; set; }
         public DbSet<TinNhan> TinNhans { get; set; }
-
-
         public DbSet<NhapKho> NhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<ChiTietNhapKho> ChiTietNhapKhos { get; set; } // ✅ DbSet cho entity TinTuc không có key
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<TaiKhoanVoucher> TaiKhoanVouchers { get; set; }
-
+        public DbSet<Video> Videos { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder); // ⚠️ Luôn giữ dòng này!
@@ -104,6 +102,14 @@ namespace Final_Project.Models.Shop
                 .WithMany(th => th.SanPhams)
                 .HasForeignKey(sp => sp.MaThuongHieu)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Video>(e =>
+            {
+                e.HasOne(v => v.SanPham)          // Một Video...
+                 .WithMany()                      // ...liên kết với một SanPham (SanPham không cần ICollection<Video>)
+                 .HasForeignKey(v => v.MaSP)      // Khóa ngoại là MaSP
+                 .OnDelete(DeleteBehavior.Cascade); // Khi xóa SanPham thì xóa luôn Video
+            });
         }
     }
 }

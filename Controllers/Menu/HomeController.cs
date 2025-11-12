@@ -112,6 +112,14 @@ namespace Final_Project.Controllers.Menu
 
             ViewBag.AvailableVouchers = availableVouchers;
 
+            var videoList = await _context.Videos
+                .Include(v => v.SanPham) // Lấy kèm thông tin sản phẩm liên quan
+                .OrderByDescending(v => v.NgayTao) // Lấy video mới nhất
+                .Take(10) // Giới hạn 10 video cho trang chủ
+                .ToListAsync();
+
+            ViewBag.VideoList = videoList;
+
             // ===============================
             // Top sản phẩm yêu thích (Không đổi)
             // ===============================
