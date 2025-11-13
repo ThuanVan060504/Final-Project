@@ -1,0 +1,157 @@
+﻿@model IEnumerable<Final_Project.Models.Shop.Video>
+@{
+    ViewData["Title"] = "Danh sách Video";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Danh Sách Video</h4>
+                <h6>Quản lý video liên kết với sản phẩm</h6>
+            </div>
+            <div class="page-btn">
+                <a href="@Url.Action("Create", "Video", new { area = "Admin" })" class="btn btn-added">
+                    <i class="fa fa-plus me-1"></i> Thêm Video Mới
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success">@TempData["Success"]</div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">@TempData["Error"]</div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Thumbnail</th>
+                                <th>Tiêu Đề</th>
+                                <th>Sản Phẩm Liên Kết</th>
+                                <th>Video URL</th>
+                                <th>Ngày Tạo</th>
+                                <th>Hành Động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr id="row_@item.MaVideo">
+                                    <td>
+                                        <a class="product-img">
+                                            <img src="@(item.ThumbnailUrl ?? "/images/no-image.png")" alt="thumbnail" style="width: 60px; height: 60px; object-fit: cover; border-radius: 4px;">
+                                        </a>
+                                    </td>
+                                    <td>@item.TieuDe</td>
+                                    <td>@(item.SanPham?.TenSP ?? "N/A")</td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.VideoUrl))
+                                        {
+                                            <a href="@item.VideoUrl" target="_blank">Xem Video</a>
+                                        }
+                                        else
+                                        {
+                                            <span>N/A</span>
+                                        }
+                                    </td>
+                                    <td>@(item.NgayTao?.ToString("dd/MM/yyyy") ?? "N/A")</td>
+                                    <td>
+                                        <a href="@Url.Action("Edit", "Video", new { area = "Admin", id = item.MaVideo })" class="btn btn-primary-light me-2">
+                                            <i class="fa fa-edit me-1"></i> Sửa
+                                        </a>
+
+                                        <form asp-area="Admin" asp-controller="Video" asp-action="Delete" asp-route-id="@item.MaVideo" method="post" class="d-inline delete-form">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger-light btn-delete" data-id="@item.MaVideo" data-name="@item.TieuDe">
+                                                <i class="fa fa-trash me-1"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
+<script>
+      $(document).ready(function() {
+        // Tự động ẩn thông báo TempData sau 3 giây
+        setTimeout(function() {
+            $('.alert-success, .alert-danger').fadeOut('slow');
+        }, 3000);
+    });
+
+
+      $(document).on('click', '.btn-delete', function (e) {
+        e.preventDefault();
+        var button = $(this);
+        var id = button.data('id');
+        var name = button.data('name') || 'video này'; // Sửa 'sản phẩm' thành 'video'
+
+        Swal.fire({
+            title: `Xóa ${name}?`,
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Sửa URL thành Video
+                $.ajax({
+                    url: '/Admin/Video/Delete/' + id,
+                    type: 'POST',
+                    headers: {
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire('Đã xóa!', response.message, 'success').then(() => {
+                                // Xóa hàng khỏi table thay vì reload
+                                 button.closest('tr').remove();
+                            });
+                        } else {
+                             Swal.fire('Lỗi!', response.message, 'error');
+                        }
+                    },
+                    error: function () {
+                        // Sửa 'sản phẩm' thành 'video'
+                        Swal.fire('Lỗi khi xóa video', '', 'error');
+                    }
+                });
+            }
+        });
+    });
+</script>

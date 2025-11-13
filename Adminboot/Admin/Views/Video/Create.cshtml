@@ -1,0 +1,78 @@
+﻿@model Final_Project.Models.Shop.Video
+@{
+    ViewData["Title"] = "Thêm Video Mới";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Thêm Video Mới</h4>
+                <h6>Tạo video mới cho sản phẩm</h6>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Video" asp-action="Create" method="post" enctype="multipart/form-data">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Tiêu Đề Video</label>
+                                <input type="text" name="TieuDe" class="form-control" required />
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Sản Phẩm Liên Kết</label>
+                                @Html.DropDownList("MaSP", (SelectList)ViewBag.SanPhamList, "-- Chọn Sản Phẩm --", new { @class = "form-control select", @required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Tải Lên Video (MP4, WEBM...)</label>
+                                <input type="file" name="VideoFile" class="form-control" accept="video/*">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-6 col-sm-12">
+                            <div class="form-group">
+                                <label>Tải Lên Ảnh Bìa (Thumbnail)</label>
+                                <input type="file" name="ThumbnailFile" class="form-control" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 mt-3">
+                            <button type="submit" class="btn btn-submit me-2">Lưu</button>
+                            <a asp-area="Admin" asp-controller="Video" asp-action="Index" class="btn btn-cancel">Hủy</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
