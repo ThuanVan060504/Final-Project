@@ -1,7 +1,7 @@
 ﻿<link rel="stylesheet" href="/css/videorv.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 <link rel="stylesheet" href="/css/Videos.css" />
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 @using Final_Project.Models.Shop
 @model IEnumerable<SanPham>
@@ -367,7 +367,7 @@
                                 <div class="ps-product__badge out-stock">Habis Terjual</div>
                             }
                             <ul class="ps-product__actions">
-                                <li><a href="#" data-toggle="tooltip" title="Read More"><i class="icon-bag2"></i></a></li>
+                                <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
                                 <li><a href="#" data-toggle="tooltip" title="Quick View" class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
                                 <li><a data-toggle="tooltip" title="Add to Whishlist" id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
                             </ul>
@@ -653,7 +653,7 @@
                                 <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
                             </a>
                             <ul class="ps-product__actions">
-                                <li><a href="#"><i class="icon-bag2"></i></a></li>
+                                <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
                                 <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
                                 <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
                             </ul>
@@ -1272,75 +1272,113 @@
                            src="@video.VideoUrl" 
                            preload="metadata" 
                            loop 
-                           playsinline 
-                           muted>
+                           playsinline>
                         Trình duyệt của bạn không hỗ trợ thẻ video.
                     </video>
                     
                     @if (video.SanPham != null)
                     {
-                        <div class="video-slide-info">
-                            <h4>@video.TieuDe</h4>
-                            <a href="javascript:void(0);" 
-                               class="product-link btn-show-product" 
-                               data-product-id="@video.MaSP">
-                                <i class="fa fa-tag"></i> Xem sản phẩm: @video.SanPham.TenSP
-                            </a>
-                        </div>
+                                        <div class="video-slide-info">
+                                            <a href="javascript:void(0);"
+                                               class="product-link btn-show-product"
+                                               data-product-id="@video.MaSP">
+                                                [@video.MaSP] @video.SanPham.TenSP
+                                            </a>
 
-                        <div class="video-product-details" id="product-details-@video.MaSP">
-                            
-                            <button type="button" class="btn-close-details">&times;</button>
-                            
-                            <div class="details-inner-scroll">
-                                
-                                <div class="details-content-basic">
-                                    <div class="product-info-header">
-                                        <img src="@(video.SanPham.ImageURL ?? "/images/no-image.png")" alt="@video.SanPham.TenSP" class="product-details-img"/>
-                                        <div class="product-info-price">
-                                            <span class="price">@video.SanPham.DonGia.ToString("N0") đ</span>
-                                            @if (video.SanPham.GiaGoc > video.SanPham.DonGia)
-                                            {
-                                                <span class="original-price">@video.SanPham.GiaGoc.?ToString("N0") đ</span>
-                                            }
+                                            <h4 class="video-author-title">NTH - SHOP86</h4>
+
+                                            <p class="video-caption">
+                                                Ghế công thái học giá học sinh sinh viên. #ghecongthaihoc #nthreview ...
+                                            </p>
+
                                         </div>
-                                    </div>
-                                    <p class="product-details-name">@video.SanPham.TenSP</p>
-                                    
-                                    <button class="btn btn-add-to-cart" data-product-id="@video.MaSP">
-                                        <i class="icon-bag2"></i> Thêm vào giỏ hàng
-                                    </button>
-                                    
-                                    <button type.button" class="btn btn-full-details">
-                                        Xem chi tiết đầy đủ <i class="fa fa-chevron-down"></i>
-                                    </button>
-                                </div>
-                                
-                                <div class="details-content-expanded">
-                                    <h4>Mô tả sản phẩm</h4>
-                                    <div class="product-description">
-                                        @Html.Raw(video.SanPham.MoTa ?? "Chưa có mô tả cho sản phẩm này.")
-                                    </div>
-                                    
-                                    <h4 class="details-specs-title">Thông số kỹ thuật</h4>
-                                    <ul class="product-specs-list">
-                                        <li>
-                                            <strong>Kích thước:</strong> 
-                                            @($"R {video.SanPham.ChieuRong} x C {video.SanPham.ChieuCao} x S {video.SanPham.ChieuSau}")
-                                            </li>
-                                        <li>
-                                            <strong>Tồn kho:</strong> 
-                                            @video.SanPham.SoLuong
-                                        </li>
-                                    </ul>
-                                    </div>
-                                
-                            </div> </div> }
+                                        <div class="interaction-sidebar" bis_skin_checked="1">
+                                            <div class="user-profile" bis_skin_checked="1">
+                                                <div class="avatar-smakk" bis_skin_checked="1"><img src="~/images/AvatarAD.png" alt="Avatar"></div>
+                                                <i class="fas fa-plus follow-icon"></i>
+                                            </div>
+
+                                            <div class="action-item" bis_skin_checked="1">
+                                                <i class="fas fa-heart"></i>
+                                                <span>2.244</span>
+                                            </div>
+                                            <div class="action-item" bis_skin_checked="1">
+                                                <i class="fas fa-comment-dots"></i>
+                                                <span>107</span>
+                                            </div>
+
+                                            <div class="action-item" bis_skin_checked="1">
+                                                <i class="fas fa-shopping-cart"></i>
+                                                <span>489</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="video-product-details" id="product-details-@video.MaSP">
+
+                                            <button type="button" class="btn-close-details">&times;</button>
+
+                                            <div class="details-inner-scroll">
+
+                                                <div class="details-content-basic">
+
+                                                    <div class="product-image-wrapper">
+                                                        <img src="@(video.SanPham.ImageURL ?? "/images/no-image.png")" alt="@video.SanPham.TenSP" class="product-details-img" />
+                                                    </div>
+
+                                                    <div class="product-price-block">
+                                                        @if (video.SanPham.GiaGoc.HasValue && video.SanPham.GiaGoc > video.SanPham.DonGia && video.SanPham.GiaGoc > 0)
+                                                        {
+                                                            var discountPercent = (int)Math.Round((1 - ((double)video.SanPham.DonGia / (double)video.SanPham.GiaGoc.Value)) * 100);
+                                                            <span class="discount-tag">-@discountPercent%</span>
+                                                        }
+                                                        <span class="price">@video.SanPham.DonGia.ToString("N0")đ</span>
+                                                        @if (video.SanPham.GiaGoc.HasValue && video.SanPham.GiaGoc > video.SanPham.DonGia)
+                                                        {
+                                                            <span class="original-price">@video.SanPham.GiaGoc.Value.ToString("N0")đ</span>
+                                                        }
+                                                    </div>
+
+                                                    <div class="product-title-block">
+                                                        <span class="info-tag mall">Mall</span>
+                                                        <span class="info-tag trend">Xu Hướng</span>
+                                                        <p class="product-details-name">@video.SanPham.TenSP</p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="details-content-expanded">
+                                                    <h4 class="details-section-title">Mô tả sản phẩm</h4>
+                                                    <div class="product-description">
+                                                        @Html.Raw(video.SanPham.MoTa ?? "Chưa có mô tả cho sản phẩm này.")
+                                                    </div>
+
+                                                    <h4 class="details-section-title">Thông số kỹ thuật</h4>
+                                                    <ul class="product-specs-list">
+                                                        <li>
+                                                            <strong>Kích thước:</strong>
+                                                            @($"R {video.SanPham.ChieuRong} x C {video.SanPham.ChieuCao} x S {video.SanPham.ChieuSau}")
+                                                        </li>
+                                                        <li>
+                                                            <strong>Tồn kho:</strong>
+                                                            @video.SanPham.SoLuong
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div> <div class="details-footer-action">
+                                                <button type="button" class="btn btn-full-details">
+                                                    Xem chi tiết đầy đủ <i class="fa fa-chevron-down"></i>
+                                                </button>
+
+                                                <button class="btn btn-add-to-cart" data-product-id="@video.MaSP">
+                                                    <i class="icon-bag2"></i> Thêm vào giỏ hàng
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    }
                     else
                     {
-                         <div class="video-slide-info">
-                            <h4>@video.TieuDe</h4>
-                        </div>
+                         
                     }
                 </div>
             }

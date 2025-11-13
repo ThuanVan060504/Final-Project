@@ -1,9 +1,10 @@
 ﻿// Controllers/GioHangController.cs
-using Microsoft.AspNetCore.Mvc;
 using Final_Project.Models.Shop;
-using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Final_Project.Controllers
 {
@@ -85,20 +86,48 @@ namespace Final_Project.Controllers
 
             return View(gioHang.ToList());
         }
-
+        [Authorize] // <--- BẮT BUỘC: Tự động trả về lỗi 401 nếu chưa đăng nhập
         [HttpPost]
         public IActionResult ThemGioHang(int maSP, int soLuong = 1)
         {
-            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            // 1. Lấy MaTK (Mã Tài Khoản)
+            // [Authorize] đã đảm bảo người dùng đã đăng nhập.
+            // Dùng hàm LayMaTK() của bạn để lấy ID (từ session hoặc từ User.Claims)
+            int? maTK = LayMaTK();
+
             if (maTK == null)
-                return RedirectToAction("Login", "Auth");
+            {
+                // Trường hợp hi hữu nếu LayMaTK() vì lý do nào đó không lấy được
+                return Unauthorized(new { success = false, message = "Lỗi xác thực người dùng." });
+            }
+
+            // 2. Kiểm tra tồn kho sản phẩm
+            var sanPham = _context.SanPhams.Find(maSP);
+            if (sanPham == null)
+            {
+                return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+            }
 
             var gioHangItem = _context.GioHangs
-                .FirstOrDefault(g => g.MaTK == maTK && g.MaSP == maSP);
+                .FirstOrDefault(g => g.MaTK == maTK.Value && g.MaSP == maSP);
 
+            int soLuongHienTai = gioHangItem?.SoLuong ?? 0;
+            int soLuongMoi = soLuongHienTai + soLuong;
+
+            // Kiểm tra xem số lượng mới có vượt quá tồn kho không
+            if (sanPham.SoLuong < soLuongMoi)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"Số lượng tồn kho không đủ (Chỉ còn {sanPham.SoLuong} sản phẩm)."
+                });
+            }
+
+            // 3. Logic thêm/cập nhật giỏ hàng (giống code cũ của bạn)
             if (gioHangItem != null)
             {
-                gioHangItem.SoLuong += soLuong;
+                gioHangItem.SoLuong = soLuongMoi; // Cập nhật số lượng mới
                 gioHangItem.NgayThem = DateTime.Now;
                 _context.Update(gioHangItem);
             }
@@ -115,12 +144,19 @@ namespace Final_Project.Controllers
             }
 
             _context.SaveChanges();
+
+            // 4. Cập nhật Session và TRẢ VỀ JSON (thay vì Redirect)
             CapNhatSessionSoLuong(maTK.Value);
 
-            TempData["Success"] = "Đã thêm vào giỏ hàng!";
-            return RedirectToAction("Index", "GioHang");
-        }
+            int newCartCount = HttpContext.Session.GetInt32("SoLuongGioHang") ?? 0;
 
+            return Json(new
+            {
+                success = true,
+                message = "Đã thêm sản phẩm vào giỏ hàng!",
+                cartCount = newCartCount // Gửi về số lượng mới cho JS cập nhật
+            });
+        }
         [HttpPost]
         public IActionResult CapNhatSoLuong(int maSP, int soLuong)
         {
