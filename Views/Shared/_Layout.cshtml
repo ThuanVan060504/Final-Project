@@ -71,6 +71,181 @@
         })
         })
     </script>
+	<style>
+		/* Nút bấm nổi */
+		#chat-toggle-button {
+			position: fixed;
+			bottom: 20px;
+			left: 20px;
+			/* background-color: #007bff; */ /* 👈 SỬA 1: Tạm thời tắt hoặc xóa dòng này */
+			color: white;
+			border: none;
+			border-radius: 50%;
+			width: 60px;
+			height: 60px;
+			/* font-size: 28px; */ /* 👈 SỬA 2: Xóa dòng này đi, không cần nữa */
+			cursor: pointer;
+			box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+			z-index: 9998;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			/* 👇 THÊM 4 DÒNG SAU: 👇 */
+			background-image: url('/images/AvatarAD.png');
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+
+		/* Cửa sổ chat popup */
+		#chat-popup-window {
+			position: fixed;
+			bottom: 100px; /* Cách nút bấm 20px */
+			left: 20px;
+			width: 350px;
+			height: 500px;
+			background-color: white;
+			border: 1px solid #ccc;
+			border-radius: 10px;
+			box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+			display: none; /* Ẩn ban đầu */
+			flex-direction: column;
+			z-index: 9999;
+		}
+
+		/* Header của popup */
+		.chat-popup-header {
+			padding: 10px 15px;
+			background-color: #f1f1f1;
+			border-bottom: 1px solid #ccc;
+			border-top-left-radius: 10px;
+			border-top-right-radius: 10px;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+			.chat-popup-header h5 {
+				margin: 0;
+				font-weight: bold;
+			}
+
+		#chat-close-button {
+			background: none;
+			border: none;
+			font-size: 20px;
+			cursor: pointer;
+			padding: 5px;
+		}
+
+		/* Tái sử dụng CSS từ câu trả lời trước,
+			   nhưng áp dụng cho các ID/class mới */
+		#popup-chat-box {
+			flex-grow: 1;
+			padding: 15px;
+			overflow-y: auto;
+			background-color: #f9f9f9;
+		}
+
+		#popup-chat-input-area {
+			display: flex;
+			border-top: 1px solid #ccc;
+		}
+
+		#popup-user-message-input {
+			flex-grow: 1;
+			border: none;
+			padding: 12px;
+			font-size: 1em;
+			border-bottom-left-radius: 10px;
+		}
+
+		#popup-send-button {
+			padding: 12px 20px;
+			border: none;
+			background-color: #007bff;
+			color: white;
+			cursor: pointer;
+			border-bottom-right-radius: 10px;
+		}
+
+		/* Style tin nhắn (giữ nguyên) */
+		.message {
+			padding: 10px 15px;
+			border-radius: 18px;
+			max-width: 80%; /* Giảm max-width để chừa chỗ cho avatar */
+			line-height: 1.4;
+		}
+
+		.user-message {
+			background-color: #007bff;
+			color: white;
+			/* margin-left: auto; */ /* XÓA DÒNG NÀY (đã chuyển lên .user-row) */
+			border-bottom-right-radius: 4px;
+		}
+
+		.bot-message {
+			background-color: #e9ecef;
+			color: #333;
+			/* margin-right: auto; */ /* XÓA DÒNG NÀY (đã chuyển lên .bot-row) */
+			border-bottom-left-radius: 4px;
+		}
+
+		/* Style kết quả sản phẩm (giữ nguyên) */
+		.product-result {
+			display: flex;
+			align-items: center;
+			padding: 10px;
+			border-bottom: 1px solid #eee;
+			text-decoration: none;
+			color: inherit;
+		}
+
+			.product-result:last-child {
+				border-bottom: none;
+			}
+
+		.product-img {
+			width: 50px;
+			height: 50px;
+			object-fit: cover;
+			border-radius: 4px;
+			margin-right: 10px;
+		}
+
+		.product-info h5 {
+			margin: 0;
+			font-size: 0.9rem;
+		}
+
+		.product-info p {
+			margin: 0;
+			color: #e63946;
+			font-weight: bold;
+		}
+
+		.message-row {
+			display: flex;
+			align-items: flex-end; /* Căn avatar ở dưới cùng của bubble */
+			margin-bottom: 15px;
+		}
+
+		.bot-row {
+			justify-content: flex-start; /* Bot (avatar + text) ở bên trái */
+		}
+
+		.user-row {
+			justify-content: flex-end; /* Tin nhắn của User ở bên phải */
+		}
+
+		.chat-avatar {
+			width: 35px; /* Kích thước avatar */
+			height: 35px;
+			border-radius: 50%; /* Làm avatar tròn */
+			margin-right: 10px; /* Khoảng cách với bubble chat */
+			flex-shrink: 0; /* Không bị co lại */
+		}
+	</style>
 </head>
 <body>
 
@@ -1343,5 +1518,175 @@ s0.parentNode.insertBefore(s1,s0);
         });
     </script>
 </div>
+	<button id="chat-toggle-button" aria-label="Mở chat">
+	</button>
+
+	<div id="chat-popup-window">
+
+		<div class="chat-popup-header">
+			<h5>Hỗ trợ tìm kiếm</h5>
+			<button id="chat-close-button" aria-label="Đóng chat">
+				<i class="icon-cross"></i>
+			</button>
+		</div>
+
+		<div class="chat-box" id="popup-chat-box">
+			<div class="message-row bot-row">
+				<img src="/images/AvatarAD.png" class="chat-avatar" /> <div class="message bot-message">
+					Chào bạn! Bạn cần tìm sản phẩm gì?
+				</div>
+			</div>
+		</div>
+
+		<div class="chat-input-area" id="popup-chat-input-area">
+			<input type="text" id="popup-user-message-input" placeholder="Nhập tên sản phẩm..." />
+			<button id="popup-send-button">Gửi</button>
+		</div>
+
+	</div>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			// --- PHẦN 1: LẤY CÁC ĐỐI TƯỢNG (ELEMENTS) ---
+			const toggleButton = document.getElementById("chat-toggle-button");
+			const closeButton = document.getElementById("chat-close-button");
+			const chatWindow = document.getElementById("chat-popup-window");
+
+			// Các element của chat logic (với ID mới)
+			const chatBox = document.getElementById("popup-chat-box");
+			const messageInput = document.getElementById("popup-user-message-input");
+			const sendButton = document.getElementById("popup-send-button");
+
+			// --- PHẦN 2: LOGIC ĐÓNG/MỞ CỬA SỔ CHAT ---
+			toggleButton.addEventListener("click", function () {
+				// Hiển thị cửa sổ chat
+				chatWindow.style.display = "flex";
+				// Ẩn nút bấm đi
+				toggleButton.style.display = "none";
+			});
+
+			closeButton.addEventListener("click", function () {
+				// Ẩn cửa sổ chat
+				chatWindow.style.display = "none";
+				// Hiện lại nút bấm
+				toggleButton.style.display = "flex";
+			});
+
+			// --- PHẦN 3: LOGIC CHAT (TỪ CODE TRƯỚC, ĐÃ SỬA ID) ---
+
+			// Gửi tin nhắn khi nhấn nút
+			sendButton.addEventListener("click", sendMessage);
+
+			// Gửi tin nhắn khi nhấn "Enter"
+			messageInput.addEventListener("keypress", function (e) {
+				if (e.key === "Enter") {
+					sendMessage();
+				}
+			});
+
+			async function sendMessage() {
+				const query = messageInput.value.trim();
+				if (query === "") return;
+
+				// 1. Hiển thị tin nhắn của người dùng
+				appendMessage(query, "user");
+				messageInput.value = ""; // Xóa input
+
+				// 2. Hiển thị loading
+				const loadingMessage = appendMessage("...", "bot");
+
+				try {
+					// 3. Gọi API backend
+					const response = await fetch(`/api/chat/search?query=${encodeURIComponent(query)}`);
+					if (!response.ok) {
+						throw new Error("Lỗi mạng khi tìm kiếm.");
+					}
+
+					const products = await response.json();
+
+					// 4. Xóa loading và hiển thị kết quả
+					chatBox.removeChild(loadingMessage); // Xóa "..."
+					displayBotResponse(products);
+
+				} catch (error) {
+					console.error("Lỗi:", error);
+					chatBox.removeChild(loadingMessage); // Xóa "..."
+					appendMessage("Rất tiếc, đã có lỗi xảy ra. Vui lòng thử lại.", "bot");
+				}
+			}
+
+			// Hàm hiển thị kết quả từ bot
+			function displayBotResponse(products) {
+				let htmlContent = "";
+
+				if (products.length === 0) {
+					htmlContent = "Không tìm thấy sản phẩm nào phù hợp.";
+				} else {
+					htmlContent = `Tôi tìm thấy ${products.length} sản phẩm: <br/>`;
+
+					products.forEach(p => {
+						const price = p.donGia.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' });
+						// 💡 Thay /images/placeholder.png bằng link ảnh mặc định của bạn
+						const imageUrl = p.imageURL || '/images/placeholder.png';
+
+						// 💡 Sửa link href tới trang chi tiết sản phẩm của bạn
+						htmlContent += `
+							<a href="/SanPham/Details/${p.maSP}" target="_blank" class="product-result">
+								<img src="${imageUrl}" alt="${p.tenSP}" class="product-img" />
+								<div class="product-info">
+									<h5>${p.tenSP}</h5>
+									<p>${price}</p>
+								</div>
+							</a>
+						`;
+					});
+				}
+
+				appendMessage(htmlContent, "bot");
+			}
+
+
+			// Hàm chung để thêm tin nhắn vào chat box
+			// Hàm chung để thêm tin nhắn vào chat box
+		function appendMessage(message, type) {
+
+			// 1. Tạo dòng chứa (row)
+			const messageRow = document.createElement("div");
+			messageRow.classList.add("message-row");
+
+			// 2. Tạo bong bóng tin nhắn (bubble)
+			const messageBubble = document.createElement("div");
+			messageBubble.classList.add("message");
+
+			if (type === "user") {
+				// USER: [Bubble]
+				messageRow.classList.add("user-row");
+				messageBubble.classList.add("user-message");
+				messageBubble.textContent = message;
+
+				// Thêm bubble vào row
+				messageRow.appendChild(messageBubble);
+
+			} else {
+				// BOT: [Avatar] [Bubble]
+				messageRow.classList.add("bot-row");
+				messageBubble.classList.add("bot-message");
+				messageBubble.innerHTML = message; // Cho phép render HTML (sản phẩm)
+
+				// Tạo avatar
+				const avatarImg = document.createElement("img");
+				avatarImg.src = "/images/AvatarAD.png"; // 💡 Đảm bảo đúng đường dẫn
+				avatarImg.classList.add("chat-avatar");
+
+				// Thêm avatar VÀ bubble vào row
+				messageRow.appendChild(avatarImg);
+				messageRow.appendChild(messageBubble);
+			}
+
+			chatBox.appendChild(messageRow);
+			chatBox.scrollTop = chatBox.scrollHeight; // Tự động cuộn
+			return messageRow; // Trả về row (để xóa loading)
+		}
+		});
+	</script>
 </body>
 </html>
