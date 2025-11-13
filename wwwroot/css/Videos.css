@@ -1,0 +1,656 @@
+﻿
+.container .ps-section__content {
+    min-height: 340px;
+}
+
+.ps-site-features {
+    margin-top: 10px;
+}
+
+.col-md-3 {
+    margin-bottom: 10px;
+}
+
+.suggestion-card {
+    border: 1px solid #dee2e6 !important;
+    margin-bottom: 1.5rem !important;
+    text-align: center !important;
+    border: 1px solid #dee2e6 !important;
+    height: 48%;
+}
+
+img.suggestion-img {
+    max-width: 182px;
+}
+
+.ps-deal-of-day {
+    margin-top: 20px;
+}
+
+/* Thêm style cho voucher nếu cần */
+.voucher-item {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 15px;
+    margin-right: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    background-color: #fff4eb;
+    border: 2px solid #ff9933;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.voucher-image {
+    flex-shrink: 0;
+    margin-right: 15px; /* Khoảng cách sau ảnh */
+}
+
+    .voucher-image img {
+        width: 50px; /* size ảnh */
+        height: 50px;
+        border-radius: 4px;
+    }
+
+/* === THAY ĐỔI LAYOUT === */
+.voucher-content {
+    flex-grow: 0;
+    margin-right: 15px;
+}
+
+    .voucher-content p {
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    .voucher-content .voucher-code {
+        font-size: 1.1em;
+        font-weight: 700;
+        color: #d9534f; /* Màu ĐỎ CAM cho mã */
+    }
+
+    .voucher-content .voucher-desc {
+        font-size: 0.9em;
+        color: #555; /* Chữ xám đậm */
+    }
+
+.voucher-action {
+    margin-left: 0;
+}
+
+/* Đổi màu nút "Đã lưu" cho phù hợp */
+.btn-save-voucher.btn-success {
+    background-color: #28a745;
+    border-color: #28a745;
+}
+
+.btn-save-voucher.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.video-review-list .ps-product {
+    border: none;
+    background: none; /* Bỏ nền xám để card video tự xử lý */
+}
+
+.video-review-card {
+    position: relative;
+    cursor: pointer;
+    border-radius: 8px;
+    overflow: hidden;
+    /* Kích thước giống TikTok/Shorts (tỷ lệ 9:16) */
+    height: 320px;
+    width: 180px; /* Cố định chiều rộng */
+    margin: 0 auto; /* Căn giữa trong carousel item */
+    background-color: #222; /* Màu nền khi ảnh chưa tải */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+    .video-review-card .video-thumbnail {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Đảm bảo ảnh lấp đầy khung */
+        transition: transform 0.3s ease;
+    }
+
+    .video-review-card:hover .video-thumbnail {
+        transform: scale(1.05); /* Hiệu ứng zoom nhẹ */
+    }
+
+    .video-review-card .play-icon {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 50px;
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: 0 0 10px rgba(0,0,0,0.5);
+        transition: all 0.3s ease;
+        pointer-events: none; /* Tránh icon cản click */
+    }
+
+    .video-review-card:hover .play-icon {
+        color: rgba(255, 255, 255, 1);
+        transform: translate(-50%, -50%) scale(1.1);
+    }
+
+.video-product-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    /* Lớp phủ mờ ở dưới để đọc chữ rõ hơn */
+    background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+    color: #fff;
+}
+
+    .video-product-info .video-title {
+        font-size: 0.9em;
+        font-weight: 600;
+        margin-bottom: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Dấu ... nếu tên video quá dài */
+    }
+
+    .video-product-info .product-link {
+        font-size: 0.85em;
+        color: #f0f0f0;
+        text-decoration: none;
+        display: block;
+        padding: 4px 0;
+        border-radius: 4px;
+        transition: background-color 0.2s;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; /* Dấu ... nếu tên SP quá dài */
+    }
+
+        .video-product-info .product-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+
+/* =================================== */
+/*  CSS MỚI CHO VIDEO MODAL */
+/* =================================== */
+#videoReviewModal .modal-lg {
+    max-width: 400px; /* Chiều rộng giống điện thoại */
+    margin: 1.75rem auto;
+}
+
+#videoReviewModal .modal-content {
+    background-color: #000;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden; /* Đảm bảo video bo góc theo modal */
+}
+
+#videoReviewModal .modal-body {
+    padding: 0;
+    /* Giữ tỷ lệ khung hình video */
+    position: relative;
+    /* Tỷ lệ 16:9 (9 / 16 * 100 = 56.25%) */
+    /* Nếu video của bạn là dọc (9:16) thì dùng padding-bottom: 177.77% */
+    padding-bottom: 177.77%;
+    height: 0;
+    overflow: hidden;
+}
+
+#videoReviewModal #videoPlayer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    background-color: #000;
+}
+
+#videoReviewModal .modal-header {
+    border-bottom: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 1056; /* Phải cao hơn video */
+}
+
+#videoReviewModal .btn-close {
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    padding: 0.5em;
+    opacity: 0.8;
+}
+
+    #videoReviewModal .btn-close:hover {
+        opacity: 1;
+    }
+
+/* CSS for video modal navigation */
+.modal-video-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white;
+    border: none;
+    font-size: 2rem;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 1057;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background-color 0.2s ease;
+}
+
+    .modal-video-nav.prev {
+        left: 15px;
+    }
+
+    .modal-video-nav.next {
+        right: 15px;
+    }
+
+    .modal-video-nav:hover {
+        background-color: rgba(0, 0, 0, 0.6);
+    }
+/* =================================== */
+/* CSS MỚI CHO VIDEO MODAL (SWIPER)  */
+/* =================================== */
+#videoReviewModal .modal-lg {
+    max-width: 400px; /* Chiều rộng giống điện thoại */
+    margin: 1.75rem auto;
+    height: 85vh; /* Chiều cao tối đa */
+}
+
+#videoReviewModal .modal-content {
+    background-color: #000;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
+    height: 100%; /* Cho phép nội dung bên trong chiếm full chiều cao */
+}
+
+#videoReviewModal .modal-body {
+    padding: 0;
+    height: 100%;
+    position: relative;
+}
+
+/* CSS cho Swiper */
+#videoSwiper {
+    width: 100%;
+    height: 100%;
+}
+
+.swiper-slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #000;
+}
+
+    .swiper-slide .video-player-slide {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* 'contain' để video không bị cắt, 'cover' nếu muốn lấp đầy */
+    }
+
+/* CSS cho thông tin trên video */
+.video-slide-info {
+    position: absolute;
+    bottom: 100px;
+    left: 15px;
+    right: 15px;
+    z-index: 10;
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+    padding: 10px;
+    border-radius: 5px;
+}
+
+    .video-slide-info h4 {
+        font-size: 1.1em;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .video-slide-info .product-link {
+        color: #f0f0f0;
+        text-decoration: none;
+        font-size: 0.9em;
+    }
+
+        .video-slide-info .product-link:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+
+/* Nút đóng modal */
+#videoReviewModal .modal-header {
+    border-bottom: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 1056; /* Phải cao hơn video */
+}
+
+#videoReviewModal .btn-close {
+    background-color: rgba(255,255,255,0.7);
+    border-radius: 50%;
+    padding: 0.5em;
+    opacity: 0.8;
+}
+
+/* Xóa CSS cho nút .modal-video-nav cũ nếu có */
+.modal-video-nav {
+    display: none !important;
+}
+/* End of CSS for video modal navigation */
+
+/* =================================== */
+/* CSS NÂNG CẤP CHO CARD CHI TIẾT     */
+/* =================================== */
+
+
+
+
+
+  
+
+
+
+    .details-inner-scroll::-webkit-scrollbar {
+        display: none; /* Chrome, Safari, Opera */
+    }
+
+
+
+    .btn-close-details:hover {
+        background: rgba(255,255,255,0.4);
+    }
+
+
+
+
+
+
+
+
+
+.btn-add-to-cart {
+    background-color: #e74c3c;
+    color: #fff;
+}
+
+.btn-full-details {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+
+    .btn-full-details .fa {
+        margin-left: 8px;
+        transition: transform 0.3s;
+    }
+
+/* MỚI: CSS cho nội dung mở rộng */
+.details-content-expanded {
+    /* Ẩn ban đầu, chỉ hiện khi 'is-expanded' */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, margin-top 0.4s;
+    margin-top: 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+
+
+    /* Style cho nội dung HTML (nếu có) */
+    .product-description p {
+        margin-bottom: 10px;
+    }
+
+    .product-description img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-top: 5px;
+    }
+
+
+/* Xoay icon mũi tên khi mở rộng */
+.video-product-details.is-expanded .btn-full-details .fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+/* =================================== */
+/* CSS BỔ SUNG CHO THÔNG TIN MỚI   */
+/* =================================== */
+
+/* CSS cho giá gốc (nếu có) */
+.product-info-price .original-price {
+    font-size: 0.85em;
+    color: #aaa;
+    text-decoration: line-through;
+    margin-left: 8px;
+}
+
+/* MỚI: CSS cho thông số kỹ thuật */
+.details-specs-title {
+    font-size: 1em;
+    font-weight: 700;
+    color: #ffc107; /* Màu vàng */
+    padding: 15px 0 5px 0;
+    margin-top: 10px;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+
+
+
+
+ 
+
+
+        /*=============================================================================================================================*/
+/*=============================================================================================================================*/
+/*=============================================================================================================================*/
+/*=============================================================================================================================*/
+
+/* Lớp phủ chi tiết sản phẩm (ẩn mặc định) */
+.video-product-details {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 20;
+    background-color: rgba(25, 25, 25, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    color: #fff;
+    /* Dùng max-height để tạo hiệu ứng */
+    max-height: 0; /* Ẩn ban đầu */
+    overflow: hidden; /* Ẩn nội dung khi co lại */
+    transition: max-height 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Trạng thái hiển thị (cơ bản) */
+.video-product-details.show {
+    max-height: 300px; /* Chiều cao khi hiển thị cơ bản */
+}
+
+/* Trạng thái mở rộng (đầy đủ) */
+.video-product-details.is-expanded {
+    max-height: 75vh; /* Chiều cao khi mở rộng tối đa */
+}
+
+/* Nút đóng card chi tiết */
+.btn-close-details {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    font-size: 1.5rem;
+    line-height: 1;
+    padding: 0 8px 3px 8px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 22; /* Phải cao hơn nội dung cuộn */
+}
+
+/* Vùng nội dung cuộn bên trong */
+.details-inner-scroll {
+    position: relative;
+    padding: 15px;
+    padding-top: 45px; /* Chừa không gian cho nút đóng */
+    height: 100%;
+    overflow-y: auto;
+    -ms-overflow-style: none; /* Ẩn thanh cuộn (IE/Edge) */
+    scrollbar-width: none; /* Ẩn thanh cuộn (Firefox) */
+}
+/* Ẩn thanh cuộn (Chrome/Safari) */
+.details-inner-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* --- Nội dung cơ bản (Basic Content) --- */
+.details-content-basic .product-info-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.details-content-basic .product-details-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.details-content-basic .product-info-price .price {
+    font-size: 1.3em;
+    font-weight: 700;
+    color: #ff5722; /* Màu cam/đỏ cho giá */
+}
+
+/* (CSS cho giá gốc - bạn có thể thêm nếu cần) */
+.details-content-basic .product-info-price .original-price {
+    font-size: 0.9em;
+    color: #888;
+    text-decoration: line-through;
+    margin-left: 8px;
+}
+
+.details-content-basic .product-details-name {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Nút bấm (Buttons) --- */
+.btn-add-to-cart, .btn-full-details {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 10px;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* Nút thêm vào giỏ hàng (Bạn nên định nghĩa màu) */
+.btn-add-to-cart {
+    background-color: #ff5722; /* Ví dụ: Màu cam/đỏ */
+    color: #fff;
+}
+.btn-add-to-cart:hover {
+    background-color: #e64a19;
+}
+
+/* Nút xem chi tiết (Bạn nên định nghĩa màu) */
+.btn-full-details {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+.btn-full-details:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+/* --- Nội dung mở rộng (Expanded Content) --- */
+.details-content-expanded {
+    /* Ẩn ban đầu, chỉ hiện khi .is-expanded */
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, margin-top 0.4s ease-out;
+}
+
+/* Khi panel được mở rộng (.is-expanded) */
+.video-product-details.is-expanded .details-content-expanded {
+    max-height: 2000px; /* Số đủ lớn để chứa nội dung */
+    margin-top: 15px; /* Khoảng cách với phần cơ bản */
+}
+
+.details-content-expanded h4 {
+    font-size: 1em;
+    font-weight: 700;
+    color: #ffc107; /* Màu vàng */
+    padding: 15px 0 5px 0;
+}
+
+.product-description {
+    font-size: 0.9em;
+    line-height: 1.5;
+    color: #ddd;
+} 
+
+.product-specs-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.9em;
+    color: #ddd;
+}
+
+.product-specs-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; /* Dùng flex để căn chỉnh */
+}
+
+.product-specs-list li:last-child {
+    border-bottom: none;
+}
+
+.product-specs-list li strong {
+    color: #fff;
+    min-width: 100px; /* Đặt chiều rộng cố định cho nhãn */
+    flex-shrink: 0; /* Không co lại */
+    margin-right: 10px;
+}}

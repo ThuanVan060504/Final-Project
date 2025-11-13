@@ -65,6 +65,8 @@ namespace Final_Project.Models.Shop
         public string? ChiTiet { get; set; }
         [NotMapped]
         public string TenDanhMuc => DanhMuc?.TenDanhMuc;
+        [Column(TypeName = "decimal(10, 2)")]
+        public decimal? Weight { get; set; }
 
     }
 }

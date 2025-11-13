@@ -1,5 +1,6 @@
 ﻿<link rel="stylesheet" href="/css/videorv.css" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<link rel="stylesheet" href="/css/Videos.css" />
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 @using Final_Project.Models.Shop
@@ -13,484 +14,6 @@
 }
 
 
-<style>
-    .container .ps-section__content {
-        min-height: 340px;
-    }
-
-    .ps-site-features {
-        margin-top: 10px;
-    }
-
-    .col-md-3 {
-        margin-bottom: 10px;
-    }
-
-    .suggestion-card {
-        border: 1px solid #dee2e6 !important;
-        margin-bottom: 1.5rem !important;
-        text-align: center !important;
-        border: 1px solid #dee2e6 !important;
-        height: 48%;
-    }
-
-    img.suggestion-img {
-        max-width: 182px;
-    }
-
-    .ps-deal-of-day {
-        margin-top: 20px;
-    }
-
-    /* Thêm style cho voucher nếu cần */
-    .voucher-item {
-        display: inline-flex;
-        align-items: center;
-        margin-bottom: 15px;
-        margin-right: 15px;
-        padding: 12px;
-        border-radius: 8px;
-        background-color: #fff4eb;
-        border: 2px solid #ff9933;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
-
-    .voucher-image {
-        flex-shrink: 0;
-        margin-right: 15px; /* Khoảng cách sau ảnh */
-    }
-
-        .voucher-image img {
-            width: 50px; /* size ảnh */
-            height: 50px;
-            border-radius: 4px;
-        }
-
-    /* === THAY ĐỔI LAYOUT === */
-    .voucher-content {
-        flex-grow: 0;
-        margin-right: 15px;
-    }
-
-        .voucher-content p {
-            margin: 0;
-            line-height: 1.4;
-        }
-
-        .voucher-content .voucher-code {
-            font-size: 1.1em;
-            font-weight: 700;
-            color: #d9534f; /* Màu ĐỎ CAM cho mã */
-        }
-
-        .voucher-content .voucher-desc {
-            font-size: 0.9em;
-            color: #555; /* Chữ xám đậm */
-        }
-
-    .voucher-action {
-        margin-left: 0;
-    }
-
-    /* Đổi màu nút "Đã lưu" cho phù hợp */
-    .btn-save-voucher.btn-success {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
-
-    .btn-save-voucher.btn-secondary {
-        background-color: #6c757d;
-        border-color: #6c757d;
-    }
-
-    .video-review-list .ps-product {
-        border: none;
-        background: none; /* Bỏ nền xám để card video tự xử lý */
-    }
-
-    .video-review-card {
-        position: relative;
-        cursor: pointer;
-        border-radius: 8px;
-        overflow: hidden;
-        /* Kích thước giống TikTok/Shorts (tỷ lệ 9:16) */
-        height: 320px;
-        width: 180px; /* Cố định chiều rộng */
-        margin: 0 auto; /* Căn giữa trong carousel item */
-        background-color: #222; /* Màu nền khi ảnh chưa tải */
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-        .video-review-card .video-thumbnail {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Đảm bảo ảnh lấp đầy khung */
-            transition: transform 0.3s ease;
-        }
-
-        .video-review-card:hover .video-thumbnail {
-            transform: scale(1.05); /* Hiệu ứng zoom nhẹ */
-        }
-
-        .video-review-card .play-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 50px;
-            color: rgba(255, 255, 255, 0.8);
-            text-shadow: 0 0 10px rgba(0,0,0,0.5);
-            transition: all 0.3s ease;
-            pointer-events: none; /* Tránh icon cản click */
-        }
-
-        .video-review-card:hover .play-icon {
-            color: rgba(255, 255, 255, 1);
-            transform: translate(-50%, -50%) scale(1.1);
-        }
-
-    .video-product-info {
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        padding: 10px;
-        /* Lớp phủ mờ ở dưới để đọc chữ rõ hơn */
-        background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
-        color: #fff;
-    }
-
-        .video-product-info .video-title {
-            font-size: 0.9em;
-            font-weight: 600;
-            margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Dấu ... nếu tên video quá dài */
-        }
-
-        .video-product-info .product-link {
-            font-size: 0.85em;
-            color: #f0f0f0;
-            text-decoration: none;
-            display: block;
-            padding: 4px 0;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis; /* Dấu ... nếu tên SP quá dài */
-        }
-
-            .video-product-info .product-link:hover {
-                color: #fff;
-                text-decoration: underline;
-            }
-
-
-    /* =================================== */
-    /*  CSS MỚI CHO VIDEO MODAL */
-    /* =================================== */
-    #videoReviewModal .modal-lg {
-        max-width: 400px; /* Chiều rộng giống điện thoại */
-        margin: 1.75rem auto;
-    }
-
-    #videoReviewModal .modal-content {
-        background-color: #000;
-        border: none;
-        border-radius: 10px;
-        overflow: hidden; /* Đảm bảo video bo góc theo modal */
-    }
-
-    #videoReviewModal .modal-body {
-        padding: 0;
-        /* Giữ tỷ lệ khung hình video */
-        position: relative;
-        /* Tỷ lệ 16:9 (9 / 16 * 100 = 56.25%) */
-        /* Nếu video của bạn là dọc (9:16) thì dùng padding-bottom: 177.77% */
-        padding-bottom: 177.77%;
-        height: 0;
-        overflow: hidden;
-    }
-
-    #videoReviewModal #videoPlayer {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: none;
-        background-color: #000;
-    }
-
-    #videoReviewModal .modal-header {
-        border-bottom: none;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        z-index: 1056; /* Phải cao hơn video */
-    }
-
-    #videoReviewModal .btn-close {
-        background-color: rgba(255,255,255,0.7);
-        border-radius: 50%;
-        padding: 0.5em;
-        opacity: 0.8;
-    }
-
-        #videoReviewModal .btn-close:hover {
-            opacity: 1;
-        }
-
-    /* CSS for video modal navigation */
-    .modal-video-nav {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        background-color: rgba(0, 0, 0, 0.3);
-        color: white;
-        border: none;
-        font-size: 2rem;
-        padding: 5px;
-        cursor: pointer;
-        z-index: 1057;
-        border-radius: 50%;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        line-height: 1;
-        transition: background-color 0.2s ease;
-    }
-
-        .modal-video-nav.prev {
-            left: 15px;
-        }
-
-        .modal-video-nav.next {
-            right: 15px;
-        }
-
-        .modal-video-nav:hover {
-            background-color: rgba(0, 0, 0, 0.6);
-        }
-    /* =================================== */
-    /* CSS MỚI CHO VIDEO MODAL (SWIPER)  */
-    /* =================================== */
-    #videoReviewModal .modal-lg {
-        max-width: 400px; /* Chiều rộng giống điện thoại */
-        margin: 1.75rem auto;
-        height: 85vh; /* Chiều cao tối đa */
-    }
-
-    #videoReviewModal .modal-content {
-        background-color: #000;
-        border: none;
-        border-radius: 10px;
-        overflow: hidden;
-        height: 100%; /* Cho phép nội dung bên trong chiếm full chiều cao */
-    }
-
-    #videoReviewModal .modal-body {
-        padding: 0;
-        height: 100%;
-        position: relative;
-    }
-
-    /* CSS cho Swiper */
-    #videoSwiper {
-        width: 100%;
-        height: 100%;
-    }
-
-    .swiper-slide {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        background-color: #000;
-    }
-
-        .swiper-slide .video-player-slide {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; /* 'contain' để video không bị cắt, 'cover' nếu muốn lấp đầy */
-        }
-
-    /* CSS cho thông tin trên video */
-    .video-slide-info {
-        position: absolute;
-        bottom: 20px;
-        left: 15px;
-        right: 15px;
-        z-index: 10;
-        color: #fff;
-        text-shadow: 0 1px 3px rgba(0,0,0,0.5);
-        background: linear-gradient(0deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
-        padding: 10px;
-        border-radius: 5px;
-    }
-
-        .video-slide-info h4 {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .video-slide-info .product-link {
-            color: #f0f0f0;
-            text-decoration: none;
-            font-size: 0.9em;
-        }
-
-            .video-slide-info .product-link:hover {
-                color: #fff;
-                text-decoration: underline;
-            }
-
-
-    /* Nút đóng modal */
-    #videoReviewModal .modal-header {
-        border-bottom: none;
-        position: absolute;
-        top: 5px;
-        right: 5px;
-        z-index: 1056; /* Phải cao hơn video */
-    }
-
-    #videoReviewModal .btn-close {
-        background-color: rgba(255,255,255,0.7);
-        border-radius: 50%;
-        padding: 0.5em;
-        opacity: 0.8;
-    }
-
-    /* Xóa CSS cho nút .modal-video-nav cũ nếu có */
-    .modal-video-nav {
-        display: none !important;
-    }
-    /* End of CSS for video modal navigation */
-
-    /* =================================== */
-/* CSS CHO CARD CHI TIẾT SẢN PHẨM   */
-/* =================================== */
-
-/* Lớp phủ chi tiết sản phẩm (ẩn mặc định) */
-.video-product-details {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 20; /* Cao hơn video-slide-info (thường z-index: 10) */
-    background-color: rgba(25, 25, 25, 0.95); /* Nền mờ đục */
-    
-    /* Hiệu ứng kính mờ (Tùy chọn) */
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-    padding: 15px;
-    color: #fff;
-    
-    /* Ẩn đi (dịch chuyển xuống dưới) */
-    transform: translateY(100%);
-    transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-    visibility: hidden;
-}
-
-/* Lớp .show để hiện card */
-.video-product-details.show {
-    transform: translateY(0);
-    visibility: visible;
-}
-
-/* Nút đóng card chi tiết */
-.btn-close-details {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    background: rgba(255,255,255,0.2);
-    border: none;
-    color: #fff;
-    font-size: 1.5rem;
-    line-height: 1;
-    padding: 0 8px 3px 8px;
-    border-radius: 50%;
-    cursor: pointer;
-    z-index: 25;
-}
-.btn-close-details:hover {
-    background: rgba(255,255,255,0.4);
-}
-
-/* Layout bên trong card */
-.product-info-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 12px;
-}
-
-.product-details-img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-right: 15px;
-    border: 1px solid rgba(255,255,255,0.1);
-}
-
-.product-info-price .price {
-    font-size: 1.3em;
-    font-weight: 700;
-    color: #ff5722; /* Màu cam nổi bật */
-}
-
-.product-details-name {
-    font-size: 1em;
-    font-weight: 600;
-    margin-bottom: 15px;
-    /* Cắt chữ nếu quá dài */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Nút bấm */
-.btn-add-to-cart, .btn-full-details {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 5px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 0.95em;
-    margin-bottom: 10px;
-    text-decoration: none;
-    border: none;
-    cursor: pointer;
-}
-
-.btn-add-to-cart {
-    background-color: #e74c3c; /* Màu đỏ */
-    color: #fff;
-}
-.btn-add-to-cart:hover {
-    background-color: #c0392b;
-}
-
-.btn-full-details {
-    background-color: rgba(255, 255, 255, 0.2);
-    color: #fff;
-}
-.btn-full-details:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    color: #fff;
-}
-</style>
 
 
 <div class="container mt-4">
@@ -916,32 +439,30 @@
             });
         }
         
-        // --- ⭐ MỚI: Hàm ẩn tất cả các card chi tiết sản phẩm ---
+        // --- ⭐ CẬP NHẬT: Hàm ẩn tất cả card (reset cả .is-expanded) ---
         function hideAllProductDetails() {
-            $videoModal.find('.video-product-details').removeClass('show');
+            $videoModal.find('.video-product-details')
+                       .removeClass('show')
+                       .removeClass('is-expanded'); // <-- Đảm bảo reset cả trạng thái mở rộng
         }
 
         // Khi click vào một card video
         videoCards.on('click', function () {
-            clickedVideoIndex = videoCards.index(this); // Lấy index của card được click
-            $videoModal.modal('show'); // Hiển thị modal
+            clickedVideoIndex = videoCards.index(this); 
+            $videoModal.modal('show');
         });
 
         // Sự kiện khi modal ĐÃ ĐƯỢC HIỂN THỊ
         $videoModal.on('shown.bs.modal', function () {
             // Khởi tạo Swiper
             videoSwiperInstance = new Swiper('#videoSwiper', {
-                // Tùy chọn Swiper
-                direction: 'vertical', // Quan trọng: cuộn dọc
+                direction: 'vertical',
                 loop: false,
-                mousewheel: true, // Cho phép cuộn bằng chuột
-                initialSlide: clickedVideoIndex, // Bắt đầu tại video đã click
-
-                // Sự kiện
+                mousewheel: true,
+                initialSlide: clickedVideoIndex,
                 on: {
                     // Khi khởi tạo xong
                     init: function () {
-                        // Tự động phát video đầu tiên (video được click)
                         var activeSlideVideo = $(this.slides[this.activeIndex]).find('video');
                         if (activeSlideVideo.length > 0) {
                             activeSlideVideo[0].play().catch(error => console.log("Lỗi tự động phát:", error));
@@ -949,28 +470,28 @@
                     },
                     // Khi chuyển slide xong
                     slideChangeTransitionEnd: function () {
-                        // Dừng tất cả các video
                         pauseAllVideos();
-                        
-                        // --- ⭐ MỚI: Ẩn card SP khi chuyển slide ---
-                        hideAllProductDetails(); 
+                        hideAllProductDetails(); // <-- Quan trọng: Reset card khi chuyển slide
 
-                        // Phát video ở slide hiện tại
                         var activeSlideVideo = $(this.slides[this.activeIndex]).find('video');
                         if (activeSlideVideo.length > 0) {
-                            activeSlideVideo[0].currentTime = 0; // Tua về đầu
+                            activeSlideVideo[0].currentTime = 0; 
                             activeSlideVideo[0].play().catch(error => console.log("Lỗi tự động phát:", error));
                         }
                     },
 
-                    // --- ⭐ MỚI: Xử lý TAP (chạm/click) trên video ---
+                    // Xử lý TAP (chạm/click) trên video
                     tap: function(swiper, event) {
-                        // 1. Nếu click vào nút "Xem SP" hoặc "Card SP", thì bỏ qua (vì đã có handler riêng)
-                        if ($(event.target).closest('.btn-show-product, .video-product-details').length) {
+                        // 1. Nếu click vào bất kỳ phần tử nào trong card SP, thì bỏ qua
+                        if ($(event.target).closest('.video-product-details').length) {
                              return;
                         }
-                        
-                        // 2. Nếu card SP đang mở, thì đóng nó lại
+                        // 2. Nếu click vào nút "Xem SP", cũng bỏ qua
+                        if ($(event.target).closest('.btn-show-product').length) {
+                            return;
+                        }
+
+                        // 3. Nếu card SP đang mở, thì đóng nó lại (ưu tiên)
                         if ($videoModal.find('.video-product-details.show').length > 0) {
                             hideAllProductDetails();
                             // và tiếp tục phát video
@@ -979,7 +500,7 @@
                             return;
                         }
 
-                        // 3. Ngược lại, xử lý play/pause video
+                        // 4. Ngược lại, xử lý play/pause video
                         var activeSlideVideo = $(swiper.slides[swiper.activeIndex]).find('video');
                         if (activeSlideVideo.length > 0) {
                             if (activeSlideVideo[0].paused) {
@@ -995,39 +516,36 @@
 
         // Sự kiện khi modal BỊ ĐÓNG
         $videoModal.on('hidden.bs.modal', function () {
-            // Dừng tất cả video
             pauseAllVideos();
+            hideAllProductDetails(); // Reset khi đóng
             
-            // --- ⭐ MỚI: Ẩn card SP khi đóng modal ---
-            hideAllProductDetails(); 
-            
-            // Hủy Swiper instance để giải phóng tài nguyên
             if (videoSwiperInstance) {
                 videoSwiperInstance.destroy(true, true);
                 videoSwiperInstance = null;
             }
         });
 
-        // --- ⭐ MỚI: DÙNG EVENT DELEGATION ĐỂ XỬ LÝ CLICK TRONG MODAL ---
+        // --- ⭐ CẬP NHẬT: EVENT DELEGATION ĐỂ XỬ LÝ CLICK TRONG MODAL ---
         
-        // Khi click nút "Xem sản phẩm"
+        // Khi click nút "Xem sản phẩm" (Trigger ban đầu)
         $videoModal.on('click', '.btn-show-product', function() {
-            var productId = $(this).data('product-id');
-            var $detailsCard = $('#product-details-' + productId);
+            var $detailsCard = $(this).closest('.swiper-slide').find('.video-product-details');
             
-            // Ẩn các card khác (nếu có) và hiển thị card này
-            hideAllProductDetails();
-            $detailsCard.addClass('show');
+            // Ẩn các card khác và hiển thị card này (ở trạng thái CƠ BẢN)
+            hideAllProductDetails(); 
+            $detailsCard.addClass('show'); // Chỉ thêm .show
 
-            // Tạm dừng video đang phát
             $(this).closest('.swiper-slide').find('video')[0].pause();
         });
 
-        // Khi click nút "Đóng" (dấu X) trên card chi tiết
+        // Khi click nút "Đóng" (dấu X)
         $videoModal.on('click', '.btn-close-details', function() {
-            $(this).closest('.video-product-details').removeClass('show');
+            var $detailsCard = $(this).closest('.video-product-details');
+            
+            // Ẩn card đi (reset cả 2 class)
+            $detailsCard.removeClass('show').removeClass('is-expanded');
 
-            // Tiếp tục phát video (nếu Swiper còn tồn tại)
+            // Tiếp tục phát video
             if (videoSwiperInstance) {
                 var activeSlideVideo = $(videoSwiperInstance.slides[videoSwiperInstance.activeIndex]).find('video');
                 if (activeSlideVideo.length > 0) {
@@ -1036,34 +554,67 @@
             }
         });
         
-        // Khi click nút "Thêm vào giỏ hàng" (ví dụ)
+        // --- ⭐ MỚI: Khi click nút "Xem chi tiết đầy đủ" ---
+        $videoModal.on('click', '.btn-full-details', function(e) {
+            e.preventDefault();
+            var $detailsCard = $(this).closest('.video-product-details');
+            
+            // Toggle trạng thái mở rộng
+            $detailsCard.toggleClass('is-expanded');
+            
+            // Đổi chữ trên nút (Tùy chọn)
+            var $icon = $(this).find('.fa');
+            if ($detailsCard.hasClass('is-expanded')) {
+                $(this).contents().filter(function(){ return this.nodeType == 3; }).first().replaceWith("Thu gọn ");
+                // Icon đã tự xoay bằng CSS
+            } else {
+                $(this).contents().filter(function(){ return this.nodeType == 3; }).first().replaceWith("Xem chi tiết đầy đủ ");
+            }
+        });
+        
+        // Khi click nút "Thêm vào giỏ hàng"
         $videoModal.on('click', '.btn-add-to-cart', function(e) {
-            e.preventDefault(); // Ngăn hành vi mặc định
+            e.preventDefault();
             var productId = $(this).data('product-id');
-            
-            // --- !!! BẠN SẼ CODE LOGIC AJAX TẠI ĐÂY !!! ---
-            alert('Đã thêm sản phẩm ' + productId + ' vào giỏ!');
-            
-            // Ví dụ:
-            // $.ajax({
-            //     url: '/Cart/AddToCart',
-            //     type: 'POST',
-            //     data: { id: productId, quantity: 1 },
-            //     success: function(response) {
-            //         alert('Thêm vào giỏ hàng thành công!');
-            //         // Cập nhật icon giỏ hàng...
-            //     },
-            //     error: function() {
-            //         alert('Có lỗi xảy ra!');
-            //     }
-            // });
+            var button = $(this);
 
-            // Tùy chọn: đóng card sau khi thêm
-            // $(this).closest('.video-product-details').removeClass('show');
+            // Vô hiệu hóa nút để tránh click nhiều lần
+            button.prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Đang thêm...');
+
+            $.ajax({
+                url: '/GioHang/ThemGioHang', // Action thêm vào giỏ hàng
+                type: 'POST',
+                data: {
+                    maSP: productId,
+                    soLuong: 1 // Mặc định thêm 1 sản phẩm
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message); // Hoặc dùng toast/notification đẹp hơn
+                        // Cập nhật số lượng trên icon giỏ hàng
+                        $('.wishlistcount').text(response.cartCount);
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 401) { // Unauthorized - Chưa đăng nhập
+                        alert('Bạn cần đăng nhập để thực hiện chức năng này.');
+                        window.location.href = '/Auth/Login'; // Chuyển hướng đến trang đăng nhập
+                    } else {
+                        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+                    }
+                },
+                complete: function() {
+                    // Kích hoạt lại nút sau khi hoàn tất
+                    button.prop('disabled', false).html('<i class="icon-bag2"></i> Thêm vào giỏ hàng');
+                }
+            });
         });
 
         // --- ✅ KẾT THÚC: SCRIPT MỚI CHO VIDEO REVIEW ---
- });
+        // 
+        });
 </script>
 <div class="ps-home-ads">
     <div class="ps-container">
@@ -1709,7 +1260,7 @@
             </div>
             <div class="modal-body">
 
-                <div class="swiper" id="videoSwiper">
+<div class="swiper" id="videoSwiper">
     <div class="swiper-wrapper">
         
         @if (ViewBag.VideoList != null)
@@ -1738,30 +1289,56 @@
                         </div>
 
                         <div class="video-product-details" id="product-details-@video.MaSP">
-                            <div class="details-content">
-                                <button type="button" class="btn-close-details">&times;</button>
+                            
+                            <button type="button" class="btn-close-details">&times;</button>
+                            
+                            <div class="details-inner-scroll">
                                 
-                                <div class="product-info-header">
-                                    <img src="@(video.SanPham.ImageURL ?? "/images/no-image.png")" alt="@video.SanPham.TenSP" class="product-details-img"/>
-                                    <div class="product-info-price">
-                                        <span class="price">@video.SanPham.DonGia.ToString("N0") đ</span>
+                                <div class="details-content-basic">
+                                    <div class="product-info-header">
+                                        <img src="@(video.SanPham.ImageURL ?? "/images/no-image.png")" alt="@video.SanPham.TenSP" class="product-details-img"/>
+                                        <div class="product-info-price">
+                                            <span class="price">@video.SanPham.DonGia.ToString("N0") đ</span>
+                                            @if (video.SanPham.GiaGoc > video.SanPham.DonGia)
+                                            {
+                                                <span class="original-price">@video.SanPham.GiaGoc.?ToString("N0") đ</span>
+                                            }
                                         </div>
+                                    </div>
+                                    <p class="product-details-name">@video.SanPham.TenSP</p>
+                                    
+                                    <button class="btn btn-add-to-cart" data-product-id="@video.MaSP">
+                                        <i class="icon-bag2"></i> Thêm vào giỏ hàng
+                                    </button>
+                                    
+                                    <button type.button" class="btn btn-full-details">
+                                        Xem chi tiết đầy đủ <i class="fa fa-chevron-down"></i>
+                                    </button>
                                 </div>
-                                <p class="product-details-name">@video.SanPham.TenSP</p>
                                 
-                                <button class="btn btn-add-to-cart" data-product-id="@video.MaSP">
-                                    <i class="icon-bag2"></i> Thêm vào giỏ hàng
-                                </button>
+                                <div class="details-content-expanded">
+                                    <h4>Mô tả sản phẩm</h4>
+                                    <div class="product-description">
+                                        @Html.Raw(video.SanPham.MoTa ?? "Chưa có mô tả cho sản phẩm này.")
+                                    </div>
+                                    
+                                    <h4 class="details-specs-title">Thông số kỹ thuật</h4>
+                                    <ul class="product-specs-list">
+                                        <li>
+                                            <strong>Kích thước:</strong> 
+                                            @($"R {video.SanPham.ChieuRong} x C {video.SanPham.ChieuCao} x S {video.SanPham.ChieuSau}")
+                                            </li>
+                                        <li>
+                                            <strong>Tồn kho:</strong> 
+                                            @video.SanPham.SoLuong
+                                        </li>
+                                    </ul>
+                                    </div>
                                 
-                                <a href="@Url.Action("Details", "SanPham", new { id = video.MaSP })" class="btn btn-full-details" target="_blank">
-                                    Xem chi tiết đầy đủ
-                                </a>
-                            </div>
-                        </div>
-                    }
+                            </div> </div> }
                     else
                     {
-                        <div class="video-slide-info">
+                         <div class="video-slide-info">
                             <h4>@video.TieuDe</h4>
                         </div>
                     }
@@ -1770,8 +1347,7 @@
         }
         
     </div>
+</div>       
 </div>
-            </div>
-        </div>
     </div>
 </div>
