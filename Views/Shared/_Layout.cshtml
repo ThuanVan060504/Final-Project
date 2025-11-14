@@ -617,7 +617,7 @@
 				}
 
 						<div class='ps-cart--mini'>
-							<a class="header__extra" href="/User/Profile#favoritesSection" id="favoriteLink">
+							<a class="header__extra" asp-controller="Auth" asp-action="Login" id="favoriteLink">
 								<i class="icon-heart"></i>
 							</a>
 						</div>
@@ -693,10 +693,12 @@
 									});
 							});
 						</script>
-				<div class="ps-block__left">
-						<a class='header__extra' href='/User/Profile#addressSection' id="addressLink"><i class="icon-apartment"></i></a>
-				</div>				
-				<script>
+						<div class="ps-block__left">
+							<a class="header__extra" asp-controller="Auth" asp-action="Login" id="addressLink">
+								<i class="icon-apartment"></i>
+							</a>
+						</div>
+						<script>
 							document.getElementById("addressLink").addEventListener("click", function(e) {
 								e.preventDefault();
 
@@ -1193,8 +1195,10 @@ else
 		<h4 class='widget-title'>Hỗ Trợ</h4>
 		<ul class='ps-list--link'>
 							<li><a asp-controller="LienHe" asp-action="Index">Liên hệ</a></li>
-							<li><a href="/User/Profile#historySection" id="historyLink">Thông Tin Giao Hàng</a></li>
-							<li><a asp-controller="ThongTin" asp-action="DieuKhoan">Điều Khoản</a></li>
+						<li>
+							<a asp-controller="Auth" asp-action="Login" id="footerInfoLink">Thông Tin Giao Hàng</a>
+						</li>
+						<li><a asp-controller="ThongTin" asp-action="DieuKhoan">Điều Khoản</a></li>
                             <li><a asp-controller="ThongTin" asp-action="BaoMat">Bảo Mật</a></li>
 						<script>
 							document.getElementById("historyLink").addEventListener("click", function(e) {
@@ -1646,7 +1650,6 @@ s0.parentNode.insertBefore(s1,s0);
 
 
 			// Hàm chung để thêm tin nhắn vào chat box
-			// Hàm chung để thêm tin nhắn vào chat box
 		function appendMessage(message, type) {
 
 			// 1. Tạo dòng chứa (row)
@@ -1687,6 +1690,55 @@ s0.parentNode.insertBefore(s1,s0);
 			return messageRow; // Trả về row (để xóa loading)
 		}
 		});
-	</script>
+
+		//xử lý icon section Profile
+		document.addEventListener('DOMContentLoaded', function() {
+
+			// 1. Tìm TẤT CẢ các link cần xử lý
+			const footerLink = document.getElementById('footerInfoLink');
+			const favoriteLink = document.getElementById('favoriteLink');
+			const addressLink = document.getElementById('addressLink');
+
+			// Nếu không có link nào thì không cần làm gì
+			if (!footerLink && !favoriteLink && !addressLink) {
+				return;
+			}
+
+			// 2. Gọi API kiểm tra đăng nhập MỘT LẦN
+			fetch('/Auth/CheckLogin')
+				.then(response => {
+					if (!response.ok) throw new Error('Lỗi mạng');
+					return response.json();
+				})
+				.then(data => {
+					const isLoggedIn = data.loggedIn;
+					const loginUrl = '/Auth/Login';
+
+					// 3. Xử lý link footer (Thông tin giao hàng)
+					if (footerLink) {
+						footerLink.href = isLoggedIn ? '/User/Profile#historySection' : loginUrl;
+					}
+
+					// 4. Xử lý link yêu thích
+					if (favoriteLink) {
+						favoriteLink.href = isLoggedIn ? '/User/Profile#favoritesSection' : loginUrl;
+					}
+
+					// 5. Xử lý link địa chỉ (MỚI)
+					if (addressLink) {
+						addressLink.href = isLoggedIn ? '/User/Profile#addressSection' : loginUrl;
+					}
+				})
+				.catch(error => {
+					console.error('Lỗi khi kiểm tra trạng thái đăng nhập:', error);
+					// Mặc định an toàn: nếu có lỗi, cứ trỏ về trang đăng nhập
+					const loginUrl = '/Auth/Login';
+					if (footerLink) footerLink.href = loginUrl;
+					if (favoriteLink) favoriteLink.href = loginUrl;
+					if (addressLink) addressLink.href = loginUrl; // MỚI
+				});
+		});	
+	});
+		</script>
 </body>
 </html>
