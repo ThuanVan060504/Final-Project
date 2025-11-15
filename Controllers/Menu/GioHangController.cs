@@ -1,10 +1,11 @@
-﻿// Controllers/GioHangController.cs
-using Final_Project.Models.Shop;
+﻿using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System; // <-- Thêm using này
+using System.Collections.Generic; // <-- Thêm using này
 
 namespace Final_Project.Controllers
 {
@@ -16,6 +17,8 @@ namespace Final_Project.Controllers
         {
             _context = context;
         }
+
+        // --- CÁC HÀM HELPER (Giữ nguyên) ---
 
         private void CapNhatSessionSoLuong(int maTK)
         {
@@ -49,17 +52,42 @@ namespace Final_Project.Controllers
             return null;
         }
 
+        // ✅ HÀM LOAD DỮ LIỆU CHUNG (MỚI)
+        private void LoadCommonData()
+        {
+            // Lấy thông tin User
+            int? maTK = LayMaTK(); // Dùng lại hàm helper của bạn
+            if (maTK != null)
+            {
+                var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
+                ViewBag.Avatar = taiKhoan?.Avatar;
+                ViewBag.HoTen = taiKhoan?.HoTen;
+            }
+
+            // Lấy danh mục (cho _Layout)
+            var danhMucs = _context.DanhMucs
+                .Include(d => d.SanPhams)
+                .ToList();
+
+            ViewBag.DanhMucs = danhMucs;
+        }
+
+
+        // --- CÁC ACTION ---
+
         public IActionResult Index()
         {
+            // ✅ BƯỚC 1: Gọi hàm LoadCommonData()
+            LoadCommonData();
+            
+            // Lấy MaTK cho logic của riêng trang giỏ hàng
             int? maTK = LayMaTK();
             if (maTK == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
-            var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
-            ViewBag.Avatar = taiKhoan?.Avatar;
-            ViewBag.HoTen = taiKhoan?.HoTen;
+            // (Code lấy Avatar/HoTen đã được chuyển vào LoadCommonData())
 
             var now = DateTime.Now;
 
@@ -74,34 +102,33 @@ namespace Final_Project.Controllers
                     x => x.sp.MaSP,
                     fs => fs.MaSP,
                     (x, flashSales) => new { x.gh, x.sp, flashSale = flashSales.FirstOrDefault() })
-                .Select(result => new GioHangViewModel
+                .Select(result => new GioHangViewModel // Giả sử bạn có ViewModel này
                 {
                     MaSP = result.sp.MaSP,
                     TenSP = result.sp.TenSP,
                     SoLuong = result.gh.SoLuong,
-                    DonGia = result.sp.DonGia,
+                    DonGia = result.sp.DonGia, 
                     ImageURL = result.sp.ImageURL
                 }).ToList();
 
 
-            return View(gioHang.ToList());
+            return View(gioHang); // Bỏ .ToList() thừa
         }
-        [Authorize] 
+        
+        // --- CÁC ACTION KHÁC (Không cần LoadCommonData vì trả về JSON/Redirect) ---
+
+        [Authorize]
         [HttpPost]
         public IActionResult ThemGioHang(int maSP, int soLuong = 1)
         {
-            // 1. Lấy MaTK (Mã Tài Khoản)
-            // [Authorize] đã đảm bảo người dùng đã đăng nhập.
-            // Dùng hàm LayMaTK() của bạn để lấy ID (từ session hoặc từ User.Claims)
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = LayMaTK();
 
             if (maTK == null)
             {
-                // Trường hợp hi hữu nếu LayMaTK() vì lý do nào đó không lấy được
                 return Unauthorized(new { success = false, message = "Lỗi xác thực người dùng." });
             }
 
-            // 2. Kiểm tra tồn kho sản phẩm
             var sanPham = _context.SanPhams.Find(maSP);
             if (sanPham == null)
             {
@@ -114,7 +141,6 @@ namespace Final_Project.Controllers
             int soLuongHienTai = gioHangItem?.SoLuong ?? 0;
             int soLuongMoi = soLuongHienTai + soLuong;
 
-            // Kiểm tra xem số lượng mới có vượt quá tồn kho không
             if (sanPham.SoLuong < soLuongMoi)
             {
                 return Json(new
@@ -124,10 +150,9 @@ namespace Final_Project.Controllers
                 });
             }
 
-            // 3. Logic thêm/cập nhật giỏ hàng (giống code cũ của bạn)
             if (gioHangItem != null)
             {
-                gioHangItem.SoLuong = soLuongMoi; // Cập nhật số lượng mới
+                gioHangItem.SoLuong = soLuongMoi;
                 gioHangItem.NgayThem = DateTime.Now;
                 _context.Update(gioHangItem);
             }
@@ -145,7 +170,6 @@ namespace Final_Project.Controllers
 
             _context.SaveChanges();
 
-            // 4. Cập nhật Session và TRẢ VỀ JSON (thay vì Redirect)
             CapNhatSessionSoLuong(maTK.Value);
 
             int newCartCount = HttpContext.Session.GetInt32("SoLuongGioHang") ?? 0;
@@ -154,12 +178,14 @@ namespace Final_Project.Controllers
             {
                 success = true,
                 message = "Đã thêm sản phẩm vào giỏ hàng!",
-                cartCount = newCartCount // Gửi về số lượng mới cho JS cập nhật
+                cartCount = newCartCount
             });
         }
+
         [HttpPost]
         public IActionResult CapNhatSoLuong(int maSP, int soLuong)
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
@@ -179,6 +205,7 @@ namespace Final_Project.Controllers
         [HttpPost]
         public IActionResult XoaKhoiGio(int maSP)
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
@@ -197,6 +224,7 @@ namespace Final_Project.Controllers
         [HttpPost]
         public IActionResult CapNhatNhieu(List<int> chonSP, Dictionary<int, int> soLuong)
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
@@ -222,6 +250,7 @@ namespace Final_Project.Controllers
         [HttpPost]
         public IActionResult XoaNhieu(List<int> chonSP)
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return RedirectToAction("Login", "Auth");
 
@@ -243,6 +272,7 @@ namespace Final_Project.Controllers
         [HttpGet]
         public IActionResult LayDiaChiMacDinh()
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null) return Json(new { success = false });
 
@@ -265,6 +295,7 @@ namespace Final_Project.Controllers
         [HttpGet]
         public IActionResult LayTatCaDiaChi()
         {
+            // ... (code của bạn giữ nguyên) ...
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
                 return Json(new { success = false, message = "Chưa đăng nhập" });

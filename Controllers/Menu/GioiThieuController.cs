@@ -1,5 +1,7 @@
 ﻿using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Linq; // Đảm bảo bạn đã using System.Linq
 
 namespace Final_Project.Controllers.Menu
 {
@@ -11,8 +13,17 @@ namespace Final_Project.Controllers.Menu
         {
             _context = context;
         }
+
         public IActionResult Index()
         {
+            LoadCommonData();
+
+            return View();
+        }
+
+        private void LoadCommonData()
+        {
+            // Lấy thông tin User
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK != null)
             {
@@ -20,7 +31,13 @@ namespace Final_Project.Controllers.Menu
                 ViewBag.Avatar = taiKhoan?.Avatar;
                 ViewBag.HoTen = taiKhoan?.HoTen;
             }
-            return View();
+
+            // Lấy danh mục
+            var danhMucs = _context.DanhMucs
+                .Include(d => d.SanPhams)
+                .ToList();
+
+            ViewBag.DanhMucs = danhMucs;
         }
     }
 }

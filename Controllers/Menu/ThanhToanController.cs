@@ -60,8 +60,13 @@ namespace Final_Project.Controllers
                 ViewBag.Avatar = taiKhoan?.Avatar ?? "Avatar.jpg";
                 ViewBag.HoTen = taiKhoan?.HoTen ?? "Ẩn danh";
             }
-        }
 
+            var danhMucs = _context.DanhMucs
+                .Include(d => d.SanPhams)
+                .ToList();
+
+            ViewBag.DanhMucs = danhMucs;
+        }
 
         [HttpGet]
         public IActionResult LayDanhSachDiaChi()
