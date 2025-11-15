@@ -1,0 +1,35 @@
+﻿@model Final_Project.Models.Shop.SanPham
+@* File: Views/Shared/_QuickViewPartial.cshtml *@
+
+<div class="quick-view-product">
+    <div class="row">
+        <div class="col-md-5">
+            <img src="@(!string.IsNullOrEmpty(Model.ImageURL) ? Model.ImageURL : "/images/no-image.png")" alt="@Model.TenSP" class="img-fluid" />
+        </div>
+        <div class="col-md-7">
+            <h3>@Model.TenSP</h3>
+
+            <p class="ps-product__price sale" style="font-size: 24px; color: #e53935;">
+                @Model.DonGia.ToString("N0") đ
+            </p>
+
+            <p><strong>Danh mục:</strong> @Model.DanhMuc?.TenDanhMuc</p>
+            <p><strong>Số lượng còn lại:</strong> @Model.SoLuong</p>
+
+            <hr>
+
+            <a href="javascript:void(0);"
+               class="ps-btn add-to-cart-link"
+               data-id="@Model.MaSP"
+               style="width: 100%;">
+                <i class="icon-bag2"></i> Thêm vào giỏ hàng
+            </a>
+
+            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@Model.MaSP"
+               class="ps-btn ps-btn--outline"
+               style="width: 100%; margin-top: 10px;">
+                Xem chi tiết đầy đủ
+            </a>
+        </div>
+    </div>
+</div>

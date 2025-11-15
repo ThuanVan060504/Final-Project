@@ -86,7 +86,7 @@ namespace Final_Project.Controllers
 
             return View(gioHang.ToList());
         }
-        [Authorize] // <--- BẮT BUỘC: Tự động trả về lỗi 401 nếu chưa đăng nhập
+        [Authorize] 
         [HttpPost]
         public IActionResult ThemGioHang(int maSP, int soLuong = 1)
         {

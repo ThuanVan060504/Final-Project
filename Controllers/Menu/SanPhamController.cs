@@ -195,5 +195,25 @@ namespace Final_Project.Controllers.Menu
 
             return View("Index", pagedProducts);
         }
+        // GET: /SanPham/QuickView?id=123
+        [HttpGet]
+        public IActionResult QuickView(int id)
+        {
+            // 1. Tìm sản phẩm (tải kèm DanhMuc để hiển thị)
+            var sanPham = _context.SanPhams
+                                  .Include(sp => sp.DanhMuc)
+                                  .FirstOrDefault(sp => sp.MaSP == id);
+
+            // 2. Nếu không tìm thấy
+            if (sanPham == null)
+            {
+                // Trả về lỗi 404, AJAX sẽ bắt được trong 'error:'
+                return NotFound("<p class='text-danger text-center'>Không tìm thấy sản phẩm.</p>");
+            }
+
+            // 3. Trả về một PartialView (HTML)
+            // QUAN TRỌNG: Tên file PartialView phải khớp với tên bạn sẽ tạo
+            return PartialView("_QuickViewPartial", sanPham);
+        }
     }
 }
