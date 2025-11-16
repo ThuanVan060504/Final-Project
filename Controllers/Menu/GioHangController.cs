@@ -172,9 +172,7 @@ namespace Final_Project.Controllers
 
             CapNhatSessionSoLuong(maTK.Value);
 
-<<<<<<< HEAD
             return RedirectToAction("Index");
-=======
             int newCartCount = HttpContext.Session.GetInt32("SoLuongGioHang") ?? 0;
 
             return Json(new
@@ -183,7 +181,6 @@ namespace Final_Project.Controllers
                 message = "Đã thêm sản phẩm vào giỏ hàng!",
                 cartCount = newCartCount
             });
->>>>>>> c70b9f05ce2c049c7e06eef1551adbd53ae530ac
         }
 
         [HttpPost]

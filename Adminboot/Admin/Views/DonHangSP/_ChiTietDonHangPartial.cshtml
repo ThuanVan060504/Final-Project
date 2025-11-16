@@ -1,0 +1,77 @@
+﻿@model Final_Project.Models.Shop.DonHang
+
+<div class="modal-header">
+    <h5 class="modal-title" id="orderDetailModalLabel">Chi Tiết Đơn Hàng #@Model.MaDonHang</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="modal-body">
+
+    <h6 class="text-primary">Thông Tin Khách Hàng (Người Đặt)</h6>
+    <div class="row border-bottom pb-2 mb-3">
+        <div class="col-md-6">
+            <p class="mb-1"><strong>Họ Tên:</strong> @Model.TaiKhoan.HoTen</p>
+            <p class="mb-1"><strong>Email:</strong> @Model.TaiKhoan.Email</p>
+        </div>
+        <div class="col-md-6">
+            <p class="mb-1"><strong>Điện Thoại:</strong> @Model.TaiKhoan.SDT</p>
+            <p class="mb-1"><strong>Người Nhận:</strong> @Model.DiaChiNguoiDung.TenNguoiNhan</p>
+            <p class="mb-1"><strong>SĐT Nhận:</strong> @Model.DiaChiNguoiDung.SoDienThoai</p>
+            <p class="mb-1">
+                <strong>Địa Chỉ Giao Hàng:</strong>
+                @Model.DiaChiNguoiDung.DiaChiChiTiet,
+                @Model.DiaChiNguoiDung.PhuongXa,
+                @Model.DiaChiNguoiDung.QuanHuyen,
+                @Model.DiaChiNguoiDung.TinhTP
+            </p>
+        </div>
+    </div>
+
+    <h6 class="text-primary">Chi Tiết Đơn Hàng</h6>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="mb-1"><strong>Mã Đơn:</strong> @Model.MaDonHang</p>
+            <p class="mb-1"><strong>Ngày Đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+        </div>
+        <div class="col-md-6">
+            <p class="mb-1"><strong>Phương Thức TT:</strong> @Model.PhuongThucThanhToan</p>
+            <p class="mb-1"><strong>Trạng Thái:</strong> @Model.TrangThaiDonHang</p>
+        </div>
+    </div>
+
+    <h6 class="text-primary mt-3">Sản Phẩm Đã Đặt</h6>
+    <div class="table-responsive">
+        <table class="table table-sm table-bordered">
+            <thead>
+                <tr>
+                    <th>Sản Phẩm</th>
+                    <th>Số Lượng</th>
+                    <th>Đơn Giá Bán</th>
+                    <th>Thành Tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.ChiTietDonHangs)
+                {
+                    <tr>
+                        <td>@item.SanPham.TenSP</td>
+                        <td>@item.SoLuong</td>
+                        <td>@item.DonGia.ToString("N0") ₫</td>
+                        <td>@((item.SoLuong * item.DonGia).ToString("N0")) ₫</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Tổng Cộng:</strong></td>
+                    <td><strong>@Model.TongTien.ToString("N0") ₫</strong></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
+</div>
