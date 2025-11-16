@@ -77,28 +77,33 @@ namespace Final_Project.Controllers
 
         public IActionResult Index()
         {
-            // ✅ BƯỚC 1: Gọi hàm LoadCommonData()
             LoadCommonData();
-            
-            // Lấy MaTK cho logic của riêng trang giỏ hàng
+
             int? maTK = LayMaTK();
             if (maTK == null)
             {
                 return RedirectToAction("Login", "Auth");
             }
 
-            // (Code lấy Avatar/HoTen đã được chuyển vào LoadCommonData())
-
             var now = DateTime.Now;
 
+            var activeFlashSales = _context.ChiTietFlashSale
+                .Include(ct => ct.DotFlashSale) // Join với bảng DotFlashSale để kiểm tra thời gian
+                .Where(ct =>
+                    ct.DotFlashSale.IsActive == true && // Đợt sale phải active
+                    now >= ct.DotFlashSale.ThoiGianBatDau && // Và đang diễn ra
+                    now <= ct.DotFlashSale.ThoiGianKetThuc
+                );
+
+            // 2. Thực hiện truy vấn giỏ hàng
             var gioHang = _context.GioHangs
                 .Where(g => g.MaTK == maTK)
                 .Join(_context.SanPhams,
-                    gh => gh.MaSP,
-                    sp => sp.MaSP,
-                    (gh, sp) => new { gh, sp })
-                .GroupJoin(
-                    _context.FlashSales.Where(fs => fs.ThoiGianKetThuc > now),
+                      gh => gh.MaSP,
+                      sp => sp.MaSP,
+                      (gh, sp) => new { gh, sp })
+                .GroupJoin( 
+                    activeFlashSales, 
                     x => x.sp.MaSP,
                     fs => fs.MaSP,
                     (x, flashSales) => new { x.gh, x.sp, flashSale = flashSales.FirstOrDefault() })
@@ -107,14 +112,15 @@ namespace Final_Project.Controllers
                     MaSP = result.sp.MaSP,
                     TenSP = result.sp.TenSP,
                     SoLuong = result.gh.SoLuong,
-                    DonGia = result.sp.DonGia, 
+
+                    DonGia = (result.flashSale != null) ? result.flashSale.GiaSauGiam : result.sp.DonGia,
+
                     ImageURL = result.sp.ImageURL
+
                 }).ToList();
 
-
-            return View(gioHang); // Bỏ .ToList() thừa
+            return View(gioHang);
         }
-        
         // --- CÁC ACTION KHÁC (Không cần LoadCommonData vì trả về JSON/Redirect) ---
 
         [Authorize]
@@ -172,9 +178,7 @@ namespace Final_Project.Controllers
 
             CapNhatSessionSoLuong(maTK.Value);
 
-<<<<<<< HEAD
             return RedirectToAction("Index");
-=======
             int newCartCount = HttpContext.Session.GetInt32("SoLuongGioHang") ?? 0;
 
             return Json(new
@@ -183,7 +187,6 @@ namespace Final_Project.Controllers
                 message = "Đã thêm sản phẩm vào giỏ hàng!",
                 cartCount = newCartCount
             });
->>>>>>> c70b9f05ce2c049c7e06eef1551adbd53ae530ac
         }
 
         [HttpPost]

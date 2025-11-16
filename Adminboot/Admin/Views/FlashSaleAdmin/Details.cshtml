@@ -1,0 +1,214 @@
+﻿@model Final_Project.Models.ViewModels.FlashSaleManageViewModel
+@{
+    ViewData["Title"] = "Quản lý sản phẩm cho Sale";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml"; // <-- SỬA LẠI LAYOUT
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/plugins/select2/css/select2.min.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Quản lý sản phẩm: @Model.EventDetails.TenDot</h4>
+                <h6>@Model.EventDetails.ThoiGianBatDau.ToString("g") - @Model.EventDetails.ThoiGianKetThuc.ToString("g")</h6>
+            </div>
+            <div class="page-btn">
+                <a href="@Url.Action("Index", "FlashSaleAdmin", new { area = "Admin" })" class="btn btn-secondary">
+                    Quay lại danh sách
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Thêm Sản Phẩm Vào Đợt Sale</h6>
+            </div>
+            <div class="card-body">
+                <form asp-action="AddProductToSale" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="AddProductForm.MaDot" />
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label asp-for="AddProductForm.MaSP" class="control-label"></label>
+                                <select asp-for="AddProductForm.MaSP" class="form-control select" asp-items="Model.SanPhamList" id="productSelect">
+                                    <option value="">-- Chọn sản phẩm --</option>
+                                </select>
+                                <span asp-validation-for="AddProductForm.MaSP" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Giá gốc</label>
+                                <input type="text" class="form-control" id="giaGoc" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="AddProductForm.PhanTramGiam" class="control-label"></label>
+                                <input asp-for="AddProductForm.PhanTramGiam" class="form-control" type="number" id="phanTramGiam" />
+                                <span asp-validation-for="AddProductForm.PhanTramGiam" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label>Giá sau giảm</label>
+                                <input type="text" class="form-control" id="giaSauGiam" readonly />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label asp-for="AddProductForm.SoLuongGiamGia" class="control-label"></label>
+                                <input asp-for="AddProductForm.SoLuongGiamGia" class="form-control" type="number" />
+                                <span asp-validation-for="AddProductForm.SoLuongGiamGia" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-2">
+                        <input type="submit" value="Thêm Sản Phẩm" class="btn btn-primary" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0 font-weight-bold text-primary">Danh Sách Sản Phẩm Đang Sale</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Sản phẩm</th>
+                                <th>Giá gốc</th>
+                                <th>% Giảm</th>
+                                <th>Giá sau giảm</th>
+                                <th>SL Sale</th>
+                                <th>Đã bán</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ProductsInSale)
+                            {
+                                <tr>
+                                    <td>
+                                        <a class="product-img">
+                                            <img src="@(item.ImageURL ?? "/images/no-image.png")" alt="@item.TenSP" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;" />
+                                        </a>
+                                        @item.TenSP
+                                    </td>
+                                    <td>@item.GiaGoc.ToString("N0") đ</td>
+                                    <td>@item.PhanTramGiam %</td>
+                                    <td>@item.GiaSauGiam.ToString("N0") đ</td>
+                                    <td>@item.SoLuongGiamGia</td>
+                                    <td>@item.SoLuongDaBan</td>
+                                    <td>
+                                        <form asp-action="RemoveProductFromSale" asp-route-id="@item.MaChiTiet" method="post" onsubmit="return confirm('Bạn có chắc muốn XÓA sản phẩm này khỏi đợt sale?');">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger-light btn-sm" title="Xóa">
+                                                <i class="fa fa-trash me-1"></i> Xóa
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/select2/js/select2.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Tự động ẩn thông báo TempData sau 3 giây
+        setTimeout(function() {
+            $('.alert-success, .alert-danger').fadeOut('slow');
+        }, 3000);
+
+        var giaGoc = 0;
+
+        // 1. Khi chọn sản phẩm
+        $("#productSelect").change(function () {
+            var maSP = $(this).val();
+            if (maSP) {
+                // Gọi AJAX để lấy giá gốc
+                $.ajax({
+                    url: '@Url.Action("GetProductPrice", "FlashSaleAdmin")',
+                    type: 'GET',
+                    data: { maSP: maSP },
+                    success: function (response) {
+                        giaGoc = response.donGia;
+                        $("#giaGoc").val(formatCurrency(giaGoc));
+                        tinhGiaSauGiam(); // Tính lại giá sau giảm
+                    },
+                    error: function () {
+                        alert("Lỗi khi tải giá sản phẩm.");
+                        $("#giaGoc").val("");
+                        giaGoc = 0;
+                    }
+                });
+            } else {
+                $("#giaGoc").val("");
+                $("#giaSauGiam").val("");
+                giaGoc = 0;
+            }
+        });
+
+        // 2. Khi nhập % giảm
+        $("#phanTramGiam").on('input', function () {
+            tinhGiaSauGiam();
+        });
+
+        // 3. Hàm tính toán
+        function tinhGiaSauGiam() {
+            var phanTram = parseInt($("#phanTramGiam").val());
+            if (giaGoc > 0 && phanTram > 0 && phanTram < 100) {
+                var giaMoi = giaGoc * (1 - (phanTram / 100.0));
+                $("#giaSauGiam").val(formatCurrency(giaMoi));
+            } else {
+                $("#giaSauGiam").val("");
+            }
+        }
+
+        // 4. Hàm định dạng tiền tệ
+        function formatCurrency(number) {
+            // Định dạng số về dạng tiền tệ VND, không có số lẻ
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(number);
+        }
+    });
+</script>   

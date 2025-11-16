@@ -55,10 +55,10 @@
                                     
                                     <td>
                                         <select class="form-select form-control status-dropdown" data-id="@item.MaDonHang">
-                                            <option value="DangXuLy" @(item.TrangThaiDonHang == "DangXuLy" ? "selected" : "")>Đang xử lý</option>
-                                            <option value="DangGiao" @(item.TrangThaiDonHang == "DangGiao" ? "selected" : "")>Đang giao</option>
-                                            <option value="DaGiao" @(item.TrangThaiDonHang == "DaGiao" ? "selected" : "")>Đã giao</option>
-                                            <option value="HuyDon" @(item.TrangThaiDonHang == "HuyDon" ? "selected" : "")>Hủy đơn</option>
+                                            <option value="DangXuLy" selected="@(item.TrangThaiDonHang == "DangXuLy")">Đang xử lý</option>
+                                            <option value="DangGiao" selected="@(item.TrangThaiDonHang == "DangGiao")">Đang giao</option>
+                                            <option value="DaGiao" selected="@(item.TrangThaiDonHang == "DaGiao")">Đã giao</option>
+                                            <option value="HuyDon" selected="@(item.TrangThaiDonHang == "HuyDon")">Hủy đơn</option>
                                         </select>
                                     </td>
 

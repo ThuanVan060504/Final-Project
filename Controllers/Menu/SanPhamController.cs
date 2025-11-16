@@ -1,6 +1,10 @@
 ﻿using Final_Project.Models.Shop;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace Final_Project.Controllers.Menu
 {
@@ -30,7 +34,7 @@ namespace Final_Project.Controllers.Menu
                 .ToList();
         }
 
-        public IActionResult Index(string category, string search, string sort, int page = 1)
+        public async Task<IActionResult> Index(string category, string search, string sort, int page = 1)
         {
             LoadCommonData(); // gọi hàm chung
 
@@ -40,19 +44,15 @@ namespace Final_Project.Controllers.Menu
                 .Include(p => p.DanhMuc)
                 .AsQueryable();
 
-            // Lọc theo danh mục
+            // (Code lọc, tìm kiếm, sắp xếp... giữ nguyên)
             if (!string.IsNullOrEmpty(category))
             {
                 products = products.Where(p => p.DanhMuc.TenDanhMuc == category);
             }
-
-            // Tìm kiếm theo tên
             if (!string.IsNullOrEmpty(search))
             {
                 products = products.Where(p => p.TenSP.Contains(search));
             }
-
-            // Sắp xếp
             switch (sort)
             {
                 case "asc":
@@ -66,20 +66,37 @@ namespace Final_Project.Controllers.Menu
                     break;
             }
 
-            // Phân trang
-            int totalItems = products.Count();
+            int totalItems = await products.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var pagedProducts = products
+            var pagedProducts = await products
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
-            // Số lượng đã bán
-            var soldQuantities = _context.ChiTietDonHangs
-                .GroupBy(ct => ct.MaSP)
+            // ======================================================
+            // ✅ SỬA LỖI Ở ĐÂY: Lọc MaSP != null và dùng g.Key.Value
+            // ======================================================
+            var soldQuantities = await _context.ChiTietDonHangs
+                .Where(ct => ct.MaSP.HasValue) // Lọc bỏ các chi tiết đơn hàng không có MaSP
+                .GroupBy(ct => ct.MaSP.Value) // Group theo MaSP (int)
                 .Select(g => new { MaSP = g.Key, SoLuongDaBan = g.Sum(ct => ct.SoLuong) })
-                .ToDictionary(x => x.MaSP, x => x.SoLuongDaBan);
+                .ToDictionaryAsync(x => x.MaSP, x => x.SoLuongDaBan);
+
+            // ======================================================
+
+            // ✅ SỬA LỖI: Thêm code truy vấn Flash Sale
+            var now = DateTime.Now;
+            var activeFlashSales = await _context.ChiTietFlashSale
+                .Include(ct => ct.DotFlashSale)
+                .Where(ct =>
+                    ct.DotFlashSale.IsActive == true &&
+                    now >= ct.DotFlashSale.ThoiGianBatDau &&
+                    now <= ct.DotFlashSale.ThoiGianKetThuc
+                )
+                .ToDictionaryAsync(ct => ct.MaSP, ct => ct);
+
+            ViewBag.ActiveFlashSales = activeFlashSales;
 
             ViewBag.SoLuongDaBan = soldQuantities;
             ViewBag.CurrentPage = page;
@@ -88,25 +105,31 @@ namespace Final_Project.Controllers.Menu
             return View(pagedProducts);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
             LoadCommonData();
 
-            var sp = _context.SanPhams
+            var sp = await _context.SanPhams
                 .Include(s => s.DanhMuc)
-                .FirstOrDefault(s => s.MaSP == id);
+                .FirstOrDefaultAsync(s => s.MaSP == id);
 
             if (sp == null) return NotFound();
 
-            // FlashSale
-            var flashSale = _context.FlashSales
-                .Include(f => f.SanPham)
-                .FirstOrDefault(f => f.MaSP == id && f.ThoiGianKetThuc > DateTime.Now);
+            // FlashSale (Code này đã đúng từ trước)
+            var now = DateTime.Now;
+            var chiTietSale = await _context.ChiTietFlashSale
+                .Include(ct => ct.DotFlashSale)
+                .FirstOrDefaultAsync(ct =>
+                    ct.MaSP == id &&
+                    ct.DotFlashSale.IsActive == true &&
+                    now >= ct.DotFlashSale.ThoiGianBatDau &&
+                    now <= ct.DotFlashSale.ThoiGianKetThuc
+                );
 
-            if (flashSale != null)
+            if (chiTietSale != null)
             {
-                ViewBag.FlashSale = flashSale;
-                ViewBag.GiaSauGiam = flashSale.GiaKhuyenMai;
+                ViewBag.FlashSale = chiTietSale;
+                ViewBag.GiaSauGiam = chiTietSale.GiaSauGiam;
             }
             else
             {
@@ -114,20 +137,33 @@ namespace Final_Project.Controllers.Menu
             }
 
             // Sản phẩm tương tự
-            var tuongTu = _context.SanPhams
-                .Where(s => s.DanhMuc == sp.DanhMuc && s.MaSP != sp.MaSP)
+            var tuongTu = await _context.SanPhams
+                .Where(s => s.MaDanhMuc == sp.MaDanhMuc && s.MaSP != sp.MaSP)
                 .Take(4)
-                .ToList();
+                .ToListAsync();
 
             // Đánh giá
-            var danhGiaList = _context.DanhGias
+            var danhGiaList = await _context.DanhGias
                 .Where(d => d.SanPhamId == id)
                 .OrderByDescending(d => d.ThoiGian)
-                .ToList();
+                .ToListAsync();
 
             double diemTrungBinh = danhGiaList.Any()
                 ? Math.Round(danhGiaList.Average(d => d.Diem), 1)
                 : 0;
+
+            // ======================================================
+            // ✅ SỬA LỖI Ở ĐÂY: Lọc MaSP != null và dùng g.Key.Value
+            // ======================================================
+            var soldQuantities = await _context.ChiTietDonHangs
+                .Where(ct => ct.MaSP.HasValue) // Lọc bỏ các chi tiết đơn hàng không có MaSP
+                .GroupBy(ct => ct.MaSP.Value) // Group theo MaSP (int)
+                .Select(g => new { MaSP = g.Key, SoLuongDaBan = g.Sum(ct => ct.SoLuong) })
+                .ToDictionaryAsync(x => x.MaSP, x => x.SoLuongDaBan);
+
+            ViewBag.SoLuongDaBan = soldQuantities;
+            // ======================================================
+
 
             ViewBag.DiemTrungBinh = diemTrungBinh;
             ViewBag.SanPhamTuongTu = tuongTu;
@@ -137,29 +173,32 @@ namespace Final_Project.Controllers.Menu
         }
 
         [HttpPost]
-        public IActionResult GuiDanhGia(int SanPhamId, int Diem, string BinhLuan)
+        public async Task<IActionResult> GuiDanhGia(int SanPhamId, int Diem, string BinhLuan)
         {
             if (!User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Login", "TaiKhoan");
+                // Sửa: Dùng Auth Controller (theo file GioHangController)
+                return RedirectToAction("Login", "Auth");
             }
+
+            var tenNguoiDung = User.Claims.FirstOrDefault(c => c.Type == "HoTen")?.Value ?? User.Identity.Name ?? "Ẩn danh";
 
             var danhGia = new DanhGia
             {
                 SanPhamId = SanPhamId,
-                TenNguoiDung = User.Identity.Name,
+                TenNguoiDung = tenNguoiDung,
                 Diem = Diem,
                 BinhLuan = BinhLuan,
                 ThoiGian = DateTime.Now
             };
 
             _context.DanhGias.Add(danhGia);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", new { id = SanPhamId });
         }
 
-        public IActionResult Search(string keyword, int page = 1)
+        public async Task<IActionResult> Search(string keyword, int page = 1)
         {
             LoadCommonData();
 
@@ -175,18 +214,38 @@ namespace Final_Project.Controllers.Menu
                 .Where(p => p.TenSP.Contains(keyword))
                 .OrderBy(p => p.MaSP);
 
-            int totalItems = products.Count();
+            int totalItems = await products.CountAsync();
             int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
-            var pagedProducts = products
+            var pagedProducts = await products
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
-            var soldQuantities = _context.ChiTietDonHangs
-                .GroupBy(ct => ct.MaSP)
+            // ======================================================
+            // ✅ SỬA LỖI Ở ĐÂY: Lọc MaSP != null và dùng g.Key.Value
+            // ======================================================
+            var soldQuantities = await _context.ChiTietDonHangs
+                .Where(ct => ct.MaSP.HasValue) // Lọc bỏ các chi tiết đơn hàng không có MaSP
+                .GroupBy(ct => ct.MaSP.Value) // Group theo MaSP (int)
                 .Select(g => new { MaSP = g.Key, SoLuongDaBan = g.Sum(ct => ct.SoLuong) })
-                .ToDictionary(x => x.MaSP, x => x.SoLuongDaBan);
+                .ToDictionaryAsync(x => x.MaSP, x => x.SoLuongDaBan);
+
+            // ======================================================
+
+            // ✅ SỬA LỖI: Thêm code truy vấn Flash Sale cho trang Search
+            var now = DateTime.Now;
+            var activeFlashSales = await _context.ChiTietFlashSale
+                .Include(ct => ct.DotFlashSale)
+                .Where(ct =>
+                    ct.DotFlashSale.IsActive == true &&
+                    now >= ct.DotFlashSale.ThoiGianBatDau &&
+                    now <= ct.DotFlashSale.ThoiGianKetThuc
+                )
+                .ToDictionaryAsync(ct => ct.MaSP, ct => ct);
+
+            ViewBag.ActiveFlashSales = activeFlashSales;
+            // ======================================================
 
             ViewBag.SoLuongDaBan = soldQuantities;
             ViewBag.CurrentPage = page;
@@ -195,24 +254,36 @@ namespace Final_Project.Controllers.Menu
 
             return View("Index", pagedProducts);
         }
-        // GET: /SanPham/QuickView?id=123
-        [HttpGet]
-        public IActionResult QuickView(int id)
-        {
-            // 1. Tìm sản phẩm (tải kèm DanhMuc để hiển thị)
-            var sanPham = _context.SanPhams
-                                  .Include(sp => sp.DanhMuc)
-                                  .FirstOrDefault(sp => sp.MaSP == id);
 
-            // 2. Nếu không tìm thấy
+        [HttpGet]
+        public async Task<IActionResult> QuickView(int id)
+        {
+            var sanPham = await _context.SanPhams
+                                  .Include(sp => sp.DanhMuc)
+                                  .FirstOrDefaultAsync(sp => sp.MaSP == id);
+
             if (sanPham == null)
             {
-                // Trả về lỗi 404, AJAX sẽ bắt được trong 'error:'
                 return NotFound("<p class='text-danger text-center'>Không tìm thấy sản phẩm.</p>");
             }
 
-            // 3. Trả về một PartialView (HTML)
-            // QUAN TRỌNG: Tên file PartialView phải khớp với tên bạn sẽ tạo
+            // ✅ SỬA LỖI: Thêm code kiểm tra Flash Sale cho QuickView
+            var now = DateTime.Now;
+            var chiTietSale = await _context.ChiTietFlashSale
+                .Include(ct => ct.DotFlashSale)
+                .FirstOrDefaultAsync(ct =>
+                    ct.MaSP == id &&
+                    ct.DotFlashSale.IsActive == true &&
+                    now >= ct.DotFlashSale.ThoiGianBatDau &&
+                    now <= ct.DotFlashSale.ThoiGianKetThuc
+                );
+
+            if (chiTietSale != null)
+            {
+                ViewBag.FlashSale = chiTietSale;
+                ViewBag.GiaSauGiam = chiTietSale.GiaSauGiam;
+            }
+
             return PartialView("_QuickViewPartial", sanPham);
         }
     }
