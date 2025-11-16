@@ -535,7 +535,7 @@ namespace Final_Project.Controllers
                 TongTien = tongTien,         // <-- Tổng cuối cùng
                 GiamGia = discountAmount, // <-- Lưu giảm giá
                 PhuongThucThanhToan = "Ví MOMO",
-                TrangThaiThanhToan = "ChuaThanhToan",
+                TrangThaiThanhToan = "DaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 MaVoucherID = (maVoucherID > 0) ? maVoucherID : (int?)null
             };
@@ -657,7 +657,7 @@ namespace Final_Project.Controllers
                 TongTien = tongTien,
                 GiamGia = discountAmount,
                 PhuongThucThanhToan = "Ví VNPAY",
-                TrangThaiThanhToan = "ChuaThanhToan",
+                TrangThaiThanhToan = "DaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 MaVoucherID = (maVoucherID > 0) ? maVoucherID : (int?)null
             };
@@ -774,7 +774,7 @@ namespace Final_Project.Controllers
                 TongTien = tongTien,
                 GiamGia = discountAmount,
                 PhuongThucThanhToan = "PayPal",
-                TrangThaiThanhToan = "ChuaThanhToan",
+                TrangThaiThanhToan = "DaThanhToan",
                 TrangThaiDonHang = "DangXuLy",
                 MaVoucherID = (maVoucherID > 0) ? maVoucherID : (int?)null
             };

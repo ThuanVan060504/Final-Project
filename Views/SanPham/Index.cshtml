@@ -8,7 +8,7 @@
 
 <link rel="stylesheet" href="~/css/sanpham.css">
 <div class="container mt-5">
-    <h2 class="fw-bold mb-4 text-center">🛒 Tất cả sản phẩm</h2>
+    <h2 class="fw-bold mb-4 text-center">Tất cả sản phẩm</h2>
     @if (ViewBag.Keyword != null)
     {
         <h4>Kết quả tìm kiếm cho: "<span class="text-danger">@ViewBag.Keyword</span>"</h4>
@@ -16,7 +16,7 @@
         @if (!Model.Any())
         {
             <div class="alert alert-warning text-center">
-                😥 Không tìm thấy sản phẩm nào phù hợp với từ khóa "<strong>@ViewBag.Keyword</strong>"
+                Không tìm thấy sản phẩm nào phù hợp với từ khóa "<strong>@ViewBag.Keyword</strong>"
             </div>
         }
     }
@@ -25,7 +25,7 @@
         <!-- 🔍 Sidebar -->
         <div class="col-md-3 mb-4">
             <form method="get" asp-action="Index" class="card shadow-sm p-3">
-                <h5 class="fw-semibold mb-3">🎯 Bộ lọc</h5>
+                <h5 class="fw-semibold mb-3">Bộ lọc</h5>
 
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Danh mục</label>
@@ -69,7 +69,7 @@
             @if (!Model.Any())
             {
                 <div class="alert alert-warning text-center">
-                    😥 Xin lỗi, chúng tôi hiện không có sản phẩm bạn yêu cầu.
+                    Xin lỗi, chúng tôi hiện không có sản phẩm bạn yêu cầu.
                 </div>
             }
             else

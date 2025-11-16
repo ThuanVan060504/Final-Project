@@ -70,7 +70,7 @@
                         <input type="number" id="soLuong" name="soLuong" class="form-control product-detail__qty-input" value="1" min="1" max="@soLuongTon" />
                         <button class="product-detail__qty-btn" type="button" onclick="thayDoiSoLuong(1)">+</button>
                     </div>
-                    <button type="submit" class="product-detail__addcart-btn">🛒 Thêm vào giỏ hàng</button>
+                    <button type="submit" class="product-detail__addcart-btn">Thêm vào giỏ hàng</button>
                 </form>
             }
 
@@ -86,68 +86,14 @@
                 }
             </script>
 
-            <div class="mt-5 payment-accordion">
-                <h5 class="fw-bold mb-3">Phương thức thanh toán hỗ trợ:</h5>
-                <div class="accordion" id="paymentAccordion">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingVisa">
-                            <button class="accordion-button collapsed text-danger fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseVisa" aria-expanded="false" aria-controls="collapseVisa">
-                                💳 Visa / MasterCard
-                            </button>
-                        </h2>
-                        <div id="collapseVisa" class="accordion-collapse collapse" aria-labelledby="headingVisa" data-bs-parent="#paymentAccordion">
-                            <div class="accordion-body border-top border-danger">
-                                Nhập thông tin thẻ Visa/MasterCard tại trang thanh toán. Hệ thống sẽ xử lý an toàn qua cổng thanh toán quốc tế.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingMomo">
-                            <button class="accordion-button collapsed text-success fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseMomo" aria-expanded="false" aria-controls="collapseMomo">
-                                📱 Momo / ZaloPay
-                            </button>
-                        </h2>
-                        <div id="collapseMomo" class="accordion-collapse collapse" aria-labelledby="headingMomo" data-bs-parent="#paymentAccordion">
-                            <div class="accordion-body border-top border-success">
-                                Quét mã QR hoặc nhập số điện thoại: <strong>09xx xxx xxx</strong> trong app Momo/ZaloPay để hoàn tất thanh toán.
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingBank">
-                            <button class="accordion-button collapsed text-primary fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseBank" aria-expanded="false" aria-controls="collapseBank">
-                                🏦 Chuyển khoản
-                            </button>
-                        </h2>
-                        <div id="collapseBank" class="accordion-collapse collapse" aria-labelledby="headingBank" data-bs-parent="#paymentAccordion">
-                            <div class="accordion-body border-top border-primary">
-                                Chuyển khoản đến STK: <strong>123456789</strong><br />
-                                Ngân hàng: <strong>Vietcombank</strong><br />
-                                Nội dung: <code>Thanh toán đơn hàng [mã]</code>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="headingCOD">
-                            <button class="accordion-button collapsed text-dark fs-5" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCOD" aria-expanded="false" aria-controls="collapseCOD">
-                                📦 Thanh toán khi nhận
-                            </button>
-                        </h2>
-                        <div id="collapseCOD" class="accordion-collapse collapse" aria-labelledby="headingCOD" data-bs-parent="#paymentAccordion">
-                            <div class="accordion-body border-top border-secondary">
-                                Thanh toán trực tiếp khi nhận hàng. Vui lòng chuẩn bị đủ tiền mặt và kiểm tra hàng hóa trước khi thanh toán.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 
     <!-- Giới thiệu chi tiết sản phẩm -->
     <div class="row mt-5">
         <div class="col-12">
-            <h4 class="product-detail__full-description fs-3 fw-bold">📌 Giới thiệu chi tiết sản phẩm</h4>
+            
             <p class="product-detail__full-description">@Model.ChiTiet</p>
         </div>
     </div>
@@ -178,7 +124,7 @@
 
 <hr />
 
-<h4 class="text-dark mt-5">📝 Viết đánh giá</h4>
+<h4 class="text-dark mt-5">Viết đánh giá</h4>
 
 @if (!User.Identity.IsAuthenticated)
 {
@@ -197,7 +143,7 @@ else
 
         <div class="mb-3">
             <label class="form-label">Tên của bạn</label>
-            <p class="text-muted">👤 <strong>@tenNguoiDung</strong></p>
+            <p class="text-muted"> <strong>@tenNguoiDung</strong></p>
         </div>
 
         <div class="mb-3">
@@ -225,7 +171,7 @@ else
     </form>
 }
 
-<h4 class="mt-5 mb-3">📢 Đánh giá từ người dùng:</h4>
+<h4 class="mt-5 mb-3">Đánh giá từ người dùng:</h4>
 
 @if (ViewBag.DanhGiaList != null && ViewBag.DanhGiaList.Count > 0)
 {
@@ -363,6 +309,7 @@ input#soLuong {
     transition: all 0.3s ease;
     box-shadow: 0 3px 8px var(--shadow-light);
     cursor: pointer;
+    color: white;
 }
 .row.align-items-center {
     margin-top: 7%;

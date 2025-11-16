@@ -24,7 +24,7 @@ namespace Final_Project.Controllers
             _context = context;
             _emailService = emailService;
         }
-        [Authorize]
+       
         // GET: /Auth/Login
         [HttpGet("Auth/Login")]
         public IActionResult Login()

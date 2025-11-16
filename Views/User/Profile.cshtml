@@ -6,7 +6,7 @@
     var yeuThichList = ViewBag.SanPhamYeuThich as List<SanPham> ?? new List<SanPham>();
     var myVouchers = ViewBag.MyVouchers as List<Voucher> ?? new List<Voucher>();
 }
-}
+
 
 <link rel="stylesheet" href="~/css/canhan.css">
 
@@ -162,18 +162,18 @@
     <div class="row">
         <div class="col-md-3">
             <ul class="sidebar-menu">
-                <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
-                <li onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
-                <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
-                <li onclick="showSection('favoritesSection', this)">❤️ Sản phẩm yêu thích</li>
-                <li onclick="showSection('vouchersSection', this)">🎁 Voucher của tôi</li>
-                <li onclick="showSection('changePasswordSection', this)">🔐 Đổi mật khẩu</li>
+                <li class="active" onclick="showSection('profileSection', this)">Thông tin cá nhân</li>
+                <li onclick="showSection('historySection', this)">Lịch sử mua hàng</li>
+                <li onclick="showSection('addressSection', this)">Địa chỉ đặt hàng</li>
+                <li onclick="showSection('favoritesSection', this)">Sản phẩm yêu thích</li>
+                <li onclick="showSection('vouchersSection', this)">Voucher của tôi</li>
+                <li onclick="showSection('changePasswordSection', this)">Đổi mật khẩu</li>
             </ul>
         </div>
 
         <div class="col-md-9">
             <div id="profileSection" class="content-section active">
-                <h4 class="mb-3 text-success">👤 Thông tin tài khoản</h4>
+                <h4 class="mb-3 text-success">Thông tin tài khoản</h4>
                 <div class="text-center mb-4">
                     <img src="@(string.IsNullOrEmpty(taiKhoan?.Avatar) ? "/images/default-avatar.png" : taiKhoan.Avatar)"
                          alt="Avatar"
@@ -184,7 +184,7 @@
                 <form asp-action="UploadAvatar" asp-controller="User" method="post" enctype="multipart/form-data" class="text-center mb-4">
                     <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
                     <input type="file" name="avatarFile" class="form-control w-50 d-inline-block mb-2" accept="image/*" required />
-                    <button type="submit" class="btn btn-outline-primary btn-sm">📤 Đổi ảnh đại diện</button>
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Đổi ảnh đại diện</button>
                 </form>
 
                 <div id="viewInfo">
@@ -211,7 +211,7 @@
                             <label class="form-label">Số điện thoại</label>
                             <input type="text" name="SDT" class="form-control" value="@taiKhoan?.SDT" required />
                         </div>
-                        <button type="submit" class="btn btn-success">💾 Lưu</button>
+                        <button type="submit" class="btn btn-success">Lưu</button>
                         <button type="button" class="btn btn-secondary ms-2" onclick="toggleEdit(false)">❌ Hủy</button>
                     </form>
                 </div>
@@ -219,7 +219,7 @@
 
 
             <div id="historySection" class="content-section">
-                <h4 class="mb-3 text-primary">🛒 Lịch sử mua hàng</h4>
+                <h4 class="mb-3 text-primary">Lịch sử mua hàng</h4>
                 @if (donHangs != null && donHangs.Count > 0)
                 {
                     foreach (var don in donHangs)
@@ -320,7 +320,7 @@
                                 {
                                     <form asp-controller="DonHang" asp-action="HuyDon" method="post" onsubmit="return confirm('Bạn có chắc muốn hủy đơn hàng này không?');">
                                         <input type="hidden" name="maDonHang" value="@don.MaDonHang" />
-                                        <button type="submit" class="btn btn-outline-danger mt-2">❌ Hủy đơn hàng</button>
+                                        <button type="submit" class="btn btn-outline-danger mt-2">Hủy đơn hàng</button>
                                     </form>
                                 }
 
@@ -335,7 +335,7 @@
             </div>
 
             <div id="addressSection" class="content-section">
-                <h4 class="mb-3 text-warning">📍 Địa chỉ đặt hàng</h4>
+                <h4 class="mb-3 text-warning">Địa chỉ đặt hàng</h4>
 
                 @if (taiKhoan != null && taiKhoan.DiaChiNguoiDungs != null && taiKhoan.DiaChiNguoiDungs.Count > 0)
                 {
@@ -375,7 +375,7 @@
                     <p class="text-muted">Bạn chưa có địa chỉ nào.</p>
                 }
 
-                <button class="btn btn-outline-warning" type="button" onclick="toggleNewAddress()">➕ Thêm địa chỉ mới</button>
+                <button class="btn btn-outline-warning" type="button" onclick="toggleNewAddress()">Thêm địa chỉ mới</button>
                 <hr />
 
                 <div id="editAddressModalBackdrop" onclick="toggleEditAddress()"></div>
@@ -452,7 +452,7 @@
             </div>
 
             <div id="favoritesSection" class="content-section">
-                <h4 class="mb-3 fw-bold">❤️ Danh sách yêu thích</h4>
+                <h4 class="mb-3 fw-bold">Danh sách yêu thích</h4>
 
                 @if (yeuThichList == null || !yeuThichList.Any())
                 {
@@ -478,7 +478,7 @@
 
                                             <form asp-controller="YeuThich" asp-action="BoYeuThich" method="post" style="margin: 0;">
                                                 <input type="hidden" name="maSP" value="@sp.MaSP" />
-                                                <button type="submit" class="custom-btn red">💔 Bỏ yêu thích</button>
+                                                <button type="submit" class="custom-btn red">Bỏ yêu thích</button>
                                             </form>
                                         </div>
                                     </div>
@@ -490,7 +490,7 @@
             </div>
 
             <div id="changePasswordSection" class="content-section" style="display: none;">
-                <h4 class="mb-3 fw-bold text-orange">🔐 Đổi mật khẩu</h4>
+                <h4 class="mb-3 fw-bold text-orange">Đổi mật khẩu</h4>
 
                 <form asp-controller="User" asp-action="DoiMatKhau" method="post" class="password-form">
                     <div class="form-group mb-3">
@@ -514,7 +514,7 @@
                 }
             </div>
             <div id="vouchersSection" class="content-section" style="display: none;">
-                <h4 class="mb-3 fw-bold text-orange">🎁 Voucher của tôi</h4>
+                <h4 class="mb-3 fw-bold text-orange">Voucher của tôi</h4>
 
                 @if (!myVouchers.Any())
                 {

@@ -117,8 +117,8 @@ h2:hover {
     text-align: center;
     vertical-align: middle;
 }
-.cart-table th {
-    background: linear-gradient(90deg, #ff9e4f, #ff7b1a);
+cart-table th {
+    background: #ff9143;
     color: #fff;
     font-weight: 600;
     font-size: 15px;
@@ -242,12 +242,7 @@ h2:hover {
         font-size: 15px;
     }
 
-    .cart-table th {
-        background: linear-gradient(90deg, #ff9e4f, #ff7b1a);
-        color: #fff;
-        font-weight: 600;
-        font-size: 16px;
-    }
+    
 
     .cart-table img {
         width: 60px;
@@ -260,132 +255,3 @@ h2:hover {
             transform: scale(1.05);
         }
 
-/* ==== Responsive tablet ==== */
-@media (max-width: 992px) {
-    .cart-table th, .cart-table td {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    .cart-table img {
-        width: 50px;
-    }
-
-    .form-controls {
-        width: 60px;
-    }
-}
-
-@media (max-width: 768px) {
-    .cart-table th, .cart-table td {
-        font-size: 13px;
-        padding: 8px;
-    }
-
-    .cart-table img {
-        width: 45px;
-    }
-
-    .btn-sm {
-        padding: 4px 8px;
-        font-size: 12px;
-    }
-
-    .btn-checkout {
-        padding: 6px 18px;
-        font-size: 14px;
-    }
-}
-
-/* ==== Mobile nhỏ (≤576px) - Card đẹp hơn ==== */
-@media (max-width: 576px) {
-    .cart-table, .cart-table thead, .cart-table tbody,
-    .cart-table th, .cart-table td, .cart-table tr {
-        display: block;
-    }
-
-        .cart-table thead {
-            display: none;
-        }
-
-        .cart-table tr {
-            margin-bottom: 20px;
-            border-radius: 12px;
-            padding: 12px;
-            background-color: #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-            .cart-table tr:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-            }
-
-        .cart-table td {
-            text-align: left;
-            padding: 8px 10px;
-            font-size: 14px;
-            position: relative;
-            padding-left: 50%;
-        }
-
-            .cart-table td::before {
-                position: absolute;
-                top: 8px;
-                left: 10px;
-                width: 45%;
-                white-space: nowrap;
-                font-weight: 600;
-                color: #ff5722;
-            }
-
-            .cart-table td:nth-of-type(1)::before {
-                content: "Sản phẩm";
-            }
-
-            .cart-table td:nth-of-type(2)::before {
-                content: "Tên";
-            }
-
-            .cart-table td:nth-of-type(3)::before {
-                content: "Số lượng";
-            }
-
-            .cart-table td:nth-of-type(4)::before {
-                content: "Giá";
-            }
-
-            .cart-table td:nth-of-type(5)::before {
-                content: "Thao tác";
-            }
-
-        .cart-table img {
-            width: 55px;
-            border-radius: 8px;
-        }
-
-    .form-controls {
-        width: 50px;
-        padding: 5px;
-        font-size: 13px;
-    }
-
-    .btn-sm {
-        padding: 4px 8px;
-        font-size: 12px;
-        margin-left: 2px;
-    }
-
-    .btn-checkout {
-        padding: 6px 16px;
-        font-size: 14px;
-    }
-
-    .tong-tien {
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: #ff5722;
-        margin-top: 10px;
-    }
-}

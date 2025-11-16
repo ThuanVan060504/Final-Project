@@ -148,14 +148,7 @@ namespace Final_Project.Controllers
             // 4. Cập nhật Session và TRẢ VỀ JSON (thay vì Redirect)
             CapNhatSessionSoLuong(maTK.Value);
 
-            int newCartCount = HttpContext.Session.GetInt32("SoLuongGioHang") ?? 0;
-
-            return Json(new
-            {
-                success = true,
-                message = "Đã thêm sản phẩm vào giỏ hàng!",
-                cartCount = newCartCount // Gửi về số lượng mới cho JS cập nhật
-            });
+            return RedirectToAction("Index");
         }
         [HttpPost]
         public IActionResult CapNhatSoLuong(int maSP, int soLuong)

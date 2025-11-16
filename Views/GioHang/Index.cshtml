@@ -52,7 +52,7 @@
                     <td><input type="number" name="soLuong[@item.MaSP]" value="@item.SoLuong" min="1" class="form-controls" /></td>
                     <td>@item.ThanhTien.ToString("n0") ₫</td>
                     <td>
-                        <button type="submit" formaction="/GioHang/XoaKhoiGio?maSP=@item.MaSP" class="btn-sm btn-danger">🗑 Xóa</button>
+                        <button type="submit" formaction="/GioHang/XoaKhoiGio?maSP=@item.MaSP" class="btn-sm btn-danger">Xóa</button>
                     </td>
                 </tr>
             }
@@ -63,10 +63,10 @@
             </tr>
             <tr>
                 <td colspan="7" style="text-align: right;">
-                    <button type="submit" formaction="/GioHang/CapNhatNhieu" class="btn-sm btn-primary">🔄 Cập nhật số lượng</button>
-                    <button type="submit" formaction="/GioHang/XoaNhieu" class="btn-sm btn-danger">🗑 Xóa đã chọn</button>
+                    <button type="submit" formaction="/GioHang/CapNhatNhieu" class="btn-sm btn-primary"> Cập nhật số lượng</button>
+                    <button type="submit" formaction="/GioHang/XoaNhieu" class="btn-sm btn-danger">Xóa đã chọn</button>
                  <!-- nút Thanh toán -->
-                <button type="submit" formaction="/ThanhToan/XacNhanThanhToan" class="btn-checkout">💳 Thanh toán</button>
+                <button type="submit" formaction="/ThanhToan/XacNhanThanhToan" class="btn-checkout">Thanh toán</button>
 
                 </td>
             </tr>
