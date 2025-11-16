@@ -32,20 +32,65 @@ public class DonHangController : BaseAdminController
                               DonGiaBan = ct.DonGia
                           };
 
-        return View("~/Adminboot/Admin/Views/DonHangSP/Index.cshtml",donHangList.ToList());
+        return View("~/Adminboot/Admin/Views/DonHangSP/Index.cshtml", donHangList.ToList());
     }
+    // Trong DonHangController.cs
+
     [HttpPost]
     public IActionResult UpdateTrangThai(int maDonHang, string trangThai)
     {
         var donHang = _context.DonHangs.FirstOrDefault(d => d.MaDonHang == maDonHang);
-        if (donHang != null)
+
+        if (donHang == null)
         {
-            donHang.TrangThaiDonHang = trangThai;
-            _context.SaveChanges(); // <<== câu lệnh UPDATE sẽ xảy ra ở đây
+            return NotFound();
+        }
+        if (donHang.TrangThaiDonHang == "DangGiao" || donHang.TrangThaiDonHang == "DaGiao")
+        {
+            if (trangThai == "HuyDon" || trangThai == "DangXuLy")
+            {
+                return BadRequest("Không thể chuyển đơn hàng từ trạng thái Đang Giao/Đã Giao sang Hủy Đơn hoặc Đang Xử Lý.");
+            }
+        }
+
+        // Nếu trạng thái mới giống trạng thái cũ, không cần làm gì
+        if (donHang.TrangThaiDonHang == trangThai)
+        {
             return Ok();
         }
-        return NotFound();
+
+        // Cập nhật trạng thái mới nếu hợp lệ
+        donHang.TrangThaiDonHang = trangThai;
+
+        // Đặc biệt, nếu chuyển sang 'DaGiao', cập nhật NgayGiao
+        if (trangThai == "DaGiao")
+        {
+            donHang.NgayGiao = DateTime.Now;
+        }
+
+        _context.SaveChanges();
+        return Ok();
     }
 
+    // Action để xem chi tiết đơn hàng và thông tin khách hàng
+    public IActionResult ChiTietDonHang(int maDonHang)
+    {
+        // Sử dụng Eager loading như trước
+        var donHang = _context.DonHangs
+            .Include(dh => dh.TaiKhoan)
+            .Include(dh => dh.DiaChiNguoiDung)
+            .Include(dh => dh.ChiTietDonHangs)
+                .ThenInclude(ct => ct.SanPham)
+            .FirstOrDefault(dh => dh.MaDonHang == maDonHang);
+
+        if (donHang == null)
+        {
+            // Có thể trả về Partial View rỗng hoặc thông báo lỗi
+            return PartialView("_NotFoundPartial");
+        }
+
+        // Trả về Partial View chứa nội dung chi tiết
+        return PartialView("~/Adminboot/Admin/Views/DonHangSP/_ChiTietDonHangPartial.cshtml", donHang);
+    }
 
 }

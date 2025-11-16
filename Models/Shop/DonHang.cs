@@ -39,5 +39,7 @@ namespace Final_Project.Models.Shop
 
         [ForeignKey("MaVoucherID")]
         public Voucher Voucher { get; set; }
+        [ForeignKey("MaTK")] // Khóa ngoại ánh xạ tới cột MaTK
+        public TaiKhoan TaiKhoan { get; set; }
     }
 }

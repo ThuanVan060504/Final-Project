@@ -3,7 +3,6 @@
     ViewData["Title"] = "Đơn Hàng";
 }
 
-<!-- ✅ CSS Assets -->
 <link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
 <link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
 <link rel="stylesheet" href="~/Admin/css/animate.css">
@@ -14,7 +13,7 @@
 <link rel="stylesheet" href="~/Admin/css/style.css">
 
 <div class="page-wrapper">
-    <div class="content">   
+    <div class="content">
         <div class="page-header">
             <div class="page-title">
                 <h4>Danh Sách Đơn Hàng</h4>
@@ -24,7 +23,6 @@
 
         <div class="card">
             <div class="card-body">
-                <!-- Bảng dữ liệu -->
                 <div class="table-responsive">
                     <table class="table datanew">
                         <thead>
@@ -37,6 +35,7 @@
                                 <th>Đơn Giá</th>
                                 <th>Số Lượng</th>
                                 <th>Tổng</th>
+                                <th>Thao tác</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -52,7 +51,7 @@
                                     </td>
                                     <td>@item.NgayDat.ToString("dd/MM/yyyy")</td>
                                     <td>@item.PhuongThucThanhToan</td>
-                                    
+
                                     <td>
                                         <select class="form-select form-control status-dropdown" data-id="@item.MaDonHang">
                                             <option value="DangXuLy" selected="@(item.TrangThaiDonHang == "DangXuLy")">Đang xử lý</option>
@@ -66,6 +65,12 @@
                                     <td>@item.DonGiaBan.ToString("N0") ₫</td>
                                     <td>@item.SoLuongDat</td>
                                     <td>@item.TongTien.ToString("N0") ₫</td>
+
+                                    <td>
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-info btn-view-detail" data-id="@item.MaDonHang" title="Xem Chi Tiết">
+                                            <i class=""></i> Chi tiết
+                                        </a>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
@@ -76,7 +81,18 @@
     </div>
 </div>
 
-<!-- ✅ JS Assets -->
+<div class="modal fade" id="orderDetailModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div id="modal-content-placeholder">
+                <div class="modal-body text-center">
+                    Đang tải...
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="~/Admin/js/jquery-3.6.0.min.js"></script>
 <script src="~/Admin/js/feather.min.js"></script>
 <script src="~/Admin/js/jquery.slimscroll.min.js"></script>
@@ -87,25 +103,77 @@
 <script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
 <script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
 <script src="~/Admin/js/script.js"></script>
+
 <script>
-   $('.status-dropdown').change(function () {
-    var maDonHang = $(this).data('id');
-    var trangThaiMoi = $(this).val();
+    // Script cập nhật trạng thái
+    $('.status-dropdown').change(function () {
+        var dropdown = $(this);
+        var maDonHang = dropdown.data('id');
+        var trangThaiMoi = dropdown.val();
+        var trangThaiCu = dropdown.find('option:selected').data('current-status'); // Giả sử bạn lấy trạng thái cũ
 
-    $.ajax({
-        url: '/Admin/DonHang/UpdateTrangThai',
-        method: 'POST',
-        data: {
-            maDonHang: maDonHang,
-            trangThai: trangThaiMoi
-        },
-        success: function () {
-            alert("Cập nhật trạng thái thành công!");
-        },
-        error: function () {
-            alert("Lỗi khi cập nhật trạng thái.");
-        }
+        $.ajax({
+            url: '@Url.Action("UpdateTrangThai", "DonHang", new { Area = "Admin" })',
+            method: 'POST',
+            data: {
+                maDonHang: maDonHang,
+                trangThai: trangThaiMoi
+            },
+            success: function () {
+                // Cập nhật thành công
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: 'Cập nhật trạng thái đơn hàng #' + maDonHang + ' thành ' + trangThaiMoi + ' thành công!',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            },
+            error: function (xhr) {
+                var errorMessage = "Lỗi khi cập nhật trạng thái.";
+                // Kiểm tra nếu lỗi là BadRequest (400) và có nội dung trả về
+                if (xhr.status === 400 && xhr.responseText) {
+                    errorMessage = xhr.responseText; // Lấy thông báo lỗi từ Controller
+                } else if (xhr.status === 404) {
+                     errorMessage = "Không tìm thấy đơn hàng.";
+                }
+
+                // Quay lại trạng thái cũ (nếu có, nếu không thì thông báo lỗi chung)
+                // Lấy trạng thái hiện tại từ DB/Controller tốt hơn, nhưng tạm thời reset
+                var trangThaiHienTai = dropdown.find('option[value="' + trangThaiCu + '"]').text();
+                dropdown.val(trangThaiCu); // Reset dropdown về trạng thái trước đó
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Thất bại!',
+                    text: errorMessage
+                });
+            }
+        });
     });
-});
 
+    // Script hiển thị chi tiết đơn hàng (GIỮ NGUYÊN)
+    $('.btn-view-detail').click(function () {
+        var maDonHang = $(this).data('id');
+        var modalContent = $('#modal-content-placeholder');
+
+        // Hiển thị trạng thái tải
+        modalContent.html('<div class="modal-body text-center"><i class="fas fa-spinner fa-spin"></i> Đang tải thông tin...</div>');
+        $('#orderDetailModal').modal('show');
+
+        // Gửi AJAX để lấy Partial View (nội dung chi tiết)
+        $.ajax({
+            url: '@Url.Action("ChiTietDonHang", "DonHang", new { Area = "Admin" })',
+            type: 'GET',
+            data: { maDonHang: maDonHang },
+            success: function (data) {
+                // Chèn nội dung Partial View vào Modal
+                modalContent.html(data);
+            },
+            error: function (xhr, status, error) {
+                modalContent.html('<div class="modal-body text-danger">Lỗi khi tải chi tiết đơn hàng. Vui lòng thử lại.</div>');
+                console.error("AJAX Error:", status, error);
+            }
+        });
+    });
 </script>
