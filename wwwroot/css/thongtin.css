@@ -1,170 +1,167 @@
-﻿/* =======================
-   🧱 CHUNG CHO TRANG BẢO MẬT
-   ======================= */
-
-.info-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 40px 20px;
-    background: #fffdf8;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.05);
-    display: block;
-    position: relative;
-    left: 50%;
-    transform: translateX(-50%);
+﻿/* --- BIẾN MÀU SẮC CHỦ ĐĐẠO --- */
+:root {
+    --primary-color: #0a4a8f;
+    --dark-text: #212529;
+    --body-text: #495057;
+    --border-color: #e9ecef;
+    --light-bg: #f8f9fa;
+    --white: #ffffff;
+    --shadow-soft: 0 8px 25px rgba(0, 0, 0, 0.07);
 }
 
-/* ===== Header ===== */
+/* --- TỔNG THỂ TRANG --- */
+body {
+    background-color: var(--light-bg);
+    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --- KHUNG NỘI DUNG CHÍNH (ĐÃ FIX LAYOUT) --- */
+.info-container {
+    /* max-width và margin-left/right ĐÃ BỊ XÓA (Bootstrap lo) */
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+}
+
+/* --- PHẦN BANNER & TIÊU ĐỀ --- */
 .info-header {
     text-align: center;
-    margin-bottom: 30px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .info-banner {
     width: 100%;
-    height: auto;
-    border-radius: 8px;
-    margin-bottom: 15px;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+    height: 200px;
+    object-fit: cover;
 }
 
 .info-header h1 {
-    font-size: 2.4rem;
-    color: #3f3f3f;
-    font-weight: 800;
+    /* Tăng font-size */
+    font-size: 2.8rem; 
+    font-weight: 700;
+    color: var(--primary-color);
+    padding: 1.5rem 1rem;
+    margin: 0;
 }
 
     .info-header h1 i {
-        color: #f7a600;
+        font-size: 0.9em;
         margin-right: 10px;
     }
 
-/* ===== Nội dung chính ===== */
+/* --- NỘI DUNG CHÍNH SÁCH --- */
 .info-content {
-    margin-top: 20px;
+    padding: 2.5rem;
 }
 
     .info-content h2 {
-        color: #5b3926;
+        /* Tăng font-size */
+        font-size: 2.0rem; 
         font-weight: 600;
-        margin-top: 30px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 2.5rem;
+        color: var(--dark-text);
+        margin-bottom: 1rem;
     }
 
         .info-content h2 i {
-            color: #f7a600;
+            font-size: 0.9em;
+            margin-right: 12px;
+            color: var(--primary-color);
+            width: 25px;
         }
 
     .info-content p {
-        color: #333;
+        /* Tăng font-size */
+        font-size: 1.3rem;
         line-height: 1.8;
-        margin-bottom: 20px;
-        font-size: 2.05rem;
+        color: var(--body-text);
+        margin-bottom: 2.5rem;
     }
 
-/* =======================
-   💬 FAQ SECTION (Câu hỏi thường gặp)
-   ======================= */
-
+/* --- PHẦN CÂU HỎI THƯỜNG GẶP (FAQ) --- */
 .faq-section {
-    margin-top: 60px;
-    background: #fffaf5;
-    border-radius: 16px;
-    padding: 40px 35px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    padding: 2.5rem;
+    border-top: 1px solid var(--border-color);
+    background-color: #fdfdfd;
 }
 
     .faq-section h2 {
-        color: #4a2c07;
-        font-size: 2.5rem;
-        font-weight: 700;
-        margin-bottom: 25px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        text-align: center;
+        /* Tăng font-size */
+        font-size: 2.2rem;
+        color: var(--dark-text);
+        margin-bottom: 2rem;
     }
 
         .faq-section h2 i {
-            color: #f7a600;
-            font-size: 2rem;
+            color: var(--primary-color);
+            margin-right: 10px;
         }
 
-/* Accordion Container */
+/* --- THIẾT KẾ ACCORDION --- */
 .accordion {
-    margin-top: 15px;
+    border-top: 1px solid var(--border-color);
 }
 
-/* Mỗi câu hỏi */
 .accordion-item {
-    border: 1px solid #f1e3d3;
-    border-radius: 10px;
-    background: #fff;
-    margin-bottom: 15px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border-bottom: 1px solid var(--border-color);
 }
 
-    .accordion-item:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    }
-
-/* Nút câu hỏi */
 .accordion-button {
-    background: #fff;
+    background: none;
     border: none;
-    padding: 22px 25px;
+    outline: none;
     width: 100%;
+    padding: 1.5rem 1rem;
     text-align: left;
-    font-size: 2.5rem;
+    /* Tăng font-size */
+    font-size: 1.4rem; 
     font-weight: 600;
-    color: #3f3f3f;
+    color: var(--dark-text);
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease;
 }
+
+    .accordion-button:hover {
+        background-color: var(--light-bg);
+    }
 
     .accordion-button::after {
         content: '+';
-        font-size: 2rem;
-        color: #f7a600;
-        transition: transform 0.3s ease, color 0.3s ease;
+        font-family: monospace;
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        transition: transform 0.4s ease-in-out;
     }
 
-    .accordion-button.active {
-        background-color: #fff7e6;
-        color: #d37a00;
+    .accordion-button.active::after {
+        transform: rotate(45deg);
     }
 
-        .accordion-button.active::after {
-            content: '–';
-            color: #d37a00;
-            transform: rotate(180deg);
-        }
-
-/* Nội dung câu trả lời */
 .accordion-content {
     max-height: 0;
     overflow: hidden;
-    padding: 0 25px;
-    color: #555;
-    line-height: 1.7;
-    font-size: 2.05rem;
-    background: #fffdf8;
-    border-left: 4px solid #f7a600;
-    transition: max-height 0.4s ease, padding 0.3s ease;
+    background: var(--light-bg);
+    transition: max-height 0.4s ease-in-out;
 }
 
-    .accordion-content.open {
-        max-height: 400px;
-        padding: 15px 25px 20px;
+    .accordion-content p {
+        padding: 0 1.5rem;
+        margin: 0;
+        /* Tăng font-size */
+        font-size: 1.4rem; 
+        line-height: 1.7;
+        color: var(--body-text);
     }
 
+    .accordion-content.open {
+        padding-top: 1.5rem;
+        padding-bottom: 1.5rem;
+    }

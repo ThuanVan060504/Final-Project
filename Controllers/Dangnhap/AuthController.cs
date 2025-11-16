@@ -5,7 +5,7 @@ using Final_Project.Models.User;
 using Final_Project.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Facebook; // <-- THÊM USING NÀY
+using Microsoft.AspNetCore.Authentication.Facebook; 
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,7 +24,10 @@ namespace Final_Project.Controllers
             _context = context;
             _emailService = emailService;
         }
+<<<<<<< HEAD
        
+=======
+>>>>>>> c70b9f05ce2c049c7e06eef1551adbd53ae530ac
         // GET: /Auth/Login
         [HttpGet("Auth/Login")]
         public IActionResult Login()

@@ -136,21 +136,21 @@
         <div class="sidebar-suggestions col-md-3">
             <div class="suggestion-card">
                 <small class="suggestion-title">Recently Viewed</small><br />
-                <img src="https://i.pinimg.com/1200x/ee/16/29/ee1629f6518a827c1dbc88e1d4315118.jpg"
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQk3IhhprESVn62DmXdVvsbLE9SUzCgQPqJLw&s"
                      alt="Recently Viewed"
                      class="suggestion-img" />
                 <p class="suggestion-link">
-                    <a href="#">See your browsing history</a>
+                    <a href="/SanPham/Details/17">See your browsing history</a>
                 </p>
             </div>
 
             <div class="suggestion-card">
                 <small class="suggestion-title">Suggestions for You</small><br />
-                <img src="https://i.pinimg.com/1200x/05/ac/d3/05acd3cdde303e1e9b0f60fd73dcab40.jpg"
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpqw7QUpiHN9nWWuNS5yjmrZ8hfnJjeLl4Bw&s"
                      alt="Suggestions"
                      class="suggestion-img" />
                 <p class="suggestion-link">
-                    <a href="#">Watch more</a>
+                    <a asp-controller="SanPham" asp-action="Index">Watch more</a>
                 </p>
             </div>
         </div>
@@ -368,8 +368,14 @@
                             }
                             <ul class="ps-product__actions">
                                 <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
-                                <li><a href="#" data-toggle="tooltip" title="Quick View" class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                <li><a data-toggle="tooltip" title="Add to Whishlist" id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+
+                                <li><a href="javascript:void(0);" data-toggle="tooltip" title="Quick View" class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+
+                                <li>
+                                    <a href="javascript:void(0);" data-toggle="tooltip" title="Add to Wishlist" class="add-to-wishlist-link" data-id="@sp.MaSP">
+                                        <i class="icon-heart"></i>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div class="ps-product__container">
@@ -647,26 +653,163 @@
 
                 @foreach (var sp in Model)
                 {
-                    <div class="ps-product">
+                    <div class="ps-product ps-product--inner">
                         <div class="ps-product__thumbnail">
-                            <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP">
-                                <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
+                            <a href="/SanPham/Details/@sp.MaSP">
+                                <img src="@sp.ImageURL" alt="@sp.TenSP" />
                             </a>
+                            @if (sp.SoLuong == 0)
+                            {
+                                <div class="ps-product__badge out-stock">Habis Terjual</div>
+                            }
                             <ul class="ps-product__actions">
                                 <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
-                                <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+
+                                <li><a href="javascript:void(0);" data-toggle="tooltip" title="Quick View" class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
+
+                                <li>
+                                    <a href="javascript:void(0);" data-toggle="tooltip" title="Add to Wishlist" class="add-to-wishlist-link" data-id="@sp.MaSP">
+                                        <i class="icon-heart"></i>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <div class="ps-product__container">
-                            <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
+                            <p class="ps-product__price sale">
+                                @String.Format("{0:N0}", sp.DonGia) đ
+                            </p>
                             <div class="ps-product__content">
-                                <a class="ps-product__title" href="#">@sp.TenSP</a>
-                                <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                <a class="ps-product__title" href="/SanPham/Details/@sp.MaSP">@sp.TenSP</a>
                             </div>
                         </div>
                     </div>
                 }
+
+                <script type="text/javascript">
+                    $(document).ready(function() {
+
+                        // ===================================================
+                        // 1. XỬ LÝ ICON GIỎ HÀNG (icon-bag2)
+                        // ===================================================
+                        $(document).on('click', '.add-to-cart-link', function(e) {
+                            e.preventDefault();
+                            var button = $(this);
+                            var icon = button.find('i');
+                            var originalIconClass = icon.attr('class'); // "icon-bag2"
+                            var productId = button.data('id');
+
+                            button.css('pointer-events', 'none');
+                            icon.attr('class', 'fa fa-spinner fa-spin'); // Đổi sang icon quay
+
+                            $.ajax({
+                                url: '/GioHang/ThemGioHang', // Endpoint thêm giỏ hàng
+                                type: 'POST',
+                                data: { maSP: productId, soLuong: 1 },
+                                success: function(response) {
+                                    if (response.success) {
+                                        alert(response.message);
+                                        if (response.cartCount !== undefined) {
+                                            $('.wishlistcount').text(response.cartCount); // Cập nhật số lượng giỏ hàng
+                                        }
+                                    } else {
+                                        alert(response.message);
+                                    }
+                                },
+                                error: function(xhr) {
+                                    if (xhr.status === 401) {
+                                        // Yêu cầu của bạn: Hiện thông báo khi chưa đăng nhập
+                                        alert('Đăng nhập trước khi thêm giỏ hàng bạn nhé!');
+                                    } else {
+                                        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+                                    }
+                                },
+                                complete: function() {
+                                    // Trả lại icon và nút như cũ
+                                    button.css('pointer-events', 'auto');
+                                    icon.attr('class', originalIconClass);
+                                }
+                            });
+                        });
+
+                        // ===================================================
+                        // 2. XỬ LÝ ICON YÊU THÍCH (icon-heart)
+                        // ===================================================
+                        $(document).on('click', '.add-to-wishlist-link', function(e) {
+                            e.preventDefault();
+                            var button = $(this);
+                            var icon = button.find('i');
+                            var originalIconClass = icon.attr('class'); // "icon-heart"
+                            var productId = button.data('id');
+
+                            button.css('pointer-events', 'none');
+                            icon.attr('class', 'fa fa-spinner fa-spin'); // Đổi sang icon quay
+
+                            $.ajax({
+                                url: '/YeuThich/Them', // !!! THAY THẾ BẰNG ENDPOINT CỦA BẠN
+                                type: 'POST',
+                                data: { maSP: productId },
+                                success: function(response) {
+                                    if (response.success) {
+                                        alert(response.message);
+                                        // Đổi icon thành màu đỏ và giữ nguyên
+                                        icon.attr('class', 'icon-heart text-danger');
+                                    } else {
+                                        alert(response.message);
+                                        icon.attr('class', originalIconClass); // Trả lại icon cũ
+                                        button.css('pointer-events', 'auto'); // Cho click lại
+                                    }
+                                },
+                                error: function(xhr) {
+                                    if (xhr.status === 401) {
+                                        // Yêu cầu của bạn: Hiện thông báo khi chưa đăng nhập
+                                        alert('Mong bạn đăng nhập để sản phẩm được lưu nhé!');
+                                    } else {
+                                        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
+                                    }
+                                    // Trả lại icon và nút như cũ
+                                    icon.attr('class', originalIconClass);
+                                    button.css('pointer-events', 'auto');
+                                }
+                            });
+                        });
+
+                        // ===================================================
+                        // 3. XỬ LÝ ICON XEM NHANH (icon-eye)
+                        // ===================================================
+                        $(document).on('click', '.quick_view', function(e) {
+                            e.preventDefault();
+                            var productId = $(this).data('id');
+
+                            // Đoạn code này giả định bạn có một modal tên là "quickViewModal"
+                            var $modal = $('#quickViewModal');
+                            var $modalBody = $('#quickViewModalBody');
+
+                            if ($modal.length === 0 || $modalBody.length === 0) {
+                                alert('Lỗi: Không tìm thấy Quick View Modal.');
+                                return;
+                            }
+
+                            // Hiển thị modal với icon loading
+                            $modalBody.html('<div class="text-center p-5"><i class="fa fa-spinner fa-spin fa-3x"></i></div>');
+                            $modal.modal('show');
+
+                            // Không cần kiểm tra đăng nhập, gọi thẳng
+                            $.ajax({
+                                url: '/SanPham/QuickView', // !!! THAY THẾ BẰNG ENDPOINT CỦA BẠN
+                                type: 'GET',
+                                data: { id: productId },
+                                dataType: 'html', // Yêu cầu server trả về HTML
+                                success: function(responseHtml) {
+                                    // Đổ HTML sản phẩm vào thân modal
+                                    $modalBody.html(responseHtml);
+                                },
+                                error: function() {
+                                    $modalBody.html('<p class="text-danger text-center">Không thể tải thông tin sản phẩm. Vui lòng thử lại.</p>');
+                                }
+                            });
+                        });
+                    });
+                </script>
             </div>
         </div>
     </div>
@@ -678,11 +821,11 @@
         </div>
         <div class="ps-section__content">
             <div class="ps-carousel--nav owl-slider"
-                 data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
-                 data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
-                 data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
-                 data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
-                 data-owl-duration="1000" data-owl-mousedrag="on">
+                          data-owl-auto="false" data-owl-loop="false" data-owl-speed="10000"
+                          data-owl-gap="0" data-owl-nav="true" data-owl-dots="true"
+                          data-owl-item="7" data-owl-item-xs="2" data-owl-item-sm="2"
+                          data-owl-item-md="3" data-owl-item-lg="4" data-owl-item-xl="6"
+                          data-owl-duration="1000" data-owl-mousedrag="on">
 
                 @if (ViewBag.SanPhamYeuThich != null)
                 {
@@ -696,16 +839,23 @@
                                     <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
                                 </a>
                                 <ul class="ps-product__actions">
-                                    <li><a href="#"><i class="icon-bag2"></i></a></li>
-                                    <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                    <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                    <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
+
+                                    <li><a href="javascript:void(0);" class="quick_view" data-id="@sp.MaSP" data-toggle="tooltip" title="Quick View"><i class="icon-eye"></i></a></li>
+
+                                    <li>
+                                        <a href="javascript:void(0);" class="add-to-wishlist-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Add to Wishlist">
+                                            <i class="icon-heart"></i>
+                                        </a>
+                                    </li>
+                                    _    
                                 </ul>
                             </div>
                             <div class="ps-product__container">
                                 <a class="ps-product__vendor" href="#">@sp.DanhMuc?.TenDanhMuc</a>
                                 <div class="ps-product__content">
                                     <a class="ps-product__title" href="#">@sp.TenSP</a>
-                                    <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
+                                        <p class="ps-product__price sale">@sp.DonGia.ToString("N0") đ</p>
                                     <p><i class="fa fa-heart text-danger"></i> @yeuThich lượt yêu thích</p>
                                 </div>
                             </div>
@@ -716,7 +866,6 @@
         </div>
     </div>
 </div>
-
 <div class="ps-product-list ps-clothings">
     <div class="ps-container">
         <div class="ps-section__header">
@@ -734,7 +883,7 @@
 
                 @if (ViewBag.SanPhamBanChay != null)
                 {
-                    foreach (var item in ViewBag.SanPhamBanChay)
+                    @foreach (var item in ViewBag.SanPhamBanChay)
                     {
                         var sp = item.SanPham as Final_Project.Models.Shop.SanPham;
                         int daBan = item.SoLuongDaBan;
@@ -744,9 +893,15 @@
                                     <img src="@(!string.IsNullOrEmpty(sp.ImageURL) ? sp.ImageURL : "/images/no-image.png")" alt="@sp.TenSP" />
                                 </a>
                                 <ul class="ps-product__actions">
-                                    <li><a href="#"><i class="icon-bag2"></i></a></li>
-                                    <li><a class="quick_view" data-id="@sp.MaSP"><i class="icon-eye"></i></a></li>
-                                    <li><a id="save-@sp.MaSP"><i class="icon-heart" onclick="save('@sp.MaSP', this.id)"></i></a></li>
+                                    <li><a href="javascript:void(0);" class="add-to-cart-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Thêm vào giỏ"><i class="icon-bag2"></i></a></li>
+
+                                    <li><a href="javascript:void(0);" class="quick_view" data-id="@sp.MaSP" data-toggle="tooltip" title="Quick View"><i class="icon-eye"></i></a></li>
+
+                                    <li>
+                                        <a href="javascript:void(0);" class="add-to-wishlist-link" data-id="@sp.MaSP" data-toggle="tooltip" title="Add to Wishlist">
+                                            <i class="icon-heart"></i>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                             <div class="ps-product__container">
@@ -781,8 +936,6 @@
                     font: 14px Helvetica,Arial,sans-serif;
                     width: 600px;
                 }
-                /* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
-                                           We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
             </style>
             <div id="mc_embed_signup">
                 <form action="https://gmail.us3.list-manage.com/subscribe/post?u=9c6eed3e23e98dae8bdcb103b&amp;id=e3cae8dfec&amp;f_id=0076a9e1f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_blank">
@@ -1377,8 +1530,7 @@
                                         </div>
                                     }
                     else
-                    {
-                         
+                    {                       
                     }
                 </div>
             }

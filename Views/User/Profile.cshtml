@@ -162,12 +162,21 @@
     <div class="row">
         <div class="col-md-3">
             <ul class="sidebar-menu">
+<<<<<<< HEAD
                 <li class="active" onclick="showSection('profileSection', this)">Thông tin cá nhân</li>
                 <li onclick="showSection('historySection', this)">Lịch sử mua hàng</li>
                 <li onclick="showSection('addressSection', this)">Địa chỉ đặt hàng</li>
                 <li onclick="showSection('favoritesSection', this)">Sản phẩm yêu thích</li>
                 <li onclick="showSection('vouchersSection', this)">Voucher của tôi</li>
                 <li onclick="showSection('changePasswordSection', this)">Đổi mật khẩu</li>
+=======
+                <li class="active" onclick="showSection('profileSection', this)">🧍 Thông tin cá nhân</li>
+                <li id="historyTab" onclick="showSection('historySection', this)">📜 Lịch sử mua hàng</li>
+                <li onclick="showSection('addressSection', this)">📍 Địa chỉ đặt hàng</li>
+                <li onclick="showSection('favoritesSection', this)">❤️ Sản phẩm yêu thích</li>
+                <li onclick="showSection('vouchersSection', this)">🎁 Voucher của tôi</li>
+                <li onclick="showSection('changePasswordSection', this)">🔐 Đổi mật khẩu</li>
+>>>>>>> c70b9f05ce2c049c7e06eef1551adbd53ae530ac
             </ul>
         </div>
 
@@ -973,5 +982,50 @@
                 alert("Lỗi kết nối khi xóa địa chỉ.");
             }
         }
-    </script>
+
+         //SCRIPT xử lý icon section Profile
+        // Dùng 'window.onload' để đợi mọi thứ tải xong (quan trọng)
+        window.addEventListener('load', function() {
+
+            // Hàm này kích hoạt tab dựa trên # trong URL
+            function activateTabFromUrl() {
+
+                // 1. Lấy hash, ví dụ: #historySection hoặc #addressSection
+                const currentHash = window.location.hash;
+                if (!currentHash) return; // Không có hash, dùng tab mặc định
+
+                // 2. Lấy sectionId, ví dụ: "addressSection"
+                const sectionId = currentHash.substring(1);
+
+                // 3. Tự động tạo ra Tab ID, ví dụ: "addressTab"
+                // (Đây là lý do chúng ta thêm id="addressTab", "historyTab", v.v.)
+                const tabId = sectionId.replace('Section', 'Tab');
+
+                console.log(`Đang tìm tab cho: ${sectionId} (ID: ${tabId})`);
+
+                // 4. Tìm LI (tab) bằng ID (Cách đáng tin cậy nhất)
+                let targetLi = document.getElementById(tabId);
+
+                // 5. Nếu không tìm thấy ID, thử tìm bằng [onclick] (Cách dự phòng)
+                if (!targetLi) {
+                    console.warn(`Không tìm thấy ID: ${tabId}. Đang thử tìm bằng onclick...`);
+                    targetLi = document.querySelector(`.sidebar-menu li[onclick*="'${sectionId}'"]`);
+                }
+
+                // 6. Nếu tìm thấy, giả lập một cú click
+                if (targetLi) {
+                    console.log("Đã tìm thấy tab, đang kích hoạt click...");
+                    targetLi.click(); // Giả lập click vào tab
+                } else {
+                    console.warn(`KHÔNG THỂ TÌM THẤY tab nào cho section: ${sectionId}`);
+                }
+            }
+
+            // 7. Gọi hàm khi tải trang
+            activateTabFromUrl();
+
+            // 8. Gọi lại hàm khi hash thay đổi (người dùng bấm back/forward)
+            window.addEventListener('hashchange', activateTabFromUrl);
+        });       
+        </script>
 }

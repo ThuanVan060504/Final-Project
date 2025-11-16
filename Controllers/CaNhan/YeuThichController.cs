@@ -1,5 +1,6 @@
 ﻿using Final_Project.Models.Shop;
 using Final_Project.Models.User;
+using Microsoft.AspNetCore.Authorization; // <-- Đảm bảo bạn đã using
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,44 +15,67 @@ namespace Final_Project.Controllers.CaNhan
             _context = context;
         }
 
-        [HttpPost]
+        // =========================================================
+        // === HÀM THÊM YÊU THÍCH (ĐÃ SỬA CHO AJAX) ===
+        // =========================================================
+        [Authorize] // 1. Tự động trả về lỗi 401 nếu Cookie đăng nhập không có
+        [HttpPost]
         public IActionResult Them(int maSP)
         {
-            int? maTK = HttpContext.Session.GetInt32("MaTK");
+            // 2. Kiểm tra Session (vì [Authorize] chỉ kiểm tra cookie)
+            int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
-                return RedirectToAction("Login", "Auth");
-
-            bool daTonTai = _context.SanPhamYeuThichs.Any(x => x.MaTK == maTK && x.MaSP == maSP);
-            if (!daTonTai)
             {
-                var yeuThich = new SanPhamYeuThich
-                {
-                    MaTK = maTK.Value,
-                    MaSP = maSP,
-                    NgayThem = DateTime.Now
-                };
-                _context.SanPhamYeuThichs.Add(yeuThich);
-                _context.SaveChanges();
+                // 3. Trả về lỗi 401 nếu Session mất
+                return Unauthorized(new { success = false, message = "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại." });
             }
 
-            return RedirectToAction("Index", "SanPham");
+            bool daTonTai = _context.SanPhamYeuThichs.Any(x => x.MaTK == maTK.Value && x.MaSP == maSP);
+
+            if (daTonTai)
+            {
+                // 4. SỬA LỖI: Trả về JSON "thất bại" nếu đã tồn tại
+                return Json(new { success = false, message = "Sản phẩm này đã có trong danh sách yêu thích." });
+            }
+
+            // 5. Thêm mới
+            var yeuThich = new SanPhamYeuThich
+            {
+                MaTK = maTK.Value,
+                MaSP = maSP,
+                NgayThem = DateTime.Now
+            };
+            _context.SanPhamYeuThichs.Add(yeuThich);
+            _context.SaveChanges();
+
+            // 6. SỬA LỖI: Trả về JSON "thành công"
+            return Json(new { success = true, message = "Đã thêm vào danh sách yêu thích!" });
         }
 
-        public IActionResult DanhSach()
+        // =========================================================
+        // === HÀM LẤY DANH SÁCH (GIỮ NGUYÊN - VÌ TẢI CẢ TRANG) ===
+        // =========================================================
+        [Authorize] // Thêm [Authorize] ở đây để bảo vệ
+        public IActionResult DanhSach()
         {
             int? maTK = HttpContext.Session.GetInt32("MaTK");
             if (maTK == null)
-                return RedirectToAction("Login", "Auth");
+                return RedirectToAction("Login", "Auth"); // Redirect ở đây là ĐÚNG
 
-            var yeuThich = _context.SanPhamYeuThichs
-                .Include(y => y.SanPham)
-                .Where(y => y.MaTK == maTK)
-                .Select(y => y.SanPham)
-                .ToList();
+            var yeuThich = _context.SanPhamYeuThichs
+        .Include(y => y.SanPham)
+        .Where(y => y.MaTK == maTK)
+        .Select(y => y.SanPham)
+        .ToList();
 
             return View(yeuThich);
         }
 
+        // =========================================================
+        // === HÀM BỎ YÊU THÍCH (ĐÃ SỬA CHO AJAX) ===
+        // (Dùng cho trang Profile)
+        // =========================================================
+        [Authorize]
         [HttpPost]
         public IActionResult BoYeuThich(int maSP)
         {
@@ -59,19 +83,20 @@ namespace Final_Project.Controllers.CaNhan
 
             if (maTK == null)
             {
-                return RedirectToAction("Login", "Auth");
+                return Unauthorized(new { success = false, message = "Phiên đăng nhập hết hạn." });
             }
 
             var spYeuThich = _context.SanPhamYeuThichs
-                .FirstOrDefault(y => y.MaSP == maSP && y.MaTK == maTK);
+              .FirstOrDefault(y => y.MaSP == maSP && y.MaTK == maTK);
 
             if (spYeuThich != null)
             {
                 _context.SanPhamYeuThichs.Remove(spYeuThich);
                 _context.SaveChanges();
+                return Json(new { success = true, message = "Đã bỏ yêu thích." });
             }
 
-            return RedirectToAction("Profile", "User");
+            return Json(new { success = false, message = "Không tìm thấy sản phẩm." });
         }
     }
 }

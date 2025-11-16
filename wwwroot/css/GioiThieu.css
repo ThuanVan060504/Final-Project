@@ -1,168 +1,255 @@
-﻿.vision-mission-values {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-    gap: 50px;
-    background: #fff;
-    padding: 100px 10%;
+﻿/* --- BIẾN MÀU SẮC CHỦ ĐẠO --- */
+:root {
+    --primary-color: #0a4a8f;
+    --dark-text: #212529;
+    --body-text: #495057;
+    --light-bg: #f8f9fa;
+    --white: #ffffff;
+    --border-color: #e9ecef; /* Màu viền phân cách */
+    --shadow-soft: 0 8px 25px rgba(0, 0, 0, 0.07);
+    --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.1);
+    /* 4 màu cho thẻ giá trị cốt lõi */
+    --color-1: #007bff; /* Blue */
+    --color-2: #28a745; /* Green */
+    --color-3: #ffc107; /* Yellow */
+    --color-4: #dc3545; /* Red */
 }
 
-.vmv-block {
-    background: #fff;
-    padding: 50px;
-    border-radius: 24px;
-    border-left: 8px solid #f7a600;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+/* --- TỔNG THỂ & TYPOGRAPHY --- */
+/* Dòng .col-md-9 này có thể không còn tác dụng vì bạn đã đổi thành .col-12 */
+.col-md-9 {
+    font-family: 'Inter', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    color: var(--body-text);
+    line-height: 1.7;
 }
 
-    .vmv-block:hover {
-        transform: translateY(-8px);
-        background-color: #fffaf3;
-    }
-
-    .vmv-block h2 {
-        font-size: 3rem;
-        color: #f58b00;
-        margin-bottom: 25px;
-    }
-
-    .vmv-block p,
-    .vmv-block ul {
-        font-size: 1.8rem;
-        color: #444;
-    }
-
-    .vmv-block li {
-        margin-bottom: 12px;
-    }
-
-/* ===================== 👥 ĐỘI NGŨ ===================== */
-.team {
-    background: #fffaf3;
-    padding: 100px 10%;
-    text-align: center;
+p, .text-muted, .core-values li {
+    font-size: 1.2rem;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
 }
 
-    .team h2 {
-        color: #f58b00;
-        font-size: 3.2rem;
-        margin-bottom: 40px;
-    }
-
-    .team p {
-        font-size: 1.9rem;
-        color: #555;
-    }
-
-/* ===================== 🏢 SHOWROOM & XƯỞNG ===================== */
-.facilities {
-    background: #fff;
-    padding: 100px 10%;
-    text-align: center;
-    border-top: 4px solid #f7a600;
-    border-bottom: 4px solid #f7a600;
+section .fs-5 {
+    font-size: 1.3rem !important;
+    color: var(--dark-text);
 }
 
-    .facilities h2 {
-        color: #f58b00;
-        font-size: 3rem;
-        margin-bottom: 25px;
-    }
-
-    .facilities p {
-        font-size: 1.8rem;
-        color: #555;
-    }
-
-/* ===================== 🛍️ CTA ===================== */
-.cta {
-    width: 100%;
-    background: linear-gradient(135deg, #fff5e6, #fff);
-    text-align: center;
-    padding: 120px 10%;
+h2 {
+    color: var(--dark-text);
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    position: relative;
+    padding-bottom: 15px;
+    font-size: 2rem;
 }
 
-    .cta h2 {
-        color: #f58b00;
-        font-size: 3.2rem;
-        font-weight: 700;
-        margin-bottom: 25px;
+    h2::after {
+        content: '';
+        display: block;
+        width: 60px;
+        height: 3px;
+        background-color: var(--primary-color);
+        position: absolute;
+        bottom: 0;
     }
 
-    .cta p {
-        color: #555;
-        font-size: 2rem;
-        margin-bottom: 40px;
+.text-center h2::after,
+.mission h2::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+
+/* * ==========================================================
+ * YÊU CẦU MỚI: TẠO 1 KHUNG BAO CHUNG
+ * ==========================================================
+*/
+.content-page-wrapper {
+    background: var(--white);
+    padding: 2.5rem; /* Padding cho toàn bộ trang */
+    margin-bottom: 2.5rem;
+    border-radius: 12px; /* Bo góc 1 lần duy nhất ở ngoài */
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--border-color);
+}
+
+
+/* --- CÁC KHỐI NỘI DUNG BÊN TRONG --- */
+/* * Bây giờ các khối này chỉ cần đệm và đường kẻ phân cách,
+ * không cần style "thẻ" nữa.
+*/
+.vmv-block,
+section.team,
+section.facilities {
+    padding-bottom: 2.5rem; /* Khoảng đệm dưới */
+    margin-bottom: 2.5rem; /* Khoảng cách giữa các mục */
+    border-bottom: 1px solid var(--border-color); /* Kẻ phân cách */
+}
+
+    /* --- SỨ MỆNH (Ở GIỮA) --- */
+    .vmv-block.mission {
+        text-align: center;
+        max-width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 1rem;
     }
 
-    .cta .btn {
-        display: inline-block;
-        border: 3px solid #ff9900;
-        background: #fff8eb;
-        color: #ff7a00;
-        font-size: 1.8rem;
-        font-weight: 700;
-        padding: 20px 45px;
-        border-radius: 50px;
-        box-shadow: 0 6px 15px rgba(255, 122, 0, 0.25);
-        transition: all 0.3s ease;
-        text-decoration: none;
-    }
-
-        .cta .btn:hover {
-            background: #ff7a00;
-            color: #fff;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(255, 122, 0, 0.35);
+        .vmv-block.mission h2 {
+            font-size: 2.4rem;
+            color: var(--primary-color);
         }
 
-/* ===================== 📱 RESPONSIVE ===================== */
-@media (max-width: 1024px) {
-    header h1 {
-        font-size: 4.5rem;
+        .vmv-block.mission p {
+            font-size: 1.35rem;
+            font-weight: 400;
+            color: var(--dark-text);
+        }
+
+
+/* --- GIÁ TRỊ CỐT LÕI (4 THẺ CÙNG HÀNG) --- */
+/* Phần này giữ nguyên, vì 4 thẻ con vẫn nằm bên trong */
+.core-values ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    list-style: none;
+    padding-left: 0;
+    gap: 1.5rem;
+}
+
+.core-values li {
+    padding-left: 0;
+    margin-bottom: 0;
+    font-size: 1.1rem; /* Size chữ này đã được ghi đè bởi p, .text-muted, .core-values li ở trên */
+    flex-basis: calc(25% - 1.5rem);
+    flex-grow: 1;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top-width: 4px;
+    border-top-style: solid;
+}
+
+    .core-values li:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-soft);
     }
 
-    header p {
-        font-size: 1.8rem;
+    .core-values li::before {
+        display: none;
     }
 
-    .feature h3 {
-        font-size: 2.2rem;
+    .core-values li strong {
+        display: block;
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
     }
 
-    .feature p {
-        font-size: 1.6rem;
+    .core-values li:nth-child(1) {
+        border-top-color: var(--color-1);
+    }
+
+        .core-values li:nth-child(1) strong {
+            color: var(--color-1);
+        }
+
+    .core-values li:nth-child(2) {
+        border-top-color: var(--color-2);
+    }
+
+        .core-values li:nth-child(2) strong {
+            color: var(--color-2);
+        }
+
+    .core-values li:nth-child(3) {
+        border-top-color: var(--color-3);
+    }
+
+        .core-values li:nth-child(3) strong {
+            color: var(--color-3);
+        }
+
+    .core-values li:nth-child(4) {
+        border-top-color: var(--color-4);
+    }
+
+        .core-values li:nth-child(4) strong {
+            color: var(--color-4);
+        }
+
+@media (max-width: 992px) {
+    .core-values li {
+        flex-basis: calc(50% - 1rem);
     }
 }
 
-@media (max-width: 768px) {
-    header {
-        padding: 100px 5%;
+@media (max-width: 576px) {
+    .core-values li {
+        flex-basis: 100%;
+    }
+}
+
+
+/* --- KHỐI CTA (KÊU GỌI HÀNH ĐỘNG) --- */
+/* Khối này sẽ là khối cuối cùng, không cần đường viền dưới */
+section.cta {
+    border-bottom: none; /* Không cần đường kẻ ở mục cuối */
+    margin-bottom: 0;
+    padding-bottom: 0;
+    /* Tùy chỉnh riêng cho CTA */
+    border-radius: 12px; /* Bo góc riêng cho nó */
+    background-image: linear-gradient(135deg, var(--primary-color) 0%, #002b5e 100%);
+    color: var(--white);
+    padding: 4rem 2rem !important; /* Dùng !important để ghi đè class 'py-5' */
+    box-shadow: var(--shadow-medium);
+}
+
+.cta h2 {
+    color: var(--white);
+    font-weight: 800;
+    font-size: 2.5rem;
+}
+
+    .cta h2::after {
+        background-color: var(--white);
+        opacity: 0.8;
     }
 
-        header h1 {
-            font-size: 3.2rem;
-        }
+.cta .fs-5 {
+    color: var(--white);
+    opacity: 0.9;
+}
 
-        header p {
-            font-size: 1.6rem;
-        }
+.cta .btn {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    background-color: var(--white);
+    color: var(--primary-color);
+    border: 2px solid var(--white);
+}
 
-    .features {
-        flex-direction: column;
-        padding: 60px 5%;
+    .cta .btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        background-color: var(--primary-color);
+        color: var(--white);
     }
 
-    .cta h2 {
-        font-size: 2.4rem;
-    }
-
-    .cta p {
-        font-size: 1.6rem;
-    }
-
-    .cta .btn {
-        font-size: 1.4rem;
-        padding: 16px 35px;
-    }
+/* ========================================================== */
+/* === PHẦN SỬA LỖI CANH GIỮA VÀ TRÀN CHỮ (THÊM MỚI) === */
+/* ========================================================== */
+section.team p,
+section.facilities p {
+    max-width: 90%; /* Giảm chiều rộng, không cho chạm mép */
+    margin-left: auto; /* Tự động canh giữa (bên trái) */
+    margin-right: auto; /* Tự động canh giữa (bên phải) */
 }
