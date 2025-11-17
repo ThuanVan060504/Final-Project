@@ -1,80 +1,66 @@
-﻿using Final_Project.Models.Shop;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
+using Final_Project.Models;
+using Final_Project.Models.Shop; 
+using Final_Project.Models.ViewModels; 
 
-// Thêm using này nếu chưa có
-using System.Collections.Generic;
-
-public class FlashSaleController : Controller
+namespace Final_Project.Controllers
 {
-    private readonly AppDbContext _context;
-
-    public FlashSaleController(AppDbContext context)
+    public class FlashSaleController : Controller
     {
-        _context = context;
-    }
-
-    public IActionResult Index()
-    {
-        LoadCommonData();
-
-        var now = DateTime.Now;
-
-        // Code logic của FlashSale giữ nguyên
-        var flashSales = _context.FlashSales
-            .Include(fs => fs.SanPham)
-            .ToList();
-
-        foreach (var fs in flashSales)
+        private readonly AppDbContext _context;
+        public FlashSaleController(AppDbContext context)
         {
-            var sp = fs.SanPham;
-
-            if (now >= fs.ThoiGianBatDau && now < fs.ThoiGianKetThuc)
-            {
-                if (sp.GiaGoc == null || sp.GiaGoc == 0)
-                {
-                    sp.GiaGoc = sp.DonGia;
-                    sp.DonGia = sp.DonGia * (1 - fs.DiscountPercent / 100m);
-                }
-            }
-            else
-            {
-                if (sp.GiaGoc != null && sp.GiaGoc > 0)
-                {
-                    sp.DonGia = sp.GiaGoc.Value;
-                    sp.GiaGoc = null;
-                }
-            }
+            _context = context;
         }
 
-        _context.SaveChanges();
-
-        var activeFlashSales = flashSales
-            .Where(fs => now >= fs.ThoiGianBatDau && now < fs.ThoiGianKetThuc)
-            .Take(10)
-            .ToList();
-
-        return View(activeFlashSales);
-    }
-
-    private void LoadCommonData()
-    {
-        // Lấy thông tin User
-        int? maTK = HttpContext.Session.GetInt32("MaTK");
-        if (maTK != null)
+        [HttpGet]
+        public async Task<IActionResult> Index()
         {
-            var taiKhoan = _context.TaiKhoans.FirstOrDefault(t => t.MaTK == maTK);
-            ViewBag.Avatar = taiKhoan?.Avatar;
-            ViewBag.HoTen = taiKhoan?.HoTen;
+            var now = DateTime.Now;
+
+            // 1. Tìm đợt sale đang hoạt động
+            var activeSaleDot = await _context.DotFlashSale
+                .Where(d => d.IsActive && now >= d.ThoiGianBatDau && now <= d.ThoiGianKetThuc)
+                .OrderBy(d => d.ThoiGianKetThuc)
+                .FirstOrDefaultAsync();
+
+            if (activeSaleDot == null)
+            {
+                return View(null); // Không có sale, trả về View rỗng
+            }
+
+            // 2. Tạo ViewModel cho trang
+            var viewModel = new FlashSalePageViewModel
+            {
+                MaDot = activeSaleDot.MaDot,
+                TenDot = activeSaleDot.TenDot,
+                ThoiGianKetThuc = activeSaleDot.ThoiGianKetThuc
+            };
+
+            // 3. Lấy sản phẩm chi tiết thuộc đợt sale
+            var saleProducts = await _context.ChiTietFlashSale
+                .Where(ct => ct.MaDot == activeSaleDot.MaDot)
+                .Include(ct => ct.SanPham) // JOIN với bảng SanPham
+                .Select(ct => new FlashSaleProductViewModel
+                {
+                    MaSP = ct.MaSP,
+                    TenSP = ct.SanPham.TenSP,
+                    ImageURL = ct.SanPham.ImageURL,
+                    DonGiaGoc = ct.SanPham.DonGia, // Giá gốc
+                    GiaSauGiam = ct.GiaSauGiam,     // Giá sale
+                    PhanTramGiam = ct.PhanTramGiam,
+                    SoLuongGiamGia = ct.SoLuongGiamGia,
+                    SoLuongDaBan = ct.SoLuongDaBan
+                })
+                .ToListAsync();
+
+            viewModel.SanPhams = saleProducts;
+
+            return View(viewModel);
         }
-
-        // Lấy danh mục
-        var danhMucs = _context.DanhMucs
-            .Include(d => d.SanPhams)
-            .ToList();
-
-        ViewBag.DanhMucs = danhMucs;
     }
 }

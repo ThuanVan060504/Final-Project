@@ -1,0 +1,116 @@
+﻿@model IEnumerable<Final_Project.Models.ViewModels.FlashSaleEventViewModel>
+@{
+    ViewData["Title"] = "Quản lý Đợt Flash Sale";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml"; // <-- SỬA LẠI LAYOUT
+}
+
+<link rel="shortcut icon" type="image/x-icon" href="~/Admin/img/favicon.jpg">
+<link rel="stylesheet" href="~/Admin/css/bootstrap.min.css">
+<link rel="stylesheet" href="~/Admin/css/animate.css">
+<link rel="stylesheet" href="~/Admin/css/dataTables.bootstrap4.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="~/Admin/plugins/fontawesome/css/all.min.css">
+<link rel="stylesheet" href="~/Admin/css/style.css">
+
+<div class="page-wrapper">
+    <div class="content">
+        <div class="page-header">
+            <div class="page-title">
+                <h4>Quản lý Đợt Flash Sale</h4>
+                <h6>Quản lý các đợt giảm giá</h6>
+            </div>
+            <div class="page-btn">
+                <a href="@Url.Action("Create", "FlashSaleAdmin", new { area = "Admin" })" class="btn btn-added">
+                    <i class="fa fa-plus me-1"></i> Tạo Đợt Sale Mới
+                </a>
+            </div>
+        </div>
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+        }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+        }
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table datanew">
+                        <thead>
+                            <tr>
+                                <th>Tên Đợt Sale</th>
+                                <th>Bắt đầu</th>
+                                <th>Kết thúc</th>
+                                <th>Trạng thái</th>
+                                <th>Active</th>
+                                <th>SL Sản phẩm</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(modelItem => item.TenDot)</td>
+                                    <td>@item.ThoiGianBatDau.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@item.ThoiGianKetThuc.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        @if (item.TrangThai == "Đang diễn ra")
+                                        {
+                                            <span class="badge bg-success text-white">@item.TrangThai</span>
+                                        }
+                                        else if (item.TrangThai == "Sắp diễn ra")
+                                        {
+                                            <span class="badge bg-info text-white">@item.TrangThai</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary text-white">@item.TrangThai</span>
+                                        }
+                                    </td>
+                                    <td>@(item.IsActive ? "Có" : "Không")</td>
+                                    <td>@item.SoLuongSanPham</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@item.MaDot" class="btn btn-info btn-sm" title="Quản lý sản phẩm">
+                                            <i class="fas fa-tasks"></i> QL Sản phẩm
+                                        </a>
+                                        <a asp-action="Edit" asp-route-id="@item.MaDot" class="btn btn-warning btn-sm" title="Sửa">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form asp-action="Delete" asp-route-id="@item.MaDot" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa đợt sale này? MỌI SẢN PHẨM sale bên trong cũng sẽ bị xóa.');" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Admin/js/jquery-3.6.0.min.js"></script>
+<script src="~/Admin/js/feather.min.js"></script>
+<script src="~/Admin/js/jquery.slimscroll.min.js"></script>
+<script src="~/Admin/js/jquery.dataTables.min.js"></script>
+<script src="~/Admin/js/dataTables.bootstrap4.min.js"></script>
+<script src="~/Admin/js/bootstrap.bundle.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalert2.all.min.js"></script>
+<script src="~/Admin/plugins/sweetalert/sweetalerts.min.js"></script>
+<script src="~/Admin/js/script.js"></script>
+<script>
+    $(document).ready(function() {
+        // Tự động ẩn thông báo TempData sau 3 giây
+        setTimeout(function() {
+            $('.alert-success, .alert-danger').fadeOut('slow');
+        }, 3000);
+    });
+</script>

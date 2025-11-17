@@ -1,9 +1,12 @@
 ﻿@using Final_Project.Models.Shop
+@using Final_Project.Models.ViewModels
 
 @model List<SanPham>
 @{
     ViewData["Title"] = "Sản phẩm";
 
+    var activeFlashSales = (ViewBag.ActiveFlashSales as Dictionary<int, ChiTietFlashSale>)
+                            ?? new Dictionary<int, ChiTietFlashSale>();
 }
 
 <link rel="stylesheet" href="~/css/sanpham.css">
@@ -22,7 +25,6 @@
     }
 
     <div class="row">
-        <!-- 🔍 Sidebar -->
         <div class="col-md-3 mb-4">
             <form method="get" asp-action="Index" class="card shadow-sm p-3">
                 <h5 class="fw-semibold mb-3">Bộ lọc</h5>
@@ -64,7 +66,6 @@
             </form>
         </div>
 
-        <!-- 🛍️ Danh sách sản phẩm -->
         <div class="col-md-9">
             @if (!Model.Any())
             {
@@ -74,41 +75,56 @@
             }
             else
             {
-               <div class="row g-4">
-                @foreach (var sp in Model)
-                {
-                    <div class="col-md-4 col-sm-6 col-12">
-                        <div class="card card-hover h-100 position-relative p-2 shadow-sm">
-                                <!-- ❤️ Nút yêu thích -->
+                <div class="row g-4">
+                    @foreach (var sp in Model)
+                    {
+                        var flashSale = activeFlashSales.GetValueOrDefault(sp.MaSP);
+
+                        <div class="col-md-4 col-sm-6 col-12">
+                            <div class="card card-hover h-100 position-relative p-2 shadow-sm">
+
                                 <form asp-controller="YeuThich" asp-action="Them" method="post"
                                       class="yeu-thich-form" onsubmit="themYeuThich(event)">
                                     <input type="hidden" name="maSP" value="@sp.MaSP" />
                                     <button type="submit" class="nut-yeu-thich" title="Thêm vào yêu thích">❤️</button>
                                 </form>
-
-                                <!-- Thông báo -->
                                 <div id="thongBaoYeuThich" class="thong-bao-thanh-cong">Đã thêm vào yêu thích! ❤️</div>
 
+
+                                @if (flashSale != null)
+                                {
+                                    <div class="discount-badge"
+                                         style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background: #ff424e; color: white; font-size: 14px; font-weight: bold; padding: 4px 8px; border-radius: 4px; z-index: 10;">
+                                        -@flashSale.PhanTramGiam%
+                                    </div>
+                                }
 
                                 <a asp-controller="SanPham" asp-action="Details" asp-route-id="@sp.MaSP" class="text-decoration-none text-dark">
                                     <img src="@sp.ImageURL" class="card-img-top" alt="@sp.TenSP" />
                                     <div class="card-body">
                                         <h6 class="fw-bold">@sp.TenSP</h6>
-                                        <p class="text-danger fw-semibold">@sp.DonGia.ToString("N0") đ</p>
 
+                                        @if (flashSale != null)
+                                        {
+                                            <p class="text-danger fw-semibold" style="font-size: 1.5rem; font-weight: 700; margin-bottom: 0;">@flashSale.GiaSauGiam.ToString("N0") đ</p>
+                                            <p style="font-size: 1.0rem; text-decoration: line-through; color: #888; margin-top: -5px;">@sp.DonGia.ToString("N0") đ</p>
+                                        }
+                                        else
+                                        {
+                                            <p class="text-danger fw-semibold" style="font-size: 1.5rem; font-weight: 700;">@sp.DonGia.ToString("N0") đ</p>
+                                        }
                                         <p class="text-muted small">@sp.MoTa</p>
                                         @{
                                             var soLuongDaBan = ViewBag.SoLuongDaBan.ContainsKey(sp.MaSP) ? ViewBag.SoLuongDaBan[sp.MaSP] : 0;
                                         }
                                         <p class="text-muted small">Đã bán: @soLuongDaBan sản phẩm</p>
                                         <p class="text-muted small">Còn lại: @sp.SoLuong sản phẩm</p>
-
                                     </div>
                                 </a>
                             </div>
                         </div>
-
                     }
+
                     @if (ViewBag.TotalPages > 1)
                     {
                         var currentPage = (int)ViewBag.CurrentPage;
@@ -119,7 +135,6 @@
                         <nav class="mt-4 d-flex justify-content-center">
                             <ul class="pagination">
 
-                                <!-- Nút về đầu -->
                                 @if (currentPage > 1)
                                 {
                                     <li class="page-item">
@@ -146,7 +161,6 @@
                                     </li>
                                 }
 
-                                <!-- Nút đến cuối -->
                                 @if (currentPage < totalPages)
                                 {
                                     <li class="page-item">
@@ -161,8 +175,6 @@
                             </ul>
                         </nav>
                     }
-
-
                 </div>
             }
         </div>
@@ -170,34 +182,32 @@
 </div>
 
 <script>
-    function themYeuThich(e) {
-    e.preventDefault();
+        function themYeuThich(e) {
+        e.preventDefault();
 
-    const form = e.target;
-    const button = form.querySelector('.nut-yeu-thich');
+        const form = e.target;
+        const button = form.querySelector('.nut-yeu-thich');
 
-    // Thêm class clicked để chạy animation
-    button.classList.add('clicked');
-    setTimeout(() => button.classList.remove('clicked'), 400);
+        button.classList.add('clicked');
+        setTimeout(() => button.classList.remove('clicked'), 400);
 
-    const formData = new FormData(form);
+        const formData = new FormData(form);
 
-    fetch(form.action, {
-        method: "POST",
-        body: formData
-    })
-    .then(response => {
-        if (response.ok) {
-            const tb = document.getElementById("thongBaoYeuThich");
-            tb.classList.add("hien");
-            setTimeout(() => {
-                tb.classList.remove("hien");
-            }, 3000);
-        } else {
-            alert("Đã xảy ra lỗi khi thêm vào yêu thích.");
-        }
-    })
-    .catch(error => console.error("Lỗi:", error));
-}
-
+        fetch(form.action, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                const tb = document.getElementById("thongBaoYeuThich");
+                tb.classList.add("hien");
+                setTimeout(() => {
+                    tb.classList.remove("hien");
+                }, 3000);
+            } else {
+                alert("Đã xảy ra lỗi khi thêm vào yêu thích.");
+            }
+        })
+        .catch(error => console.error("Lỗi:", error));
+    }
 </script>
