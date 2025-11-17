@@ -79,6 +79,7 @@ public class DonHangController : BaseAdminController
         var donHang = _context.DonHangs
             .Include(dh => dh.TaiKhoan)
             .Include(dh => dh.DiaChiNguoiDung)
+            .Include(dh => dh.Voucher)
             .Include(dh => dh.ChiTietDonHangs)
                 .ThenInclude(ct => ct.SanPham)
             .FirstOrDefault(dh => dh.MaDonHang == maDonHang);

@@ -258,6 +258,9 @@
         background-color: #e88c43;
         transform: translateY(-1px);
     }
+    .avt {
+        color: white;
+    }
 button.btn.btn-outline-primary.btn-sm {
     border-radius: 20px; /* Bo tròn */
     padding: 5px 12px;

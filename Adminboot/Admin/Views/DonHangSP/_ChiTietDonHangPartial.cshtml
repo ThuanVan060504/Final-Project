@@ -62,8 +62,48 @@
                         <td>@((item.SoLuong * item.DonGia).ToString("N0")) ₫</td>
                     </tr>
                 }
+
+                @{
+                    // Tính Tổng tiền hàng (chưa trừ voucher, chưa cộng phí ship)
+                    decimal totalProduct = Model.ChiTietDonHangs.Sum(item => item.SoLuong * item.DonGia);
+                }
+
                 <tr>
-                    <td colspan="3" class="text-right"><strong>Tổng Cộng:</strong></td>
+                    <td colspan="3" class="text-right"><strong>Tổng Tiền Hàng:</strong></td>
+                    <td>@totalProduct.ToString("N0") ₫</td>
+                </tr>
+
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Phí Vận Chuyển:</strong></td>
+                    <td>@Model.PhiVanChuyen.ToString("N0") ₫</td>
+                </tr>
+
+                @if (Model.Voucher != null)
+                {
+                    <tr>
+                        <td colspan="3" class="text-right text-success">
+                            <strong>Mã Voucher: @Model.Voucher.MaCode</strong> (Giảm giá)
+                        </td>
+                        <td class="text-success">
+                            <strong>-@Model.GiamGia.ToString("N0") ₫</strong>
+                        </td>
+                    </tr>
+                }
+                else if (Model.GiamGia > 0)
+                {
+                    // Trường hợp có giảm giá mà không có Voucher (ví dụ: giảm giá tự động)
+                    <tr>
+                        <td colspan="3" class="text-right text-success">
+                            <strong>Giảm Giá Khác:</strong>
+                        </td>
+                        <td class="text-success">
+                            <strong>-@Model.GiamGia.ToString("N0") ₫</strong>
+                        </td>
+                    </tr>
+                }
+
+                <tr>
+                    <td colspan="3" class="text-right"><strong>Tổng Thanh Toán:</strong></td>
                     <td><strong>@Model.TongTien.ToString("N0") ₫</strong></td>
                 </tr>
             </tbody>

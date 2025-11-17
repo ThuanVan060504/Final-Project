@@ -184,7 +184,7 @@
                 <form asp-action="UploadAvatar" asp-controller="User" method="post" enctype="multipart/form-data" class="text-center mb-4">
                     <input type="hidden" name="MaTK" value="@taiKhoan?.MaTK" />
                     <input type="file" name="avatarFile" class="form-control w-50 d-inline-block mb-2" accept="image/*" required />
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Đổi ảnh đại diện</button>
+                    <button type="submit" class="avt">Đổi ảnh đại diện</button>
                 </form>
 
                 <div id="viewInfo">
@@ -219,7 +219,7 @@
 
 
             <div id="historySection" class="content-section">
-                <h4 class="mb-3 text-primary">Lịch sử mua hàng</h4>
+                <h4 class="mb-3 fw-bold text-orange">Lịch sử mua hàng</h4>
                 @if (donHangs != null && donHangs.Count > 0)
                 {
                     foreach (var don in donHangs)
@@ -335,7 +335,7 @@
             </div>
 
             <div id="addressSection" class="content-section">
-                <h4 class="mb-3 text-warning">Địa chỉ đặt hàng</h4>
+                <h4 class="mb-3 fw-bold text-orange">Địa chỉ đặt hàng</h4>
 
                 @if (taiKhoan != null && taiKhoan.DiaChiNguoiDungs != null && taiKhoan.DiaChiNguoiDungs.Count > 0)
                 {
@@ -452,7 +452,7 @@
             </div>
 
             <div id="favoritesSection" class="content-section">
-                <h4 class="mb-3 fw-bold">Danh sách yêu thích</h4>
+                <h4 class="mb-3 fw-bold text-orange">Danh sách yêu thích</h4>
 
                 @if (yeuThichList == null || !yeuThichList.Any())
                 {
