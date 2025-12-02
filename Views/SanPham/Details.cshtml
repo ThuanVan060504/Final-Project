@@ -1,8 +1,35 @@
 ﻿@using Final_Project.Models.Shop
 @model SanPham
+@section Head {
+    <title>@Model.TenSP - G3TD Nội Thất</title>
+    <meta name="description" content="@Model.MoTa">
+    <meta name="keywords" content="@Model.TenSP, nội thất, bàn ghế, @ViewBag.CategoryName">
+    <link rel="canonical" href="@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path" />
+
+    <meta property="og:type" content="product" />
+    <meta property="og:site_name" content="G3TD Shop" />
+    <meta property="og:title" content="@Model.TenSP" />
+    <meta property="og:description" content="@Model.MoTa" />
+    <meta property="og:url" content="@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path" />
+    <meta property="og:image" content="@Model.ImageURL" />
+    <meta property="og:image:width" content="800" />
+    <meta property="og:image:height" content="800" />
+    
+    <meta property="product:price:amount" content="@Model.DonGia" />
+    <meta property="product:price:currency" content="VND" />
+}
 @{
     ViewData["Title"] = "Chi tiết sản phẩm";
     var flashSale = ViewBag.FlashSale as Final_Project.Models.Shop.ChiTietFlashSale;
+    
+    // Xử lý an toàn cho điểm đánh giá
+    double diemTB = 0;
+    if (ViewBag.DiemTrungBinh != null)
+    {
+        diemTB = Convert.ToDouble(ViewBag.DiemTrungBinh);
+    }
+    
+    var danhGiaList = ViewBag.DanhGiaList as List<DanhGia> ?? new List<DanhGia>();
 }
 
 <style>
@@ -36,7 +63,7 @@
         </div>
 
         <div class="col-lg-6">
-            <h2 class="product-detail__title">@Model.TenSP</h2>
+            <h1 class="product-detail__title">@Model.TenSP</h1>
 
             @* ⭐ Trung bình đánh giá *@
             @if (ViewBag.DiemTrungBinh > 0)
@@ -164,7 +191,18 @@
                     updateTimer();
                 });
             </script>
-
+            <div class="mt-4">
+        <h6 class="fw-bold text-secondary" style="font-size: 1.1rem;">Chia sẻ ngay:</h6>
+        
+        <div class="a2a_kit a2a_kit_size_32 a2a_default_style">
+            <a class="a2a_button_facebook"></a>
+            <a class="a2a_button_facebook_messenger"></a>
+            <a class="a2a_button_twitter"></a>
+            <a class="a2a_button_copy_link"></a>
+            <a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+        </div>
+        <script async src="https://static.addtoany.com/menu/page.js"></script>
+        </div>
         </div>
     </div>
 
@@ -186,9 +224,10 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4">
             @foreach (var item in (List<SanPham>)ViewBag.SanPhamTuongTu)
             {
+                string slugItem = SlugHelper.GenerateSlug(item.TenSP);
                 <div class="col">
-                    <a asp-controller="SanPham" asp-action="Details" asp-route-id="@item.MaSP" class="text-decoration-none text-dark">
-                        <div class="card h-100 border-0 shadow-sm">
+                    <a href="/san-pham/@slugItem-@item.MaSP" class="text-decoration-none text-dark">
+                                    <div class="card h-100 border-0 shadow-sm">
                             <img src="@item.ImageURL" class="card-img-top" alt="@item.TenSP" />
                             <div class="card-body">
                                 <h6 class="fw-semibold">@item.TenSP</h6>
@@ -622,3 +661,30 @@ else
         margin: 10px;
     }
 </style>
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org/",
+  "@@type": "Product",
+  "name": "@Model.TenSP",
+  "image": "@Model.ImageURL",
+  "description": "@Model.MoTa",
+  "sku": "@Model.MaSP",
+  "offers": {
+    "@@type": "Offer",
+    "url": "@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path",
+    "priceCurrency": "VND",
+    "price": "@Model.DonGia",
+    "availability": "@(Model.SoLuong > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock")"
+  }
+  @if (diemTB > 0)
+  {
+    <text>,
+    "aggregateRating": {
+      "@@type": "AggregateRating",
+      "ratingValue": "@diemTB",
+      "reviewCount": "@danhGiaList.Count"
+    }
+    </text>
+  }
+}
+</script>

@@ -146,6 +146,13 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
+    name: "ProductDetails",
+    pattern: "san-pham/{slug}-{id}",
+    defaults: new { controller = "SanPham", action = "Details" },
+    constraints: new { id = @"\d+" } // id phải là số
+);
+
+app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
