@@ -887,11 +887,11 @@ namespace Final_Project.Controllers
 
                 // Gửi email xác nhận (chỉ khi thành công)
                 // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt để tránh spam, bạn có thể mở lại
-                TempData["Success"] = "✅ Đơn hàng đã thanh toán thành công.";
+                TempData["Success"] = "Đơn hàng đã thanh toán thành công.";
             }
             else
             {
-                TempData["Error"] = "❌ Thanh toán MOMO thất bại hoặc bị hủy.";
+                TempData["Error"] = "Thanh toán MOMO thất bại hoặc bị hủy.";
             }
 
             return RedirectToAction("Index", "GioHang");
@@ -915,7 +915,7 @@ namespace Final_Project.Controllers
                         _context.SaveChanges();
 
                         // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt
-                        TempData["Success"] = "✅ Thanh toán VNPAY thành công!";
+                        TempData["Success"] = "Thanh toán VNPAY thành công!";
                     }
                     else
                     {
@@ -944,21 +944,33 @@ namespace Final_Project.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> PayPalSuccess(string orderId)
+        public async Task<IActionResult> PayPalSuccess(string orderId, string token, string PayerID, string paymentId)
         {
-            var response = await _paypalService.ExecutePaymentAsync(Request.Query);
+            
+            Console.WriteLine($"📩 Callback PayPal Success nhận được. orderId: {orderId}, token: {token}, PayerID: {PayerID}");
 
-            if (!int.TryParse(orderId, out int maDonHang))
+            int maDonHang = 0;
+
+            // 1. Uu tiên lấy orderId từ Query String (tham số mà bạn đã truyền vào)
+            if (!int.TryParse(orderId, out maDonHang))
             {
+                // 2. Nếu không lấy được, dùng Session (Cơ chế dự phòng)
                 var sessionOrderId = HttpContext.Session.GetInt32("CurrentOrderId");
                 if (sessionOrderId.HasValue)
                     maDonHang = sessionOrderId.Value;
                 else
                 {
-                    TempData["Error"] = "⚠ Không tìm thấy mã đơn hàng trong phản hồi từ PayPal.";
-                    return RedirectToAction("Index", "GioHang");
+                    
+                    TempData["Error"] = "⚠ Không tìm thấy mã đơn hàng. Vui lòng kiểm tra thủ công."; // Cần thông báo rõ ràng
+                    return RedirectToAction("Index", "GioHang"); // Trả về giỏ hàng (như bạn thấy)
                 }
             }
+
+            // Gọi dịch vụ PayPal để thực thi thanh toán
+            // Request.Query sẽ chứa token, PayerID, v.v...
+            var response = await _paypalService.ExecutePaymentAsync(Request.Query);
+
+            
 
             if (response.Success)
             {
@@ -966,28 +978,34 @@ namespace Final_Project.Controllers
                 if (donHang != null)
                 {
                     donHang.TrangThaiThanhToan = "DaThanhToan";
+                    // ... (Nếu cần, cập nhật lại trạng thái kho/voucher nếu chưa làm trong TaoPaypalPayment)
                     _context.SaveChanges();
 
                     // await SendOrderConfirmationEmail(maDonHang); // Tạm tắt
-                    TempData["Success"] = "✅ Thanh toán PayPal thành công!";
+                    TempData["Success"] = "Thanh toán PayPal thành công!";
                 }
                 else
                 {
-                    TempData["Error"] = "❌ Không tìm thấy đơn hàng trong hệ thống.";
+                    TempData["Error"] = "Không tìm thấy đơn hàng trong hệ thống.";
                 }
             }
             else
             {
-                TempData["Error"] = "❌ Thanh toán PayPal thất bại hoặc bị hủy.";
+                TempData["Error"] = $"Thanh toán PayPal thất bại. Chi tiết: {response.Message ?? "Không xác định"}";
             }
 
+            HttpContext.Session.Remove("CurrentOrderId"); // Dọn dẹp session
             return RedirectToAction("Index", "GioHang");
         }
 
         [HttpGet]
-        public IActionResult PayPalCancel()
+        public IActionResult PayPalCancel(string orderId, string token) // Thêm tham số PayPal
         {
+            // === ĐẶT BREAKPOINT TẠI DÒNG NÀY ĐỂ XEM CÓ BỊ HỦY KHÔNG ===
+            Console.WriteLine($"📩 Callback PayPal Cancel nhận được. orderId: {orderId}, token: {token}");
+
             TempData["Error"] = "🚫 Bạn đã hủy thanh toán PayPal.";
+            HttpContext.Session.Remove("CurrentOrderId"); // Dọn dẹp session
             return RedirectToAction("Index", "GioHang");
         }
 
@@ -1122,11 +1140,11 @@ namespace Final_Project.Controllers
                     body
                 );
 
-                Console.WriteLine("✅ Email đã gửi thành công đến: " + taiKhoan.Email);
+                Console.WriteLine("Email đã gửi thành công đến: " + taiKhoan.Email);
             }
             catch (Exception ex)
             {
-                Console.WriteLine("❌ Lỗi khi gửi email đơn hàng: " + ex.Message);
+                Console.WriteLine("Lỗi khi gửi email đơn hàng: " + ex.Message);
             }
         }
     }

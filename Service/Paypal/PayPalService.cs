@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
-using System.Globalization;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Net.Http.Headers;
+using System.Linq;
 
 namespace Final_Project.Services.PayPal
 {
@@ -22,102 +22,135 @@ namespace Final_Project.Services.PayPal
             _httpClient = new HttpClient();
         }
 
-        public async Task<string> CreatePaymentUrlAsync(PayPalPaymentModel model, HttpContext context)
+        // ✅ HÀM MỚI: Tách logic lấy Token ra để dùng chung
+        private async Task<string> GetAccessTokenAsync()
         {
             string clientId = _config["PayPal:ClientId"];
             string secret = _config["PayPal:ClientSecret"];
             string apiUrl = _config["PayPal:ApiUrl"];
 
-            // 🔐 1. Lấy access token
             var auth = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{clientId}:{secret}"));
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", auth);
 
-            var tokenResponse = await _httpClient.PostAsync(
-                $"{apiUrl}/v1/oauth2/token",
-                new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded")
-            );
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{apiUrl}/v1/oauth2/token");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Basic", auth);
+            request.Content = new StringContent("grant_type=client_credentials", Encoding.UTF8, "application/x-www-form-urlencoded");
 
-            if (!tokenResponse.IsSuccessStatusCode)
+            var response = await _httpClient.SendAsync(request);
+
+            if (!response.IsSuccessStatusCode)
             {
-                string err = await tokenResponse.Content.ReadAsStringAsync();
-                throw new Exception($"❌ Lỗi khi lấy access token từ PayPal: {tokenResponse.StatusCode}\n{err}");
+                string err = await response.Content.ReadAsStringAsync();
+                throw new Exception($"Lỗi lấy Access Token: {response.StatusCode}\n{err}");
             }
 
-            var tokenJson = await tokenResponse.Content.ReadAsStringAsync();
-            var token = JsonDocument.Parse(tokenJson).RootElement.GetProperty("access_token").GetString();
+            var json = await response.Content.ReadAsStringAsync();
+            using var doc = JsonDocument.Parse(json);
+            return doc.RootElement.GetProperty("access_token").GetString();
+        }
 
-            // 🔗 2. Tạo payment request
-            var returnUrl = _config["PayPal:ReturnUrl"] ??
-                            $"{context.Request.Scheme}://{context.Request.Host}/ThanhToan/PayPalCallback";
-            var cancelUrl = _config["PayPal:CancelUrl"] ??
+        public async Task<string> CreatePaymentUrlAsync(PayPalPaymentModel model, HttpContext context)
+        {
+            string apiUrl = _config["PayPal:ApiUrl"];
+            string token = await GetAccessTokenAsync(); // Gọi hàm lấy token
+
+            var returnUrl = model.ReturnUrl ?? _config["PayPal:ReturnUrl"] ??
+                    $"{context.Request.Scheme}://{context.Request.Host}/ThanhToan/PayPalSuccess";
+
+            var cancelUrl = model.CancelUrl ?? _config["PayPal:CancelUrl"] ??
                             $"{context.Request.Scheme}://{context.Request.Host}/ThanhToan/PayPalCancel";
 
             var paymentData = new
             {
                 intent = "sale",
-                redirect_urls = new
-                {
-                    return_url = returnUrl,
-                    cancel_url = cancelUrl
-                },
+                redirect_urls = new { return_url = returnUrl, cancel_url = cancelUrl },
                 payer = new { payment_method = "paypal" },
                 transactions = new[]
                 {
                     new
                     {
                         amount = new
-                            {
-                                total = model.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture), // ✅ fix format
-                                currency = "USD"
-                            },
-
+                        {
+                            total = model.Amount.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+                            currency = "USD"
+                        },
                         description = model.Description ?? "Thanh toán đơn hàng"
                     }
                 }
             };
 
-            var paymentContent = new StringContent(
-                JsonSerializer.Serialize(paymentData),
-                Encoding.UTF8,
-                "application/json"
-            );
+            var content = new StringContent(JsonSerializer.Serialize(paymentData), Encoding.UTF8, "application/json");
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-
-            // 🔧 3. Gửi yêu cầu tạo payment
-            var response = await _httpClient.PostAsync($"{apiUrl}/v1/payments/payment", paymentContent);
+            var response = await _httpClient.PostAsync($"{apiUrl}/v1/payments/payment", content);
             var resultJson = await response.Content.ReadAsStringAsync();
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new Exception($"❌ PayPal API lỗi khi tạo payment: {response.StatusCode}\n{resultJson}");
+                throw new Exception($"Lỗi tạo Payment: {resultJson}");
             }
 
-            // ✅ 4. Lấy link thanh toán PayPal (approval_url)
-            using var jsonDoc = JsonDocument.Parse(resultJson);
-            var approvalUrl = jsonDoc.RootElement
-                .GetProperty("links")
-                .EnumerateArray()
-                .FirstOrDefault(x => x.GetProperty("rel").GetString() == "approval_url")
-                .GetProperty("href")
-                .GetString();
+            using var doc = JsonDocument.Parse(resultJson);
+            var links = doc.RootElement.GetProperty("links");
+            foreach (var link in links.EnumerateArray())
+            {
+                if (link.GetProperty("rel").GetString() == "approval_url")
+                {
+                    return link.GetProperty("href").GetString();
+                }
+            }
 
-            if (string.IsNullOrEmpty(approvalUrl))
-                throw new Exception("❌ Không tìm thấy approval_url trong phản hồi PayPal.");
-
-            return approvalUrl;
+            throw new Exception("Không tìm thấy approval_url");
         }
 
+        // 🔥 QUAN TRỌNG: HÀM NÀY ĐÃ ĐƯỢC VIẾT LẠI ĐỂ THỰC THI THANH TOÁN
         public async Task<PayPalPaymentResponse> ExecutePaymentAsync(IQueryCollection query)
         {
-            return new PayPalPaymentResponse
+            try
             {
-                Success = query.ContainsKey("paymentId") && query.ContainsKey("PayerID"),
-                PaymentId = query["paymentId"],
-                PayerId = query["PayerID"]
-            };
+                // 1. Kiểm tra tham số
+                string paymentId = query["paymentId"];
+                string payerId = query["PayerID"];
+
+                if (string.IsNullOrEmpty(paymentId) || string.IsNullOrEmpty(payerId))
+                {
+                    return new PayPalPaymentResponse { Success = false, Message = "Thiếu paymentId hoặc PayerID" };
+                }
+
+                string apiUrl = _config["PayPal:ApiUrl"];
+                string token = await GetAccessTokenAsync(); // Lấy token mới
+
+                // 2. Tạo body cho request Execute
+                var executeData = new { payer_id = payerId };
+                var content = new StringContent(JsonSerializer.Serialize(executeData), Encoding.UTF8, "application/json");
+
+                // 3. Gửi request đến endpoint /execute
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                var response = await _httpClient.PostAsync($"{apiUrl}/v1/payments/payment/{paymentId}/execute", content);
+                var resultJson = await response.Content.ReadAsStringAsync();
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return new PayPalPaymentResponse { Success = false, Message = $"PayPal API Error: {resultJson}" };
+                }
+
+                // 4. Kiểm tra trạng thái "state" trong phản hồi
+                using var doc = JsonDocument.Parse(resultJson);
+                var state = doc.RootElement.GetProperty("state").GetString();
+
+                if (state == "approved")
+                {
+                    return new PayPalPaymentResponse { Success = true, PaymentId = paymentId, PayerId = payerId };
+                }
+                else
+                {
+                    return new PayPalPaymentResponse { Success = false, Message = $"Thanh toán không thành công. State: {state}" };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new PayPalPaymentResponse { Success = false, Message = ex.Message };
+            }
         }
     }
 }

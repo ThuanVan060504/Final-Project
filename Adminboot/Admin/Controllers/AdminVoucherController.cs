@@ -17,9 +17,6 @@ namespace Final_Project.Areas.Admin.Controllers
             _context = context;
         }
 
-        // ===================================
-        // READ: Danh sách Voucher
-        // ===================================
         public async Task<IActionResult> Index()
         {
             var vouchers = await _context.Vouchers
@@ -29,9 +26,6 @@ namespace Final_Project.Areas.Admin.Controllers
             return View("~/Adminboot/Admin/Views/AdminVoucher/Index.cshtml", vouchers);
         }
 
-        // ===================================
-        // CREATE (GET)
-        // ===================================
         public IActionResult Create()
         {
             var model = new Voucher
@@ -48,9 +42,7 @@ namespace Final_Project.Areas.Admin.Controllers
             return View("~/Adminboot/Admin/Views/AdminVoucher/Create.cshtml", model);
         }
 
-        // ===================================
-        // CREATE (POST)
-        // ===================================
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
@@ -111,9 +103,6 @@ namespace Final_Project.Areas.Admin.Controllers
             return View("~/Adminboot/Admin/Views/AdminVoucher/Create.cshtml", voucher);
         }
 
-        // ===================================
-        // EDIT (GET)
-        // ===================================
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -124,9 +113,6 @@ namespace Final_Project.Areas.Admin.Controllers
             return View("~/Adminboot/Admin/Views/AdminVoucher/Edit.cshtml", voucher);
         }
 
-        // ===================================
-        // EDIT (POST)
-        // ===================================
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(
@@ -184,9 +170,6 @@ namespace Final_Project.Areas.Admin.Controllers
             return View("~/Adminboot/Admin/Views/AdminVoucher/Edit.cshtml", voucher);
         }
 
-        // ===================================
-        // ✅ THÊM HÀM NÀY VÀO (Giống DanhmucSP)
-        // ===================================
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
